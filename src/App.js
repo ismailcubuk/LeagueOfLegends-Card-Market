@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
-
+import { Button } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Navbar from './components/Navbar/Navbar';
 function App() {
   const [champions, setChampions] = useState([])
 
@@ -11,21 +13,23 @@ function App() {
     await fetch('http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
       .then(response => response.json())
       .then(json => setChampions(json.data))
+    console.log(champions);
   }
   const result = (Object.keys(champions).map((key) => champions[key]));
-  console.log(result[0]);
 
 
   return (
     <div className='page'>
+      <Navbar />
       <div className='parent'>
         {
           result.map((hero) => {
             return <div className='hero-border'>
-              <h1 className='hero-id'>{hero.id}</h1>
+              <h2 className='hero-id'>{hero.id}</h2>
               <div className='hero-title'>{hero.title}</div>
               <div className='hero-image'>
-                <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="asd" />
+                <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
+                <div className='hero-money'>${hero.info.difficulty}</div>
                 <div className='hero-tags'> {hero.tags} </div>
               </div>
               <div className='info'>
@@ -43,7 +47,7 @@ function App() {
                 </div>
               </div>
               <div className='card-trade'>
-                <button className='buy-button'>BUY</button>
+                <Button className='buy-button' variant="success">BUY</Button>
               </div>
             </div>
           })
