@@ -17,29 +17,40 @@ function App() {
 
 
   return (
-    <div>
-      {
-        result.map((hero) => {
-          return <div>
-            <div>{hero.id}</div>
-            <div>{hero.title}</div>
-            <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} width="50px" height="100px" alt="asd" />
-            <div className='info'>
-              <div>Attack = {hero.info.attack}</div>
-              <div>Defense = {hero.info.defense}</div>
-              <div>Magic = {hero.info.magic}</div>
+    <div className='page'>
+      <div className='parent'>
+        {
+          result.map((hero) => {
+            return <div className='hero-border'>
+              <h1 className='hero-id'>{hero.id}</h1>
+              <div className='hero-title'>{hero.title}</div>
+              <div className='hero-image'>
+                <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="asd" />
+                <div className='hero-tags'> {hero.tags} </div>
+              </div>
+              <div className='info'>
+                <div>
+                  <div>Attack</div>
+                  <div className='info-img'>{hero.info.attack}</div>
+                </div>
+                <div>
+                  <div>Defense</div>
+                  <div className='info-img'>{hero.info.defense}</div>
+                </div>
+                <div>
+                  <div>Magic</div>
+                  <div className='info-img'>{hero.info.magic}</div>
+                </div>
+              </div>
+              <div className='card-trade'>
+                <button className='buy-button'>BUY</button>
+              </div>
             </div>
-            <div className='tags'>
-              <div> {hero.tags} </div>
-            </div>
-            <br />
-            <p> {hero.blurb} </p>
-
-            <hr />
-          </div>
-        })
-      }
+          })
+        }
+      </div>
     </div>
+
   )
 }
 
