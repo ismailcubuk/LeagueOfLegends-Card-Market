@@ -1,55 +1,160 @@
 /* HEADER */
-.navbar {
+.nav {
     color: white;
-    border: 2px solid red;
+    background-color: #000000;
     width: 100%;
     height: 70px;
     display: flex;
     justify-content: space-between;
-    flex-wrap: wrap;
-    /* padding: 15px; */
+    position: fixed;
+    z-index: 2;
 }
 
-.navbar>a {
+.menu {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    border: 2px solid red;
+    justify-content: space-between;
+}
+
+/* LEFT MENU */
+.menu-left {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    margin-left: 40px;
+}
+
+.menu-left>img {
+    width: 50px;
+    height: 50px;
+    margin-right: 20px;
+}
+
+.lol {
+    cursor: default;
+    font-size: 24px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 325px;
+}
+
+.menu-button {
+    margin-left: 40px;
+    display: flex;
+    width: 120px;
+    justify-content: space-between;
+}
+
+.menu-button>a {
     text-decoration: none;
     color: white;
+    opacity: 0.6;
 }
 
-.logo {
-    /* margin-right: 50px; */
+.menu-button>a:hover {
+    opacity: 1;
+    text-decoration: underline solid red 20%;
+    text-decoration-color: red;
 }
 
-.list {
-    list-style: none;
+/* RİGHT MENU */
+.menu-right {
+    height: 100%;
+    width: 100px;
     display: flex;
-    gap: 25px;
+    align-items: center;
+    justify-content: center;
+    margin-right: 40px;
 }
 
-#toggler,
-.navbar label {
+.money {
+    display: flex;
+    align-items: center;
+}
+
+.wallet-border {
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    background-color: #282828;
+    height: 40px;
+    width: 100%;
+}
+
+.money-wallet {
+    font-size: 24px;
+    width: 55px;
+    height: 100%;
+}
+
+.w-icon-border {
+    background-color: red;
+    border-radius: 10px 0px 0px 10px;
+    height: 100%;
+    width: 25px;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.w-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* DROP DOWN */
+.drop-down {
     display: none;
 }
 
-@media screen (max-width:600px) {
+@media screen and (max-width:1200px) {
     .menu {
         width: 100%;
         max-height: 0;
         overflow: hidden;
+        border: none;
     }
 
-    .list {
-        flex-direction: column;
+    .nav {
+        display: flex;
+
+    }
+
+    .drop-down {
+        display: flex;
+        border: 2px solid red;
+        width: 100%;
+        justify-content: space-around;
         align-items: center;
-        padding: 20px;
     }
 
-    .navbar label {
-        display: inline-flex;
+    .drop-down>img {
+        width: 50px;
+        height: 50px;
+        margin-right: 20px;
+    }
+
+    .drop-toggle {
+        width: 60px;
+        height: 40px;
+        background-color: #282828;
+        border: none;
+        display: flex;
         align-items: center;
-        cursor: pointer;
+        justify-content: center;
     }
 
-    #toggler:checked .menu {
-        max-height: 100%;
+    .dropdown-toggle::after {
+        display: none;
+    }
+
+    .wallet-border {
+        width: 100px;
     }
 }

@@ -1,0 +1,184 @@
+.left-sidebar {
+    border: 2px solid red;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-top: none;
+    display: flex;
+    position: fixed;
+    min-height: 710px;
+    margin-top: 70px;
+    width: 210px;
+}
+
+.sidebar-border {
+    color: white;
+    width: 100%;
+}
+
+.sidebar-inside {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin-top: 20px;
+    border-radius: 20px;
+    padding: 10px 5px 0px 5px;
+    box-shadow: 3px 3px 10px red
+}
+
+
+/* ALL ROLE */
+.all-role {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-bottom: 2px solid red;
+    border-radius: 20px;
+    background-color: transparent;
+    color: white;
+    border-right: none;
+    border-left: none;
+    border-top: none;
+}
+
+.all-role:active {
+    border-bottom: none;
+    padding-top: 2px;
+    border-radius: 30px;
+}
+
+
+.all-role-images {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 10px
+}
+
+.all-role-images>img {
+    height: 40px;
+}
+
+/* ROLE FİLTER */
+.role-filter-header {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.role-filter-main {
+    margin-bottom: 10px;
+}
+
+.role {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid red;
+    border-radius: 20px;
+    background-color: transparent;
+    width: 100%;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    color: white;
+}
+
+.role:active {
+    border-bottom: none;
+    padding-top: 2px;
+    border-radius: 30px;
+}
+
+.role>label {
+    margin-left: 15px;
+}
+
+.role>img {
+    height: 40px;
+    margin: 0px 20px 0px 30px;
+}
+
+/* FİLTER BOTTOM */
+.filter-bottom {
+    width: 100%;
+}
+
+
+/* PRİCE */
+.price-filter {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    text-align: center;
+}
+
+.price-text {
+    margin: 10px;
+}
+
+.sidebar-button {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 2px solid red;
+    border-radius: 30px;
+    cursor: pointer;
+    opacity: 0.7;
+    background-color: transparent;
+    color: white;
+    border-left: none;
+    border-top: none;
+    border-right: none;
+}
+
+.sidebar-button:hover {
+    opacity: 1;
+}
+
+.sidebar-button:active {
+    border-bottom: none;
+    padding-top: 2px;
+    border-radius: 30px;
+}
+
+/* İNPUT */
+.search {
+    padding: 0px 10px 20px 10px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.search>input {
+    width: 130px;
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.2;
+}
+
+.search>input::placeholder {
+    text-align: center;
+    color: white;
+}
+
+.search>input:hover {
+    opacity: 0.7;
+}
+
+.search>input:focus {
+    opacity: 1;
+}
+
+.search-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
