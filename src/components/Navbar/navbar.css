@@ -132,6 +132,7 @@
         width: 100%;
         justify-content: space-around;
         align-items: center;
+        min-width: 580px;
     }
 
     .drop-down>img {
