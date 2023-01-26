@@ -127,7 +127,6 @@
 
     .drop-down {
         display: flex;
-        border: 2px solid red;
         width: 100%;
         justify-content: space-around;
         align-items: center;
