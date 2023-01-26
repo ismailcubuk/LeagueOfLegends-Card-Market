@@ -1,41 +1,55 @@
 /* HEADER */
-.top-navbar {
+.navbar {
     color: white;
     border: 2px solid red;
     width: 100%;
     height: 70px;
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+    /* padding: 15px; */
 }
 
-.top-navbar>h2 {
-    height: 100%;
-    margin-left: 30px;
-    display: flex;
-    align-items: center;
+.navbar>a {
+    text-decoration: none;
+    color: white;
 }
 
-.right-navbar {
-    display: flex;
-    width: 400px;
-    height: 100%;
+.logo {
+    /* margin-right: 50px; */
 }
 
-.right-navbar>div {
-    height: 100%;
-    width: 90px;
+.list {
+    list-style: none;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    cursor: pointer;
-    margin-right: 30px;
+    gap: 25px;
 }
 
-.right-navbar>h2 {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    width: 90px;
-    justify-content: center;
+#toggler,
+.navbar label {
+    display: none;
+}
+
+@media screen (max-width:600px) {
+    .menu {
+        width: 100%;
+        max-height: 0;
+        overflow: hidden;
+    }
+
+    .list {
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .navbar label {
+        display: inline-flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    #toggler:checked .menu {
+        max-height: 100%;
+    }
 }

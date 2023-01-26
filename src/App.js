@@ -7,7 +7,7 @@ function App() {
 
   useEffect(() => {
     fetchData();
-  }, [])
+  })
 
   const fetchData = async () => {
     await fetch('http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
@@ -29,7 +29,7 @@ function App() {
               <div className='hero-title'>{hero.title}</div>
               <div className='hero-image'>
                 <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
-                <div className='hero-money'>${hero.info.difficulty}</div>
+
                 <div className='hero-tags'> {hero.tags} </div>
               </div>
               <div className='info'>
@@ -48,6 +48,7 @@ function App() {
               </div>
               <div className='card-trade'>
                 <Button className='buy-button' variant="success">BUY</Button>
+                <div className='hero-money'>${hero.info.difficulty}</div>
               </div>
             </div>
           })

@@ -1,14 +1,19 @@
 import './navbar.css';
 function TopNavbar() {
     return (
-        <div className='top-navbar'>
-            <h2>League of Legends Card Shop</h2>
-            <div className="right-navbar">
-                <div>Home</div>
-                <div>Profile</div>
-                <h2>$100</h2>
+        <nav className='navbar'>
+            <a href="#" className='logo'>League of Legends Card Shop</a>
+            <input type="checkbox" id='toggler' />
+            <label htmlFor="toggler">asd</label>
+
+            <div className="menu">
+                <ul className='list'>
+                    <li> <a href="Home">Home</a> </li>
+                    <li> <a href="Profile">Profile</a> </li>
+                    {/* <h2>$100</h2> */}
+                </ul>
             </div>
-        </div>
+        </nav>
     );
 }
 
