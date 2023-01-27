@@ -17,7 +17,7 @@ function App() {
     console.log(champions);
   }
   const result = (Object.keys(champions).map((key) => champions[key]));
-
+  // PAGİNATİON WİTH SLİCE
 
   return (
     <div className='page'>
@@ -29,7 +29,7 @@ function App() {
         <div className='right-main'>
           <div className='parent'>
             {
-              result.map((hero) => {
+              result.slice(0, 10).map((hero) => {
                 return <div className='hero-border'>
                   <h2 className='hero-id'>{hero.id}</h2>
                   <div className='hero-title'>{hero.title}</div>
