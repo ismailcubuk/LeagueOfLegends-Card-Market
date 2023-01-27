@@ -13,6 +13,7 @@
 .right-main {
   width: 85%;
   margin-left: 250px;
+  min-height: 100vh;
 }
 
 

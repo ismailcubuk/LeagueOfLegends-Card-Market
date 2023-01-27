@@ -12,7 +12,7 @@ function TopNavbar() {
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/LoL_icon.svg/1200px-LoL_icon.svg.png" alt="Lol logo" />
                     <div className='lol'>League of Legends Card Shop</div>
                     <div className='menu-button'>
-                        <a href="Home">Home</a>
+                        <a href="shop">Shop</a>
                         <a href="MyCards">MyCards</a>
                     </div>
                 </div>
