@@ -13,7 +13,7 @@ function TopNavbar() {
                     <div className='lol'>League of Legends Card Shop</div>
                     <div className='menu-button'>
                         <a href="Home">Home</a>
-                        <a href="Profile">Profile</a>
+                        <a href="MyCards">MyCards</a>
                     </div>
                 </div>
                 <div className='menu-right'>
@@ -32,7 +32,7 @@ function TopNavbar() {
                 <Wallet />
                 <Dropdown.Menu className='drop-menu' variant="dark">
                     <Dropdown.Item href="Home">Home</Dropdown.Item>
-                    <Dropdown.Item href="Profile">Profile</Dropdown.Item>
+                    <Dropdown.Item href="MyCards">MyCards</Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>
         </nav >
