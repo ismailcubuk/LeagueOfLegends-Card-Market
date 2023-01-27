@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Navbar from '../../Navbar/Navbar';
-import Sidebar from '../../Sidebar/Sidebar';
+import Navbar from '../Navbar/Navbar';
+import Sidebar from '../Sidebar/Sidebar';
 function Shop() {
   const [champions, setChampions] = useState([])
 
