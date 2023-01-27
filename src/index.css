@@ -9,22 +9,18 @@
   display: flex;
 }
 
-/* LEFT BAR */
-
-
 /* RİGHT MAİN */
 .right-main {
   width: 85%;
-  margin-left: 220px
+  margin-left: 250px;
 }
 
 
 /* RESPONSE */
 .parent {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   padding-top: 80px;
-  justify-content: space-around;
+  grid-template-columns: auto auto auto auto auto auto;
 }
 
 /* PAGE */
@@ -40,11 +36,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 10px;
+  margin: 10px 10px 40px 10px;
+
 }
 
 .hero-id {
   color: white;
+  font-size: 30px;
 }
 
 .hero-title {

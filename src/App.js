@@ -29,9 +29,9 @@ function App() {
         <div className='right-main'>
           <div className='parent'>
             {
-              result.slice(0, 10).map((hero) => {
+              result.slice(0, 13).map((hero) => {
                 return <div className='hero-border'>
-                  <h2 className='hero-id'>{hero.id}</h2>
+                  <div className='hero-id'>{hero.id}</div>
                   <div className='hero-title'>{hero.title}</div>
                   <div className='hero-image'>
                     <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
