@@ -20,9 +20,28 @@ function MappedCard() {
             filtered.id.toLowerCase().includes("vex") +
             filtered.id.toLowerCase().includes("seraphine"))
     )
-    const mappedSlice = filtered.slice(0, 12)
+    const mappedSlice = filtered.slice(0, 20)
 
-    const mapped = mappedSlice.map((hero) => {
+
+
+    // for (let i = 0; i < mappedSlice.length; i++) {
+    //     if (mappedSlice[i].noname[0] === "Tank") {
+    //         mappedSlice[i].noname[0] = "New Text";
+    //     }
+    // }
+
+    let newArray = mappedSlice.map(obj => {
+        obj.tags = obj.tags.map(x => x === "Fighter" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" width="40px" height="40px" alt="" /> : x)
+        obj.tags = obj.tags.map(x => x === "Tank" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" width="40px" height="40px" alt="" /> : x)
+        obj.tags = obj.tags.map(x => x === "Mage" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png" width="40px" height="40px" alt="" /> : x)
+        obj.tags = obj.tags.map(x => x === "Assassin" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png" width="40px" height="40px" alt="" /> : x)
+        obj.tags = obj.tags.map(x => x === "Marksman" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png" width="40px" height="40px" alt="" /> : x)
+        obj.tags = obj.tags.map(x => x === "Support" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png" width="40px" height="40px" alt="" /> : x)
+        return obj;
+    });
+
+
+    const mapped = newArray.map((hero) => {
         return <div className='hero-border' key={hero.id}>
             <div className='hero-id'>{hero.id}</div>
             <div className='hero-title'>{hero.title}</div>
@@ -42,7 +61,18 @@ function MappedCard() {
                 </div>
                 <div>
                     <div>Magic</div>
-                    <div className='info-img'>{hero.info.magic}</div>
+
+
+                    <div className='info-img'>
+                        {
+                            hero.info.magic
+                        }
+
+
+                    </div>
+
+
+
                 </div>
             </div>
             <div className='card-trade'>

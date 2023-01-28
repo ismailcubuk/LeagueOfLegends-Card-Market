@@ -14,6 +14,7 @@ function TopNavbar() {
                     <div className='menu-button'>
                         <a href="/">Shop</a>
                         <a href="MyCards">MyCards</a>
+                        <a href="xa">xa</a>
                     </div>
                 </div>
                 <div className='menu-right'>

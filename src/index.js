@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import MyCards from './components/Body/MyCards/MyCards';
 import Shop from './components/Body/Shop/Shop';
+import Xa from './components/component/Xa';
 
 const router = createBrowserRouter([
   {
@@ -20,7 +21,12 @@ const router = createBrowserRouter([
   {
     path: "MyCards",
     element: <MyCards />
-  }
+  },
+  {
+    path: "xa",
+    element: <Xa />
+  },
+
 ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
