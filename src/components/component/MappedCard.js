@@ -12,6 +12,7 @@ function MappedCard() {
             .then(response => response.json())
             .then(json => setChampions(json.data))
     }
+    // filter nondata champ
     const result = (Object.keys(champions).map((key) => champions[key]));
     const filtered = result.filter(filtered =>
         filtered.id.toLowerCase().includes("") -
@@ -22,14 +23,7 @@ function MappedCard() {
     )
     const mappedSlice = filtered.slice(0, 20)
 
-
-
-    // for (let i = 0; i < mappedSlice.length; i++) {
-    //     if (mappedSlice[i].noname[0] === "Tank") {
-    //         mappedSlice[i].noname[0] = "New Text";
-    //     }
-    // }
-
+    // class icon update
     let newArray = mappedSlice.map(obj => {
         obj.tags = obj.tags.map(x => x === "Fighter" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" width="40px" height="40px" alt="" /> : x)
         obj.tags = obj.tags.map(x => x === "Tank" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" width="40px" height="40px" alt="" /> : x)
@@ -47,7 +41,6 @@ function MappedCard() {
             <div className='hero-title'>{hero.title}</div>
             <div className='hero-image'>
                 <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
-
                 <div className='hero-tags'> {hero.tags} </div>
             </div>
             <div className='info'>
@@ -61,18 +54,9 @@ function MappedCard() {
                 </div>
                 <div>
                     <div>Magic</div>
-
-
                     <div className='info-img'>
-                        {
-                            hero.info.magic
-                        }
-
-
+                        {hero.info.magic}
                     </div>
-
-
-
                 </div>
             </div>
             <div className='card-trade'>
