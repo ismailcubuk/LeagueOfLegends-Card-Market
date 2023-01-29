@@ -5,13 +5,15 @@ import { useContext } from 'react';
 import CardContext from '../../CardContext';
 
 function Sidebar() {
-    const { handleChange, allRoleCLick, clickedAllRoles, clickedFighter, clickedTank, clickedMage, clickedAssassin, clickedMarksman, clickedSupport, fighterClick, tankClick, mageClick, assassinClick, marksmanClick, supportClick } = useContext(CardContext)
+    const { filterUpMoneyClick, unFilteredMoneyClick, unFilteredMoneyActive, filterDownMoneyActive, filterUpMoneyActive, filterDownMoneyClick, handleChange, allRoleCLick, clickedAllRoles, clickedFighter, clickedTank, clickedMage, clickedAssassin, clickedMarksman, clickedSupport, fighterClick, tankClick, mageClick, assassinClick, marksmanClick, supportClick } = useContext(CardContext)
     return (
         <div className='sidebar-border'>
             <div className='sidebar-inside'>
                 <div className='check'>
+                    <div className='all-role-header'>
+                        <div>All Role</div>
+                    </div>
                     <button className='all-role'>
-                        All Role
                         <div className='all-role-images' onClick={allRoleCLick} style={clickedAllRoles}>
                             <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" alt="" />
                             <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" alt="" />
@@ -56,32 +58,31 @@ function Sidebar() {
                     <div className='filter-bottom'>
                         <div className='price-filter'>
                             Price Filter
-                            <button className='sidebar-button'>
+                            <button className='sidebar-button' onClick={filterUpMoneyClick} style={filterUpMoneyActive} >
                                 <AiOutlineArrowUp />
                                 <div className='price-text'>
                                     Price High to Low
                                 </div>
                                 <AiOutlineArrowUp />
                             </button>
-                            <button className='sidebar-button'>
+                            <button className='sidebar-button' onClick={unFilteredMoneyClick} style={unFilteredMoneyActive} >
                                 <AiOutlineArrowLeft />
                                 <div className='price-text'>
-                                    Price Low to High
+                                    Price Unfiltered
                                 </div>
                                 <AiOutlineArrowRight />
                             </button>
-                            <button className='sidebar-button'>
+                            <button className='sidebar-button' onClick={filterDownMoneyClick} style={filterDownMoneyActive}>
                                 <AiOutlineArrowDown />
                                 <div className='price-text'>
                                     Price Low to High
                                 </div>
                                 <AiOutlineArrowDown />
                             </button>
-                        </div>
-                        {/* SEARCH */}
-                        <div className='search'>
-                            <BsSearch className='search-icon' />
-                            <input type="text" placeholder='Champion Name' onChange={handleChange} />
+                            <div className='search'>
+                                <BsSearch className='search-icon' />
+                                <input type="text" placeholder='Champion Name' onChange={handleChange} />
+                            </div>
                         </div>
                     </div>
                 </div>

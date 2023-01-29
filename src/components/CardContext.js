@@ -165,14 +165,66 @@ export const CardContextprovider = ({ children }) => {
             filtered.id.toLowerCase().includes("vex") +
             filtered.id.toLowerCase().includes("seraphine"))
     )
+    //              + UP MONEY +
+    const [filterUpMoney, setFilterUpMoney] = useState(false)
+    const filterUpMoneyActive = {
+        marginLeft: filterUpMoney ? "-4px" : "",
+        opacity: filterUpMoney ? 1 : "",
+        borderLeft: filterUpMoney ? "4px solid red" : "",
+        borderTop: filterUpMoney ? "none" : "",
+    }
+    const filterUpMoneyClick = () => {
+        setFilterUpMoney(true);
+        setFilterDownMoney(false);
+        setUnFilteredMoney(false)
+    }
+    //             - UP MONEY -
+    //             + DOWN MONEY +
+    const [filterDownMoney, setFilterDownMoney] = useState(false)
+    const filterDownMoneyActive = {
+        marginLeft: filterDownMoney ? "-4px" : "",
+        opacity: filterDownMoney ? 1 : "",
+        borderLeft: filterDownMoney ? "4px solid red" : "",
+        borderTop: filterDownMoney ? "none" : "",
+    }
+    const filterDownMoneyClick = () => {
+        setFilterDownMoney(true);
+        setFilterUpMoney(false)
+        setUnFilteredMoney(false)
+    }
+    //             - DOWN MONEY -
+    //             + UNFİLTERED MONEY +
+    const [unFilteredMoney, setUnFilteredMoney] = useState(false)
+    const unFilteredMoneyActive = {
+        marginLeft: unFilteredMoney ? "-4px" : "",
+        opacity: unFilteredMoney ? 1 : "",
+        borderLeft: unFilteredMoney ? "4px solid red" : "",
+        borderTop: unFilteredMoney ? "none" : "",
+    }
+    const unFilteredMoneyClick = () => {
+        setUnFilteredMoney(true)
+        setFilterDownMoney(false);
+        setFilterUpMoney(false)
+    }
+    //             - UNFİLTERED MONEY -
 
     // .slice(0, 20)
-    const filteredChamp = filtered.filter(filteredText => filteredText.id.toLowerCase().includes(search))
-    const newArray = filteredChamp.filter(item => item.tags.some(tags => tags.includes(datas))).map(obj => {
-        return obj;
-    });
-
+    const filteredChamp = filtered.filter(filteredText => filteredText.id.toLowerCase().includes(search.toLowerCase()))
+    const rewq = filteredChamp.filter(item => item.tags.some(tags => tags.includes(datas)))
+    const newArray = filterUpMoney === true ? rewq.sort(function (a, b) { return b.info.difficulty - a.info.difficulty })
+        : filterDownMoney === true ? rewq.sort(function (a, b) { return a.info.difficulty - b.info.difficulty })
+            : unFilteredMoney === true ? rewq : rewq
+                .map(obj => {
+                    return obj;
+                });
+    console.log(filteredChamp);
     const data = {
+        unFilteredMoneyActive,
+        filterDownMoneyActive,
+        filterUpMoneyActive,
+        filterUpMoneyClick,
+        filterDownMoneyClick,
+        unFilteredMoneyClick,
         newArray,
         clickedAllRoles,
         clickedFighter,

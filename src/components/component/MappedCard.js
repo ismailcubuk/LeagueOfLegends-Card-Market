@@ -3,7 +3,6 @@ import React, { useContext } from 'react'
 import CardContext from '../CardContext'
 function MappedCard() {
     const { newArray } = useContext(CardContext)
-
     const mapped = newArray.map((hero) => {
         return <div className='hero-border' key={hero.id}>
             <div className='hero-id'>{hero.id}</div>
@@ -33,9 +32,7 @@ function MappedCard() {
                 </div>
                 <div>
                     <div>Magic</div>
-                    <div className='info-img'>
-                        {hero.info.magic}
-                    </div>
+                    <div className='info-img'>{hero.info.magic}</div>
                 </div>
             </div>
             <div className='card-trade'>
