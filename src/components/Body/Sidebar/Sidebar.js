@@ -1,15 +1,18 @@
 import { BsSearch } from 'react-icons/bs';
 import { AiOutlineArrowUp, AiOutlineArrowDown } from 'react-icons/ai';
 import './sidebar.css'
+import { useContext } from 'react';
+import CardContext from '../../CardContext';
 
 function Sidebar() {
+    const { handleChange, allRoleCLick, fighterClick, tankClick, mageClick, assassinClick, marksmanClick, supportClick } = useContext(CardContext)
     return (
         <div className='sidebar-border'>
             <div className='sidebar-inside'>
                 <div className='check'>
                     <button className='all-role'>
                         All Role
-                        <div className='all-role-images'>
+                        <div className='all-role-images' onClick={allRoleCLick}>
                             <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" alt="" />
                             <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" alt="" />
                             <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png" alt="" />
@@ -21,30 +24,30 @@ function Sidebar() {
                     <div className='role-filter-header'>
                         <div>Role Filter</div>
                     </div>
-                    <div className='role-filter-main'>
-                        <button className='role'>
+                    <div className='role-filter-main' >
+                        <button className='role' onClick={fighterClick}>
                             <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" alt="" />
                             Fighter
                         </button>
 
-                        <button className='role'>
+                        <button className='role' onClick={tankClick}>
                             <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" alt="" />
                             Tank
                         </button>
 
-                        <button className='role'>
+                        <button className='role' onClick={mageClick}>
                             <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png" alt="" />
                             Mage
                         </button>
-                        <button className='role'>
+                        <button className='role' onClick={assassinClick}>
                             <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png" alt="" />
-                            Assasin
+                            Assassin
                         </button>
-                        <button className='role'>
+                        <button className='role' onClick={marksmanClick}>
                             <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png" alt="" />
                             Marksman
                         </button>
-                        <button className='role'>
+                        <button className='role' onClick={supportClick}>
                             <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png" alt="" />
                             Support
                         </button>
@@ -71,7 +74,7 @@ function Sidebar() {
                         {/* SEARCH */}
                         <div className='search'>
                             <BsSearch className='search-icon' />
-                            <input type="text" placeholder='Champion Name' />
+                            <input type="text" placeholder='Champion Name' onChange={handleChange} />
                         </div>
                     </div>
                 </div>

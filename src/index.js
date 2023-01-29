@@ -8,6 +8,7 @@ import {
 import MyCards from './components/Body/MyCards/MyCards';
 import Shop from './components/Body/Shop/Shop';
 import Xa from './components/component/Xa';
+import { CardContextprovider } from './components/CardContext';
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,8 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <CardContextprovider>
+      <RouterProvider router={router} />
+    </CardContextprovider>
   </React.StrictMode>
 );

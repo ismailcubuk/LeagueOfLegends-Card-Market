@@ -1,39 +1,8 @@
 import { Button } from 'react-bootstrap';
-import React, { useEffect, useState } from 'react'
+import React, { useContext } from 'react'
+import CardContext from '../CardContext'
 function MappedCard() {
-    const [champions, setChampions] = useState([])
-
-    useEffect(() => {
-        fetchData();
-    }, [])
-
-    const fetchData = async () => {
-        await fetch('http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
-            .then(response => response.json())
-            .then(json => setChampions(json.data))
-    }
-    // filter nondata champ
-    const result = (Object.keys(champions).map((key) => champions[key]));
-    const filtered = result.filter(filtered =>
-        filtered.id.toLowerCase().includes("") -
-        (filtered.id.toLowerCase().includes("akshan") +
-            filtered.id.toLowerCase().includes("rell") +
-            filtered.id.toLowerCase().includes("vex") +
-            filtered.id.toLowerCase().includes("seraphine"))
-    )
-    const mappedSlice = filtered.slice(0, 20)
-
-    // class icon update
-    let newArray = mappedSlice.map(obj => {
-        obj.tags = obj.tags.map(x => x === "Fighter" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" width="40px" height="40px" alt="" /> : x)
-        obj.tags = obj.tags.map(x => x === "Tank" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" width="40px" height="40px" alt="" /> : x)
-        obj.tags = obj.tags.map(x => x === "Mage" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png" width="40px" height="40px" alt="" /> : x)
-        obj.tags = obj.tags.map(x => x === "Assassin" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png" width="40px" height="40px" alt="" /> : x)
-        obj.tags = obj.tags.map(x => x === "Marksman" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png" width="40px" height="40px" alt="" /> : x)
-        obj.tags = obj.tags.map(x => x === "Support" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png" width="40px" height="40px" alt="" /> : x)
-        return obj;
-    });
-
+    const { newArray } = useContext(CardContext)
 
     const mapped = newArray.map((hero) => {
         return <div className='hero-border' key={hero.id}>
@@ -41,7 +10,17 @@ function MappedCard() {
             <div className='hero-title'>{hero.title}</div>
             <div className='hero-image'>
                 <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
-                <div className='hero-tags'> {hero.tags} </div>
+                <div className='hero-tags'>
+                    {(hero.tags).map(
+                        a => a === "Fighter"
+                            ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" width="40px" height="40px" alt="" />
+                            : a === "Tank" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" width="40px" height="40px" alt="" />
+                                : a === "Mage" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png" width="40px" height="40px" alt="" />
+                                    : a === "Assassin" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png" width="40px" height="40px" alt="" />
+                                        : a === "Marksman" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png" width="40px" height="40px" alt="" />
+                                            : a === "Support" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png" width="40px" height="40px" alt="" />
+                                                : a)}
+                </div>
             </div>
             <div className='info'>
                 <div>
