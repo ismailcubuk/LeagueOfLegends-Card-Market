@@ -64,6 +64,7 @@
     border-left: none;
     border-top: none;
     margin-left: 4px;
+
 }
 
 .all-role-header {
@@ -78,6 +79,7 @@
     gap: 10px;
     margin: 10px;
     opacity: 0.3;
+    transition: 0.5s;
 }
 
 .all-role-images:hover {
@@ -110,6 +112,8 @@
     border-left: none;
     color: white;
     opacity: 0.3;
+    transition: 0.5s;
+
 }
 
 .role:hover {
@@ -159,6 +163,7 @@
 
 .sidebar-button:hover {
     opacity: 1;
+    transition: 0.5s;
 }
 
 /* İNPUT */
@@ -189,6 +194,7 @@
 
 .search>input:hover {
     opacity: 0.5;
+    transition: 0.5s;
 }
 
 .search>input:focus {

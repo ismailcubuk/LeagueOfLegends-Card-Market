@@ -231,13 +231,7 @@ export const CardContextprovider = ({ children }) => {
     const totalPage = Math.ceil(newArray.length / championsPerPage)
     const pageNumbers = Array.from({ length: totalPage }, (_, index) => index + 1)
     //                - PAGİNATİON -
-    //                - FİLTER AREA -  
-
-
-
-
-
-
+    //                - FİLTER AREA - 
 
     const handlePrevClick = () => {
         setCurrentPage(currentPage - 1);

@@ -9,14 +9,6 @@
   display: flex;
 }
 
-/* RİGHT MAİN */
-.right-main {
-  width: 85%;
-  margin-left: 250px;
-  min-height: 100vh;
-}
-
-
 /* RESPONSE */
 .parent {
   display: grid;
@@ -27,6 +19,14 @@
 /* PAGE */
 .page {
   background-color: #141414;
+}
+
+/* MAİN PAGE- CAROUSEL + MAPPED CHAMP */
+.carousel-map {
+  width: 85%;
+  margin-left: 250px;
+  min-height: 100vh;
+  padding-top: 80px;
 }
 
 

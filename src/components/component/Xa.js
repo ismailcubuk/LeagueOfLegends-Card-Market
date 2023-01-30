@@ -1,34 +1,32 @@
-import React from 'react'
+import React, { useState } from 'react';
 
 function Xa() {
-    const futbolcu = [
-        { name: "ismail", price: 30 },
-        { name: "furkan", price: 20 },
-        { name: "murat", price: 10 },
-    ]
-    const filtered = futbolcu.sort((a, b) => (a.price > b.price) ? 1 : -1)
-    console.log(filtered[0].price);
-    const dsa = filtered[0].price
-
-
-
-    const asd = futbolcu.map((people) => {
-        return <div key={people.name}>
-            <div> {people.name} </div>
-            <div> {people.price} </div>
-            <br />
-            <br />
-        </div>
-    })
-
+    const data = [
+        { id: 1, name: 'John Doe', age: 30 },
+        { id: 2, name: 'Jane Doe', age: 25 },
+        { id: 3, name: 'Jim Smith', age: 35 }
+    ];
+    const [index, setIndex] = useState(0);
+    const handlePrevClick = () => {
+        setIndex(index - 1);
+    };
+    const handleNextClick = () => {
+        setIndex(index + 1);
+    };
     return (
         <div>
-            <h2>MAPLENENLER</h2>
+            <button onClick={handlePrevClick}>Prev</button>
             <div>
-                {asd}
+                {data.map((item, i) => {
+                    return (
+                        <div key={item.id} style={{ display: i === index ? 'block' : 'none' }}>
+                            <p>Name: {item.name}</p>
+                            <p>Age: {item.age}</p>
+                        </div>
+                    );
+                })}
             </div>
-            <h2>TEK VERİ</h2>
-            {dsa}
+            <button onClick={handleNextClick}>Next</button>
         </div>
     )
 }
