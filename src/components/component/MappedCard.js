@@ -2,8 +2,8 @@ import { Button } from 'react-bootstrap';
 import React, { useContext } from 'react'
 import CardContext from '../CardContext'
 function MappedCard() {
-    const { newArray } = useContext(CardContext)
-    const mapped = newArray.map((hero) => {
+    const { displayedIChampions } = useContext(CardContext)
+    const mapped = displayedIChampions.map((hero) => {
         return <div className='hero-border' key={hero.id}>
             <div className='hero-id'>{hero.id}</div>
             <div className='hero-title'>{hero.title}</div>

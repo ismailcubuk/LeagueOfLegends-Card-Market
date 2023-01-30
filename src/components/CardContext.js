@@ -157,14 +157,7 @@ export const CardContextprovider = ({ children }) => {
     }
     //               - SUPPORT -
 
-    const result = (Object.keys(champions).map((key) => champions[key]));
-    const filtered = result.filter(filtered =>
-        filtered.id.toLowerCase().includes("") -
-        (filtered.id.toLowerCase().includes("akshan") +
-            filtered.id.toLowerCase().includes("rell") +
-            filtered.id.toLowerCase().includes("vex") +
-            filtered.id.toLowerCase().includes("seraphine"))
-    )
+
     //              + UP MONEY +
     const [filterUpMoney, setFilterUpMoney] = useState(false)
     const filterUpMoneyActive = {
@@ -208,17 +201,65 @@ export const CardContextprovider = ({ children }) => {
     }
     //             - UNFİLTERED MONEY -
 
-    // .slice(0, 20)
+    //                + FİLTER AREA +  
+    //                + DELETE UNREADVALUES +
+    const result = (Object.keys(champions).map((key) => champions[key]));
+    const filtered = result.filter(filtered =>
+        filtered.id.toLowerCase().includes("") -
+        (filtered.id.toLowerCase().includes("akshan") +
+            filtered.id.toLowerCase().includes("rell") +
+            filtered.id.toLowerCase().includes("vex") +
+            filtered.id.toLowerCase().includes("seraphine"))
+    )
+    //                - DELETE UNREADVALUES -
+    //                + FİLTER SİDE BAR +
     const filteredChamp = filtered.filter(filteredText => filteredText.id.toLowerCase().includes(search.toLowerCase()))
-    const rewq = filteredChamp.filter(item => item.tags.some(tags => tags.includes(datas)))
-    const newArray = filterUpMoney === true ? rewq.sort(function (a, b) { return b.info.difficulty - a.info.difficulty })
-        : filterDownMoney === true ? rewq.sort(function (a, b) { return a.info.difficulty - b.info.difficulty })
-            : unFilteredMoney === true ? rewq : rewq
+    const filteredTags = filteredChamp.filter(item => item.tags.some(tags => tags.includes(datas)))
+    const newArray = filterUpMoney === true ? filteredTags.sort(function (a, b) { return b.info.difficulty - a.info.difficulty })
+        : filterDownMoney === true ? filteredTags.sort(function (a, b) { return a.info.difficulty - b.info.difficulty })
+            : unFilteredMoney === true ? filteredTags : filteredTags
                 .map(obj => {
                     return obj;
                 });
-    console.log(filteredChamp);
+    //                - FİLTER SİDE BAR -
+    //                + PAGİNATİON +
+    const championsPerPage = 12
+    const [currentPage, setCurrentPage] = useState(1);
+    const startIndex = (currentPage - 1) * championsPerPage;
+    const endIndex = startIndex + championsPerPage;
+    const displayedIChampions = newArray.slice(startIndex, endIndex);
+    const totalPage = Math.ceil(newArray.length / championsPerPage)
+    const pageNumbers = Array.from({ length: totalPage }, (_, index) => index + 1)
+    //                - PAGİNATİON -
+    //                - FİLTER AREA -  
+
+
+
+
+
+
+
+    const handlePrevClick = () => {
+        setCurrentPage(currentPage - 1);
+    };
+
+    const handleNextClick = () => {
+        setCurrentPage(currentPage + 1);
+    };
+    const handlePageClick = (page) => {
+        setCurrentPage(page)
+    }
+
     const data = {
+        displayedIChampions,
+        totalPage,
+        handlePageClick,
+        pageNumbers,
+        currentPage,
+        championsPerPage,
+        filteredChamp,
+        handlePrevClick,
+        handleNextClick,
         unFilteredMoneyActive,
         filterDownMoneyActive,
         filterUpMoneyActive,
