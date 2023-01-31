@@ -245,6 +245,7 @@ export const CardContextprovider = ({ children }) => {
     }
 
     const data = {
+        filtered,
         displayedIChampions,
         totalPage,
         handlePageClick,

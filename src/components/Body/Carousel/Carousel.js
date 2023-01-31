@@ -1,67 +1,94 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import CardContext from '../../CardContext';
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 import './Carousel.css';
 
 function Carousel() {
-    const { filteredChamp } = useContext(CardContext)
+    const { filtered } = useContext(CardContext)
+    const [randomFighter, setRandomFighter] = useState()
+    const [randomTank, setRandomTank] = useState()
+    const [randomMage, setRandomMage] = useState()
+    const [randomAssassin, setRandomAssassin] = useState()
+    const [randomMarksman, setRandomMarksman] = useState()
+    const [randomSupport, setRandomSupport] = useState()
+
+
     // FİGHTER PİCS
-    const filteredFighter = filteredChamp.filter(item => item.tags.some(tags => tags.includes("Fighter")))
-    const randomFighter1 = Math.floor(Math.random() * filteredFighter.length)
-    const slicePicsFighter1 = filteredFighter.slice(randomFighter1, randomFighter1 + 3)
-    const filteredFighterPics1 = slicePicsFighter1.map((heroPics) => {
+    const filteredFighter = filtered.filter(item => item.tags.some(tags => tags.includes("Fighter")))
+    useEffect(() => {
+        let randomFighter = Math.floor(Math.random() * filteredFighter.length)
+        setRandomFighter(randomFighter)
+    }, [filteredFighter.length])
+    const slicePicsFighter = filteredFighter.slice(randomFighter, randomFighter + 3)
+    const filteredFighterPics = slicePicsFighter.map((heroPics) => {
         return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
     // TANK PİCS
-    const filteredTank = filteredChamp.filter(item => item.tags.some(tags => tags.includes("Tank")))
-    const randomTank1 = Math.floor(Math.random() * filteredTank.length)
-    const slicePicsTank1 = filteredTank.slice(randomTank1, randomTank1 + 3)
-    const filteredTankPics1 = slicePicsTank1.map((heroPics) => {
+    const filteredTank = filtered.filter(item => item.tags.some(tags => tags.includes("Tank")))
+    useEffect(() => {
+        let randomTank = Math.floor(Math.random() * filteredTank.length)
+        setRandomTank(randomTank)
+    }, [filteredTank.length])
+    const slicePicsTank = filteredTank.slice(randomTank, randomTank + 3)
+    const filteredTankPics = slicePicsTank.map((heroPics) => {
         return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
     // MAGE PİCS
-    const filteredMage = filteredChamp.filter(item => item.tags.some(tags => tags.includes("Mage")))
-    const randomMage1 = Math.floor(Math.random() * filteredMage.length)
-    const slicePicsMage1 = filteredMage.slice(randomMage1, randomMage1 + 3)
-    const filteredMagePics1 = slicePicsMage1.map((heroPics) => {
+    const filteredMage = filtered.filter(item => item.tags.some(tags => tags.includes("Mage")))
+    useEffect(() => {
+        let randomMage = Math.floor(Math.random() * filteredMage.length)
+        setRandomMage(randomMage)
+    }, [filteredMage.length])
+    const slicePicsMage = filteredMage.slice(randomMage, randomMage + 3)
+    const filteredMagePics = slicePicsMage.map((heroPics) => {
         return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
     // ASSASSİN PİCS
-    const filteredAssassin = filteredChamp.filter(item => item.tags.some(tags => tags.includes("Assassin")))
-    const randomAssassin1 = Math.floor(Math.random() * filteredAssassin.length)
-    const slicePicsAssassin1 = filteredAssassin.slice(randomAssassin1, randomAssassin1 + 3)
-    const filteredAssassinPics1 = slicePicsAssassin1.map((heroPics) => {
+    const filteredAssassin = filtered.filter(item => item.tags.some(tags => tags.includes("Assassin")))
+    useEffect(() => {
+        let randomAssassin = Math.floor(Math.random() * filteredAssassin.length)
+        setRandomAssassin(randomAssassin)
+    }, [filteredAssassin.length])
+    const slicePicsAssassin = filteredAssassin.slice(randomAssassin, randomAssassin + 3)
+    const filteredAssassinPics = slicePicsAssassin.map((heroPics) => {
         return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
     // MARKSMAN PİCS
-    const filteredMarksman = filteredChamp.filter(item => item.tags.some(tags => tags.includes("Marksman")))
-    const randomMarksman1 = Math.floor(Math.random() * filteredMarksman.length)
-    const slicePicsMarksman1 = filteredMarksman.slice(randomMarksman1, randomMarksman1 + 3)
-    const filteredMarksmanPics1 = slicePicsMarksman1.map((heroPics) => {
+    const filteredMarksman = filtered.filter(item => item.tags.some(tags => tags.includes("Marksman")))
+    useEffect(() => {
+        let randomMarksman = Math.floor(Math.random() * filteredMarksman.length)
+        setRandomMarksman(randomMarksman)
+    }, [filteredMarksman.length])
+    const slicePicsMarksman = filteredMarksman.slice(randomMarksman, randomMarksman + 3)
+    const filteredMarksmanPics = slicePicsMarksman.map((heroPics) => {
         return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
     // SUPPORT PİCS
-    const filteredSupport = filteredChamp.filter(item => item.tags.some(tags => tags.includes("Support")))
-    const randomSupport1 = Math.floor(Math.random() * filteredSupport.length)
-    const slicePicsSupport1 = filteredSupport.slice(randomSupport1, randomSupport1 + 3)
-    const filteredSupportPics1 = slicePicsSupport1.map((heroPics) => {
+    const filteredSupport = filtered.filter(item => item.tags.some(tags => tags.includes("Support")))
+    useEffect(() => {
+        let randomSupport = Math.floor(Math.random() * filteredSupport.length)
+        setRandomSupport(randomSupport)
+    }, [filteredSupport.length])
+    const slicePicsSupport = filteredSupport.slice(randomSupport, randomSupport + 3)
+    const filteredSupportPics = slicePicsSupport.map((heroPics) => {
         return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
     const heroPicsMap = [
-        { id: 1, class: "Fighters", heroPics: filteredFighterPics1, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" },
-        { id: 2, class: "Tanks", heroPics: filteredTankPics1, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" },
-        { id: 3, class: "Mages", heroPics: filteredMagePics1, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png" },
-        { id: 4, class: "Assassins", heroPics: filteredAssassinPics1, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png" },
-        { id: 5, class: "Marksmans", heroPics: filteredMarksmanPics1, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png" },
-        { id: 6, class: "Supports", heroPics: filteredSupportPics1, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png" },
+        { id: 1, class: "Fighters", heroPics: filteredFighterPics, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" },
+        { id: 2, class: "Tanks", heroPics: filteredTankPics, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" },
+        { id: 3, class: "Mages", heroPics: filteredMagePics, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png" },
+        { id: 4, class: "Assassins", heroPics: filteredAssassinPics, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png" },
+        { id: 5, class: "Marksmans", heroPics: filteredMarksmanPics, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png" },
+        { id: 6, class: "Supports", heroPics: filteredSupportPics, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png" },
     ]
-    const [index, setIndex] = useState(0);
+
+
     const [carouselPage, setCarouselPage] = useState(1);
     const startIndex = (carouselPage - 1) * 1;
     const endIndex = startIndex + 1;
@@ -86,6 +113,11 @@ function Carousel() {
         )
     })
 
+
+
+
+
+
     // CAROUSEL
     const dotPageClick = (page) => {
         setCarouselPage(page)
@@ -105,6 +137,11 @@ function Carousel() {
             onClick={() => dotPageClick(page)}
         > {page} </button>
     ))
+
+
+
+
+
 
 
     return (
