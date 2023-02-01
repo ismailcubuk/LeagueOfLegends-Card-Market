@@ -10,6 +10,7 @@ export const CardContextprovider = ({ children }) => {
             .then(response => response.json())
             .then(json => setChampions(json.data))
     }
+
     useEffect(() => {
         fetchData();
     }, [])

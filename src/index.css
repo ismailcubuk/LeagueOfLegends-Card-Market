@@ -14,6 +14,7 @@
   display: grid;
   padding-top: 80px;
   grid-template-columns: auto auto auto auto auto auto;
+
 }
 
 /* PAGE */
@@ -44,11 +45,9 @@
 .hero-id {
   color: white;
   font-size: 30px;
+
 }
 
-.hero-title {
-  color: white;
-}
 
 .hero-image {
   position: relative;
@@ -58,6 +57,7 @@
 .hero-image>img {
   width: 100%;
 }
+
 
 /* HERO TAGS */
 .hero-tags {
@@ -83,7 +83,10 @@
   display: flex;
   justify-content: space-around;
   color: white;
-  margin: 10px 0px 10px 0px;
+  background: rgba(0, 0, 0, .5);
+  border-radius: 30px 30px 0px 0px;
+  height: 60px;
+  padding-top: 10px;
 }
 
 .info-img {
@@ -112,4 +115,48 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* CARD BACK */
+.hero-image-back {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-title {
+  color: white;
+  border-radius: 0px 0px 30px 30px;
+  background: rgba(0, 0, 0, .5);
+  height: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+}
+
+.back-list {
+  position: absolute;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header-back {
+  color: white;
+  text-align: center;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.skills-back {
+  color: white;
+}
+
+.hero-image-back>img {
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
 }
