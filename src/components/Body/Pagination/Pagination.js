@@ -4,7 +4,7 @@ import React, { useContext } from 'react'
 import CardContext from '../../CardContext'
 
 function Pagination() {
-    const { totalPage, handleNextClick, handlePrevClick, filteredChamp, championsPerPage, currentPage, pageNumbers, handlePageClick, } = useContext(CardContext)
+    const { totalPage, handleNextClick, handlePrevClick, currentPage, pageNumbers, handlePageClick, } = useContext(CardContext)
     const addAfterPage = 0
     const addBeforePage = 0
     const beforePage = currentPage === 1 ? addAfterPage + 4 : currentPage === 2 ? addAfterPage + 3 : currentPage === 3 ? addAfterPage + 2 : +2
@@ -30,7 +30,7 @@ function Pagination() {
                         > {page} </button>
                     ))}
                 <button
-                    disabled={currentPage === Math.ceil(filteredChamp.length / championsPerPage)}
+                    disabled={currentPage === pageNumbers.length}
                     onClick={handleNextClick}
                     className='page-icons'
                 >
