@@ -1,78 +1,99 @@
 import { Button } from 'react-bootstrap';
 import React, { useContext, useState } from 'react'
 import CardContext from '../CardContext'
+import Modal from 'react-bootstrap/Modal';
+import attack from '../../Images/Stats/attack.png'
+import defanse from '../../Images/Stats/defanse.png'
+import magic from '../../Images/Stats/magic.png'
+
+import AatroxQ from '../../Images/Skills/AatroxQ.png'
+import AatroxW from '../../Images/Skills/AatroxW.png'
+import AatroxE from '../../Images/Skills/AatroxE.png'
+import AatroxR from '../../Images/Skills/AatroxR.png'
+
 function MappedCard() {
     const { displayedIChampions } = useContext(CardContext)
 
-    const [clicked, setClicked] = useState(false);
+    const [clicked, setHover] = useState(false);
     const [getId, setGetId] = useState()
-
-    const style1 = {
-        // border: clicked === true ? "2px solid blue" : "0",
-        // opacity: clicked === true ? "0.4" : "1",
+    const [show, setShow] = useState(false);
+    const [championsId, setChampionsId] = useState("")
+    const handleClose = () => setShow(false);
+    const handleShow = (champID) => {
+        setChampionsId(champID)
+        setShow(true);
     }
-    const handleClick = (id) => {
-        setClicked(!clicked);
+
+    const handleHover = (id) => {
+        setHover(!clicked);
         setGetId(id)
     }
 
     const mapped = displayedIChampions.map((hero) => {
         return <div className='hero-border' key={hero.id} id={hero.id}>
             <div className='hero-id'>{hero.id}</div>
-
-
-            <div className='hero-image' onMouseEnter={() => handleClick(hero.id)} onMouseLeave={() => handleClick(hero.id)} style={getId === hero.id ? style1 : null} >
-
-                <div class="flip-card">
-                    <div class="flip-card-inner">
-                        {clicked === true && getId === hero.id
-                            ? <div className='hero-image-back' style={{
-                                backgroundImage: `url(http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_1.jpg)`,
-                                height: 350, width: 200,
-                            }}>
-                                {/* WİDTH HEİGHT DÜZELT CSS HOVER EKLE */}
-                                {/* <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_1.jpg`} alt="champions" /> */}
-                                <div className='back-list'>
-                                    <div className='header-back' >
-                                        <div className='hero-title'>{hero.title}</div>
-                                        <div className='info'>
-                                            <div>
-                                                <div>Attack</div>
-                                                <div className='info-img'>{hero.info.attack}</div>
-                                            </div>
-                                            <div>
-                                                <div>Defense</div>
-                                                <div className='info-img'>{hero.info.defense}</div>
-                                            </div>
-                                            <div>
-                                                <div>Magic</div>
-                                                <div className='info-img'>{hero.info.magic}</div>
-                                            </div>
-                                        </div>
+            <div className='hero-image' onMouseEnter={() => handleHover(hero.id)} onMouseLeave={() => handleHover(hero.id)} >
+                {clicked === true && getId === hero.id
+                    ? <div className='hero-image-back' >
+                        <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
+                        <div className='back-list'>
+                            <div className='header-back' >
+                                <div className='hero-title'>{hero.title}</div>
+                                <div className='info'>
+                                    <div>
+                                        <img src={attack} alt="" />
+                                        <div className='info-img'>{hero.info.attack}</div>
+                                    </div>
+                                    <div>
+                                        <img src={defanse} alt="" />
+                                        <div className='info-img'>{hero.info.defense}</div>
+                                    </div>
+                                    <div>
+                                        <img src={magic} alt="" />
+                                        <div className='info-img'>{hero.info.magic}</div>
                                     </div>
                                 </div>
                             </div>
-                            : <div className='hero-image'>
-                                <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
-                                <div className='hero-tags'>
-                                    {(hero.tags).map(
-                                        a => a === "Fighter"
-                                            ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" width="40px" height="40px" alt="" />
-                                            : a === "Tank" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" width="40px" height="40px" alt="" />
-                                                : a === "Mage" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png" width="40px" height="40px" alt="" />
-                                                    : a === "Assassin" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png" width="40px" height="40px" alt="" />
-                                                        : a === "Marksman" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png" width="40px" height="40px" alt="" />
-                                                            : a === "Support" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png" width="40px" height="40px" alt="" />
-                                                                : a)}
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
+                        </div>
 
+                    </div>
+                    : <div className='hero-image'>
+                        <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
+                        <div className='hero-tags'>
+                            {(hero.tags).map(
+                                a => a === "Fighter"
+                                    ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" width="40px" height="40px" alt="" />
+                                    : a === "Tank" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" width="40px" height="40px" alt="" />
+                                        : a === "Mage" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png" width="40px" height="40px" alt="" />
+                                            : a === "Assassin" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png" width="40px" height="40px" alt="" />
+                                                : a === "Marksman" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png" width="40px" height="40px" alt="" />
+                                                    : a === "Support" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png" width="40px" height="40px" alt="" />
+                                                        : a)}
+                        </div>
+                    </div>
+                }
+            </div>
             <div className='card-trade'>
-                <Button className='buy-button' variant="success">BUY</Button>
+                {console.log(championsId)}
+                {console.log("asd", getId)}
+                <Button className='buy-button' onClick={() => handleShow(hero.id)} variant="success">BUY</Button>
+                <Modal show={show} onHide={handleClose} size="xl">
+                    <Modal.Header closeButton>
+                        <Modal.Title> {getId} </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championsId}_0.jpg`} alt="champions" />
+                        {championsId === "" ? <img src={require(`../../Images/Skills/AatroxQ.png`)} height="100px" width="100px" alt="" /> : <img src={require(`../../Images/Skills/${championsId}Q.png`)} height="100px" width="100px" alt="" />}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                            Close
+                        </Button>
+                        <Button variant="primary" onClick={handleClose}>
+                            Save Changes
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
                 <div className='hero-money'>${hero.info.difficulty}</div>
             </div>
         </div >
