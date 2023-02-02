@@ -21,46 +21,54 @@ function MappedCard() {
             <div className='hero-id'>{hero.id}</div>
 
 
-            <div className='hero-image' onClick={() => handleClick(hero.id)} style={getId === hero.id ? style1 : null} >
+            <div className='hero-image' onMouseEnter={() => handleClick(hero.id)} onMouseLeave={() => handleClick(hero.id)} style={getId === hero.id ? style1 : null} >
 
-                {clicked === true && getId === hero.id
-                    ? <div className='hero-image-back'>
-                        <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_1.jpg`} alt="champions" />
-                        <div className='back-list'>
-                            <div className='header-back' >
-                                <div className='hero-title'>{hero.title}</div>
-                                <div className='info'>
-                                    <div>
-                                        <div>Attack</div>
-                                        <div className='info-img'>{hero.info.attack}</div>
-                                    </div>
-                                    <div>
-                                        <div>Defense</div>
-                                        <div className='info-img'>{hero.info.defense}</div>
-                                    </div>
-                                    <div>
-                                        <div>Magic</div>
-                                        <div className='info-img'>{hero.info.magic}</div>
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        {clicked === true && getId === hero.id
+                            ? <div className='hero-image-back' style={{
+                                backgroundImage: `url(http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_1.jpg)`,
+                                height: 350, width: 200,
+                            }}>
+                                {/* WİDTH HEİGHT DÜZELT CSS HOVER EKLE */}
+                                {/* <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_1.jpg`} alt="champions" /> */}
+                                <div className='back-list'>
+                                    <div className='header-back' >
+                                        <div className='hero-title'>{hero.title}</div>
+                                        <div className='info'>
+                                            <div>
+                                                <div>Attack</div>
+                                                <div className='info-img'>{hero.info.attack}</div>
+                                            </div>
+                                            <div>
+                                                <div>Defense</div>
+                                                <div className='info-img'>{hero.info.defense}</div>
+                                            </div>
+                                            <div>
+                                                <div>Magic</div>
+                                                <div className='info-img'>{hero.info.magic}</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                            : <div className='hero-image'>
+                                <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
+                                <div className='hero-tags'>
+                                    {(hero.tags).map(
+                                        a => a === "Fighter"
+                                            ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" width="40px" height="40px" alt="" />
+                                            : a === "Tank" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" width="40px" height="40px" alt="" />
+                                                : a === "Mage" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png" width="40px" height="40px" alt="" />
+                                                    : a === "Assassin" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png" width="40px" height="40px" alt="" />
+                                                        : a === "Marksman" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png" width="40px" height="40px" alt="" />
+                                                            : a === "Support" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png" width="40px" height="40px" alt="" />
+                                                                : a)}
+                                </div>
+                            </div>
+                        }
                     </div>
-                    : <div className='hero-image'>
-                        <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
-                        <div className='hero-tags'>
-                            {(hero.tags).map(
-                                a => a === "Fighter"
-                                    ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" width="40px" height="40px" alt="" />
-                                    : a === "Tank" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" width="40px" height="40px" alt="" />
-                                        : a === "Mage" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png" width="40px" height="40px" alt="" />
-                                            : a === "Assassin" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png" width="40px" height="40px" alt="" />
-                                                : a === "Marksman" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png" width="40px" height="40px" alt="" />
-                                                    : a === "Support" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png" width="40px" height="40px" alt="" />
-                                                        : a)}
-                        </div>
-                    </div>
-                }
+                </div>
             </div>
 
             <div className='card-trade'>
