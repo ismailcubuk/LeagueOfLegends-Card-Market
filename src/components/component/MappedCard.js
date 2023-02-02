@@ -6,26 +6,23 @@ import attack from '../../Images/Stats/attack.png'
 import defanse from '../../Images/Stats/defanse.png'
 import magic from '../../Images/Stats/magic.png'
 
-import AatroxQ from '../../Images/Skills/AatroxQ.png'
-import AatroxW from '../../Images/Skills/AatroxW.png'
-import AatroxE from '../../Images/Skills/AatroxE.png'
-import AatroxR from '../../Images/Skills/AatroxR.png'
-
 function MappedCard() {
     const { displayedIChampions } = useContext(CardContext)
-
-    const [clicked, setHover] = useState(false);
-    const [getId, setGetId] = useState()
+    const [story, setStory] = useState("")
     const [show, setShow] = useState(false);
-    const [championsId, setChampionsId] = useState("")
+    const [hover, setHover] = useState(false);
+    const [getId, setGetId] = useState()
+    const [championsId, setChampionsId] = useState("Aatrox")
     const handleClose = () => setShow(false);
-    const handleShow = (champID) => {
+    const handleShow = (champID, story) => {
         setChampionsId(champID)
+        setStory(story)
         setShow(true);
     }
-
+    console.log("show", show);
+    console.log("hover", hover);
     const handleHover = (id) => {
-        setHover(!clicked);
+        setHover(!hover);
         setGetId(id)
     }
 
@@ -33,7 +30,7 @@ function MappedCard() {
         return <div className='hero-border' key={hero.id} id={hero.id}>
             <div className='hero-id'>{hero.id}</div>
             <div className='hero-image' onMouseEnter={() => handleHover(hero.id)} onMouseLeave={() => handleHover(hero.id)} >
-                {clicked === true && getId === hero.id
+                {hover === true && getId === hero.id
                     ? <div className='hero-image-back' >
                         <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
                         <div className='back-list'>
@@ -74,16 +71,40 @@ function MappedCard() {
                 }
             </div>
             <div className='card-trade'>
-                {console.log(championsId)}
-                {console.log("asd", getId)}
-                <Button className='buy-button' onClick={() => handleShow(hero.id)} variant="success">BUY</Button>
-                <Modal show={show} onHide={handleClose} size="xl">
-                    <Modal.Header closeButton>
-                        <Modal.Title> {getId} </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championsId}_0.jpg`} alt="champions" />
-                        {championsId === "" ? <img src={require(`../../Images/Skills/AatroxQ.png`)} height="100px" width="100px" alt="" /> : <img src={require(`../../Images/Skills/${championsId}Q.png`)} height="100px" width="100px" alt="" />}
+                <Button className='buy-button' onClick={() => handleShow(hero.id, hero.blurb)} variant="success">BUY</Button>
+                <div className='hero-money'>${hero.info.difficulty}</div>
+            </div>
+        </div >
+    })
+    return (
+        <div className='right-main'>
+            <div className='parent'>
+                {mapped}
+                <Modal show={show} onHide={handleClose} size="xl" className='modal-border'>
+                    <div className='modal-title'>{championsId} </div>
+                    <Modal.Body className='modal-body'>
+                        <img className='modal-image' src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championsId}_0.jpg`} width="100%" height="100%" alt="champions" />
+                        <div className='champion-skills'>
+                            {getId === ""
+                                ? ""
+                                : <img src={require(`../../Images/Skills/${championsId}Q.png`)} alt="" />
+                            }
+                            {championsId === ""
+                                ? ""
+                                : <img src={require(`../../Images/Skills/${championsId}W.png`)} alt="" />
+                            }
+                            {championsId === ""
+                                ? ""
+                                : <img src={require(`../../Images/Skills/${championsId}E.png`)} alt="" />
+                            }
+                            {championsId === ""
+                                ? ""
+                                : <img src={require(`../../Images/Skills/${championsId}R.png`)} alt="" />
+                            }
+                        </div>
+                        <div className='short-story'>
+                            {story}
+                        </div>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleClose}>
@@ -94,14 +115,6 @@ function MappedCard() {
                         </Button>
                     </Modal.Footer>
                 </Modal>
-                <div className='hero-money'>${hero.info.difficulty}</div>
-            </div>
-        </div >
-    })
-    return (
-        <div className='right-main'>
-            <div className='parent'>
-                {mapped}
             </div>
         </div>
     )
