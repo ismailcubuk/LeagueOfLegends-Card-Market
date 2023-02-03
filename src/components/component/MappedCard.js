@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react'
+import React, { useContext, useState } from 'react'
 import CardContext from '../CardContext'
 import Modal from 'react-bootstrap/Modal';
 import attack from '../../Images/Stats/attack.png'
@@ -23,6 +23,9 @@ function MappedCard() {
     const handleHover = (id) => {
         setHover(!hover);
         setGetId(id)
+    }
+    const buyClick = (e) => {
+        console.log(e.target.value)
     }
 
     const mapped = displayedIChampions.map((hero) => {
@@ -51,7 +54,6 @@ function MappedCard() {
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     : <div className='hero-image'>
                         <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
@@ -71,7 +73,7 @@ function MappedCard() {
                 }
             </div>
             <div className='card-trade'>
-                <button className='buy-button'>BUY</button>
+                <button className='buy-button' value={hero.id} onClick={buyClick}>BUY</button>
 
             </div>
         </div >
