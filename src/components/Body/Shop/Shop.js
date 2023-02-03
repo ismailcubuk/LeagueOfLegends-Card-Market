@@ -12,8 +12,10 @@ function Shop() {
     <div className='page'>
       <Navbar />
       <div className='main'>
-        <div className='left-sidebar' >
-          <Sidebar />
+        <div className='left-sidebar-background'>
+          <div className='left-sidebar' >
+            <Sidebar />
+          </div>
         </div>
         <div className='carousel-map'>
           <Carousel />

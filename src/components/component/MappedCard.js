@@ -87,19 +87,23 @@ function MappedCard() {
                         <div className='champion-skills'>
                             {getId === ""
                                 ? ""
-                                : <img src={require(`../../Images/Skills/${championsId}Q.png`)} alt="" />
+                                : <div className='skill-press'><img src={require(`../../Images/Passive/${championsId}P.png`)} alt="" /><div className='skill-button'>P</div></div>
+                            }
+                            {getId === ""
+                                ? ""
+                                : <div className='skill-press'><img src={require(`../../Images/Skills/${championsId}Q.png`)} alt="" /><div className='skill-button'>Q</div></div>
                             }
                             {championsId === ""
                                 ? ""
-                                : <img src={require(`../../Images/Skills/${championsId}W.png`)} alt="" />
+                                : <div className='skill-press'><img src={require(`../../Images/Skills/${championsId}W.png`)} alt="" /><div className='skill-button'>W</div></div>
                             }
                             {championsId === ""
                                 ? ""
-                                : <img src={require(`../../Images/Skills/${championsId}E.png`)} alt="" />
+                                : <div className='skill-press'><img src={require(`../../Images/Skills/${championsId}E.png`)} alt="" /><div className='skill-button'>E</div></div>
                             }
                             {championsId === ""
                                 ? ""
-                                : <img src={require(`../../Images/Skills/${championsId}R.png`)} alt="" />
+                                : <div className='skill-press'><img src={require(`../../Images/Skills/${championsId}R.png`)} alt="" /><div className='skill-button'>R</div></div>
                             }
                         </div>
                         <div className='short-story'>

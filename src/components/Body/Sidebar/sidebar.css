@@ -1,25 +1,22 @@
+.left-sidebar-background {
+    width: 210px;
+    height: 100%;
+    margin-right: 60px;
+}
+
+
 .left-sidebar {
-    border: 2px solid red;
     border-left: none;
     border-right: none;
     border-bottom: none;
     border-top: none;
     display: flex;
-    position: fixed;
     margin-top: 70px;
     width: 210px;
     height: 100%;
-    min-height: 5%;
-    max-height: 94%;
     border-right: 2px solid red;
     overflow: hidden;
-}
-
-@media only screen and (max-height: 900px) {
-    .left-sidebar {
-        overflow: auto;
-        width: 213px;
-    }
+    position: fixed;
 }
 
 .left-sidebar::-webkit-scrollbar {

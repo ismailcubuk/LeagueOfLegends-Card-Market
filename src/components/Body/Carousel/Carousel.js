@@ -8,9 +8,15 @@ function Carousel() {
 
     const mappedHeroIcons = displayedIChampionsCarousel.map((item) => {
         return (
-            <div key={item.id} className="carousel-left-border" >
-                <div className='carousel-header'>{item.class} </div>
+            <div key={item.id} >
                 <img src={item.img} alt="hero class icon" className='carousel-class-img' />
+            </div>
+        )
+    })
+    const mappedHeroHeaders = displayedIChampionsCarousel.map((item) => {
+        return (
+            <div key={item.id} >
+                <div className='carousel-header'>{item.class} </div>
             </div>
         )
     })
@@ -27,6 +33,7 @@ function Carousel() {
             <div className='carousel-hero-border'>
                 <div className='carousel-hero-border-inside'>
                     <div className='left-side-carousel'>
+                        {mappedHeroHeaders}
                         {mappedHeroIcons}
                         <div className='carousel-buttons'>
                             <button
