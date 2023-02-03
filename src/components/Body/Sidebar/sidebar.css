@@ -7,10 +7,8 @@
 
 .left-sidebar {
     border-left: none;
-    border-right: none;
     border-bottom: none;
     border-top: none;
-    display: flex;
     margin-top: 70px;
     width: 210px;
     height: 100%;
@@ -19,6 +17,8 @@
     position: fixed;
 }
 
+
+/* SCROLL ÇALIŞMIYOR */
 .left-sidebar::-webkit-scrollbar {
     width: 3px;
 }
@@ -35,6 +35,7 @@
     background: #555;
 }
 
+/* SCROLL ÇALIŞMIYOR */
 .sidebar-border {
     color: white;
     width: 100%;

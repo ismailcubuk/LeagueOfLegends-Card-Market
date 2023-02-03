@@ -1,5 +1,4 @@
-import { Button } from 'react-bootstrap';
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import CardContext from '../CardContext'
 import Modal from 'react-bootstrap/Modal';
 import attack from '../../Images/Stats/attack.png'
@@ -12,15 +11,15 @@ function MappedCard() {
     const [show, setShow] = useState(false);
     const [hover, setHover] = useState(false);
     const [getId, setGetId] = useState()
+    const [modalPrice, setModalPrice] = useState()
     const [championsId, setChampionsId] = useState("Aatrox")
     const handleClose = () => setShow(false);
-    const handleShow = (champID, story) => {
+    const handleShow = (champID, story, modalPrice) => {
         setChampionsId(champID)
         setStory(story)
         setShow(true);
+        setModalPrice(modalPrice)
     }
-    console.log("show", show);
-    console.log("hover", hover);
     const handleHover = (id) => {
         setHover(!hover);
         setGetId(id)
@@ -31,7 +30,7 @@ function MappedCard() {
             <div className='hero-id'>{hero.id}</div>
             <div className='hero-image' onMouseEnter={() => handleHover(hero.id)} onMouseLeave={() => handleHover(hero.id)} >
                 {hover === true && getId === hero.id
-                    ? <div className='hero-image-back' >
+                    ? <div className='hero-image-back' onClick={() => handleShow(hero.id, hero.blurb, hero.info.difficulty,)} >
                         <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
                         <div className='back-list'>
                             <div className='header-back' >
@@ -56,6 +55,7 @@ function MappedCard() {
                     </div>
                     : <div className='hero-image'>
                         <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
+                        <div className='hero-money'>${hero.info.difficulty}</div>
                         <div className='hero-tags'>
                             {(hero.tags).map(
                                 a => a === "Fighter"
@@ -71,8 +71,8 @@ function MappedCard() {
                 }
             </div>
             <div className='card-trade'>
-                <Button className='buy-button' onClick={() => handleShow(hero.id, hero.blurb)} variant="success">BUY</Button>
-                <div className='hero-money'>${hero.info.difficulty}</div>
+                <button className='buy-button'>BUY</button>
+
             </div>
         </div >
     })
@@ -80,10 +80,10 @@ function MappedCard() {
         <div className='right-main'>
             <div className='parent'>
                 {mapped}
-                <Modal show={show} onHide={handleClose} size="xl" className='modal-border'>
+                <Modal show={show} onHide={handleClose} size="xl">
                     <div className='modal-title'>{championsId} </div>
                     <Modal.Body className='modal-body'>
-                        <img className='modal-image' src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championsId}_0.jpg`} width="100%" height="100%" alt="champions" />
+                        <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championsId}_0.jpg`} width="100%" height="100%" alt="champions" />
                         <div className='champion-skills'>
                             {getId === ""
                                 ? ""
@@ -106,18 +106,14 @@ function MappedCard() {
                                 : <div className='skill-press'><img src={require(`../../Images/Skills/${championsId}R.png`)} alt="" /><div className='skill-button'>R</div></div>
                             }
                         </div>
+                        <div className='modal-price'>
+                            ${modalPrice}
+                        </div>
                         <div className='short-story'>
                             {story}
                         </div>
                     </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={handleClose}>
-                            Close
-                        </Button>
-                        <Button variant="primary" onClick={handleClose}>
-                            Save Changes
-                        </Button>
-                    </Modal.Footer>
+                    <button className='modal-button'>BUY</button>
                 </Modal>
             </div>
         </div>
