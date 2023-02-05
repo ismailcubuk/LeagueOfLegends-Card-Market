@@ -6,9 +6,7 @@ import defanse from '../../Images/Stats/defanse.png'
 import magic from '../../Images/Stats/magic.png'
 
 function MappedCard() {
-    const { displayedIChampions, myCardsArr,
-        filteredId, newArray,
-        buyClick } = useContext(CardContext)
+    const { displayedIChampions, myCardsArr, buyClick } = useContext(CardContext)
     const [story, setStory] = useState("")
     const [show, setShow] = useState(false);
     const [hover, setHover] = useState(false);
@@ -26,9 +24,6 @@ function MappedCard() {
         setHover(!hover);
         setGetId(id)
     }
-
-
-
 
     const myCards = myCardsArr.map((req) => {
         return <div className='hero-border' key={req.id} id={req.id}>
@@ -79,13 +74,7 @@ function MappedCard() {
             </div>
         </div>
     })
-
-    // LOOK LOG 20. ARR SAVE İT WİTH İNDEX OF, DELETE WİTH SLİCE GENERAL LOG İS NEWARRAY. FİLTERED CHAMPİONS.İD
-    console.log(championsId.indexOf("Aatrox"))
-    console.log(newArray.map(x => x.id).indexOf("Corki"))
-
-
-    const mapped = displayedIChampions.filter(qwe => filteredId.length > 0 ? !filteredId.some(x => x === qwe.id) : true).map((hero) => {
+    const mapped = displayedIChampions.map((hero) => {
         return <div className='hero-border' key={hero.id} id={hero.id}>
             <div className='hero-id'>{hero.id}</div>
             <div className='hero-image' onMouseEnter={() => handleHover(hero.id)} onMouseLeave={() => handleHover(hero.id)} >
@@ -140,18 +129,6 @@ function MappedCard() {
                 <div className='my-cards'>
                     {myCards}
                 </div>
-
-
-
-
-
-
-
-
-
-
-
-
 
                 <div className='mapped-card'>{mapped}</div>
                 <Modal show={show} onHide={handleClose} size="xl">

@@ -227,35 +227,31 @@ export const CardContextprovider = ({ children }) => {
     //                + FİLTER SİDE BAR +
     const filteredChamp = filtered.filter(filteredText => filteredText.id.toLowerCase().includes(search.toLowerCase()))
     const filteredTags = filteredChamp.filter(item => item.tags.some(tags => tags.includes(datas)))
-    const newArray = filterUpMoney === true ? filteredTags.sort(function (a, b) { return b.info.difficulty - a.info.difficulty })
+    let newArray = filterUpMoney === true ? filteredTags.sort(function (a, b) { return b.info.difficulty - a.info.difficulty })
         : filterDownMoney === true ? filteredTags.sort(function (a, b) { return a.info.difficulty - b.info.difficulty })
             : unFilteredMoney === true ? filteredTags : filteredTags
                 .map(obj => {
                     return obj;
                 });
+
     //                - FİLTER SİDE BAR -
     //                + PAGİNATİON +
-
     const [filteredId, setFilteredId] = useState([])
     const [myCardsArr, setMyCardsArr] = useState([])
-    const [count, setCount] = useState(0)
-    const [counter, setCounter] = useState(0)
+    const [heroID, setHeroID] = useState("")
     const buyClick = (hero) => {
         setMyCardsArr([hero, ...myCardsArr])
         setFilteredId([hero.id, ...filteredId])
-        setCount(count + 1)
-        setCounter(counter - 1)
+        setHeroID(hero.id)
     }
+    newArray = newArray.filter(qwe => filteredId.length > 0 ? !filteredId.some(x => x === qwe.id) : true)
 
-    // DÜZELİTELECEK NOKTA...................................................................
     const championsPerPage = 12
     const [currentPage, setCurrentPage] = useState(1);
     const startIndex = (currentPage - 1) * championsPerPage;
     const endIndex = startIndex + championsPerPage;
     const displayedIChampions = newArray.slice(startIndex, endIndex);
-    // const displayedIChampions = newArray.slice(startIndex, endIndex + count);
     const totalPage = Math.ceil((newArray.length) / championsPerPage)
-    // const totalPage = Math.ceil((newArray.length - count) / championsPerPage)
     const pageNumbers = Array.from({ length: totalPage }, (_, index) => index + 1)
     const handlePrevClick = () => {
         setCurrentPage(currentPage - 1);
@@ -269,8 +265,6 @@ export const CardContextprovider = ({ children }) => {
     }
     //                - PAGİNATİON -
     //                - FİLTER AREA - 
-
-
 
     //                  +CAROUSEL 
     const [randomFighter, setRandomFighter] = useState()
@@ -386,6 +380,7 @@ export const CardContextprovider = ({ children }) => {
 
 
     const data = {
+        heroID,
         myCardsArr,
         filteredId,
         buyClick,
