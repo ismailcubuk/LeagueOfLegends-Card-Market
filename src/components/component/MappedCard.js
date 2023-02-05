@@ -6,7 +6,9 @@ import defanse from '../../Images/Stats/defanse.png'
 import magic from '../../Images/Stats/magic.png'
 
 function MappedCard() {
-    const { displayedIChampions } = useContext(CardContext)
+    const { displayedIChampions, myCardsArr,
+        filteredId, newArray,
+        buyClick } = useContext(CardContext)
     const [story, setStory] = useState("")
     const [show, setShow] = useState(false);
     const [hover, setHover] = useState(false);
@@ -24,43 +26,42 @@ function MappedCard() {
         setHover(!hover);
         setGetId(id)
     }
-    const [data, setData] = useState("")
-    const buyClick = (e) => {
-        setData(e.target.value)
-    }
 
-    const unFilteredMapped = displayedIChampions.map((hero) => {
-        return <div className='hero-border' key={hero.id} id={hero.id}>
-            <div className='hero-id'>{hero.id}</div>
-            <div className='hero-image' onMouseEnter={() => handleHover(hero.id)} onMouseLeave={() => handleHover(hero.id)} >
-                {hover === true && getId === hero.id
-                    ? <div className='hero-image-back' onClick={() => handleShow(hero.id, hero.blurb, hero.info.difficulty,)} >
-                        <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
+
+
+
+    const myCards = myCardsArr.map((req) => {
+        return <div className='hero-border' key={req.id} id={req.id}>
+            <div className='hero-id'>{req.id}</div>
+            <div className='hero-image' onMouseEnter={() => handleHover(req.id)} onMouseLeave={() => handleHover(req.id)} >
+                {hover === true && getId === req.id
+                    ? <div className='hero-image-back' onClick={() => handleShow(req.id, req.blurb, req.info.difficulty,)} >
+                        <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${req.id}_0.jpg`} alt="champions" />
                         <div className='back-list'>
                             <div className='header-back' >
-                                <div className='hero-title'>{hero.title}</div>
+                                <div className='hero-title'>{req.title}</div>
                                 <div className='info'>
                                     <div>
                                         <img src={attack} alt="" />
-                                        <div className='info-img'>{hero.info.attack}</div>
+                                        <div className='info-img'>{req.info.attack}</div>
                                     </div>
                                     <div>
                                         <img src={defanse} alt="" />
-                                        <div className='info-img'>{hero.info.defense}</div>
+                                        <div className='info-img'>{req.info.defense}</div>
                                     </div>
                                     <div>
                                         <img src={magic} alt="" />
-                                        <div className='info-img'>{hero.info.magic}</div>
+                                        <div className='info-img'>{req.info.magic}</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     : <div className='hero-image'>
-                        <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
-                        <div className='hero-money'>${hero.info.difficulty}</div>
+                        <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${req.id}_0.jpg`} alt="champions" />
+                        <div className='hero-money'>${req.info.difficulty}</div>
                         <div className='hero-tags'>
-                            {(hero.tags).map(
+                            {(req.tags).map(
                                 a => a === "Fighter"
                                     ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" width="40px" height="40px" alt="" />
                                     : a === "Tank" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" width="40px" height="40px" alt="" />
@@ -74,16 +75,17 @@ function MappedCard() {
                 }
             </div>
             <div className='card-trade'>
-                <button className='buy-button' value={hero.id} onClick={buyClick}>BUY</button>
-
+                <button className='sell-button'>SELL</button>
             </div>
-        </div >
+        </div>
     })
 
+    // LOOK LOG 20. ARR SAVE İT WİTH İNDEX OF, DELETE WİTH SLİCE GENERAL LOG İS NEWARRAY. FİLTERED CHAMPİONS.İD
+    console.log(championsId.indexOf("Aatrox"))
+    console.log(newArray.map(x => x.id).indexOf("Corki"))
 
 
-
-    const mapped = displayedIChampions.filter(name => name.id.includes(data)).map((hero) => {
+    const mapped = displayedIChampions.filter(qwe => filteredId.length > 0 ? !filteredId.some(x => x === qwe.id) : true).map((hero) => {
         return <div className='hero-border' key={hero.id} id={hero.id}>
             <div className='hero-id'>{hero.id}</div>
             <div className='hero-image' onMouseEnter={() => handleHover(hero.id)} onMouseLeave={() => handleHover(hero.id)} >
@@ -128,17 +130,30 @@ function MappedCard() {
                 }
             </div>
             <div className='card-trade'>
-                <button className='buy-button' value={hero.id} onClick={buyClick}>BUY</button>
-
+                <button className='buy-button' onClick={() => buyClick(hero)}>BUY</button>
             </div>
         </div >
     })
     return (
         <div className='right-main'>
             <div className='parent'>
+                <div className='my-cards'>
+                    {myCards}
+                </div>
 
-                {mapped}
-                {unFilteredMapped}
+
+
+
+
+
+
+
+
+
+
+
+
+                <div className='mapped-card'>{mapped}</div>
                 <Modal show={show} onHide={handleClose} size="xl">
                     <div className='modal-title'>{championsId} </div>
                     <Modal.Body className='modal-body'>

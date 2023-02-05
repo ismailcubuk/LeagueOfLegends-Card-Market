@@ -235,14 +235,28 @@ export const CardContextprovider = ({ children }) => {
                 });
     //                - FİLTER SİDE BAR -
     //                + PAGİNATİON +
+
+    const [filteredId, setFilteredId] = useState([])
+    const [myCardsArr, setMyCardsArr] = useState([])
+    const [count, setCount] = useState(0)
+    const [counter, setCounter] = useState(0)
+    const buyClick = (hero) => {
+        setMyCardsArr([hero, ...myCardsArr])
+        setFilteredId([hero.id, ...filteredId])
+        setCount(count + 1)
+        setCounter(counter - 1)
+    }
+
+    // DÜZELİTELECEK NOKTA...................................................................
     const championsPerPage = 12
     const [currentPage, setCurrentPage] = useState(1);
     const startIndex = (currentPage - 1) * championsPerPage;
     const endIndex = startIndex + championsPerPage;
     const displayedIChampions = newArray.slice(startIndex, endIndex);
-    const totalPage = Math.ceil(newArray.length / championsPerPage)
+    // const displayedIChampions = newArray.slice(startIndex, endIndex + count);
+    const totalPage = Math.ceil((newArray.length) / championsPerPage)
+    // const totalPage = Math.ceil((newArray.length - count) / championsPerPage)
     const pageNumbers = Array.from({ length: totalPage }, (_, index) => index + 1)
-
     const handlePrevClick = () => {
         setCurrentPage(currentPage - 1);
     };
@@ -372,6 +386,9 @@ export const CardContextprovider = ({ children }) => {
 
 
     const data = {
+        myCardsArr,
+        filteredId,
+        buyClick,
         filteredTags,
         dotPageNextClick,
         dotPagePrevClick,

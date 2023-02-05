@@ -9,9 +9,18 @@
   display: flex;
 }
 
-/* RESPONSE */
+/* MY CARDS */
+.my-cards {
+  border: 2px solid red;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  padding-bottom: 1%;
+  padding-top: 3%;
+  padding-left: 3%;
+}
 
-.parent {
+.mapped-card {
   display: flex;
   flex-wrap: wrap;
   gap: 40px;
@@ -28,7 +37,6 @@
 /* MAİN PAGE- CAROUSEL + MAPPED CHAMP */
 .carousel-map {
   width: 85%;
-  min-height: 100vh;
   padding-top: 80px;
   background-color: #141414;
 }
@@ -41,9 +49,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 470px;
+  height: 460px;
   justify-content: flex-end;
   position: relative;
+  border: 2px solid blue;
 }
 
 .hero-id {
@@ -60,7 +69,6 @@
 
 .hero-image {
   position: relative;
-
   display: flex;
 }
 
@@ -108,6 +116,14 @@
   width: 100%;
   height: 100%;
   background-color: green;
+  color: white;
+  border: none;
+}
+
+.sell-button {
+  width: 100%;
+  height: 100%;
+  background-color: red;
   color: white;
   border: none;
 }
