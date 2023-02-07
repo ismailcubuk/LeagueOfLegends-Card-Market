@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react'
-import CardContext from '../CardContext'
+import CardContext from '../../component/CardContext'
 import Modal from 'react-bootstrap/Modal';
-import attack from '../../Images/Stats/attack.png'
-import defanse from '../../Images/Stats/defanse.png'
-import magic from '../../Images/Stats/magic.png'
+import attack from '../../../Images/Stats/attack.png'
+import defanse from '../../../Images/Stats/defanse.png'
+import magic from '../../../Images/Stats/magic.png'
 
 function MappedCard() {
     const { displayedIChampions, myCardsArr, buyClick, sellClick } = useContext(CardContext)
@@ -127,9 +127,21 @@ function MappedCard() {
         <div className='right-main'>
             <div className='parent'>
                 <div className='my-cards'>
-                    {myCards}
+                    <div className='cards-header'>
+                        <h1 className='my-cards-header'>MY CARDS</h1>
+                    </div>
+                    <div className='mapped-my-cards'>
+                        {myCards}
+                    </div>
                 </div>
-                <div className='mapped-card'>{mapped}</div>
+                <div className='shop'>
+                    <div className='cards-header'>
+                        <h1 className='shop-cards-header'>SHOP</h1>
+                    </div>
+                    <div className='mapped-card'>
+                        {mapped}
+                    </div>
+                </div>
                 <Modal show={show} onHide={handleClose} size="xl">
                     <div className='modal-title'>{championsId} </div>
                     <Modal.Body className='modal-body'>
@@ -137,23 +149,23 @@ function MappedCard() {
                         <div className='champion-skills'>
                             {getId === ""
                                 ? ""
-                                : <div className='skill-press'><img src={require(`../../Images/Passive/${championsId}P.png`)} alt="" /><div className='skill-button'>P</div></div>
+                                : <div className='skill-press'><img src={require(`../../../Images/Passive/${championsId}P.png`)} alt="" /><div className='skill-button'>P</div></div>
                             }
                             {getId === ""
                                 ? ""
-                                : <div className='skill-press'><img src={require(`../../Images/Skills/${championsId}Q.png`)} alt="" /><div className='skill-button'>Q</div></div>
+                                : <div className='skill-press'><img src={require(`../../../Images/Skills/${championsId}Q.png`)} alt="" /><div className='skill-button'>Q</div></div>
                             }
                             {championsId === ""
                                 ? ""
-                                : <div className='skill-press'><img src={require(`../../Images/Skills/${championsId}W.png`)} alt="" /><div className='skill-button'>W</div></div>
+                                : <div className='skill-press'><img src={require(`../../../Images/Skills/${championsId}W.png`)} alt="" /><div className='skill-button'>W</div></div>
                             }
                             {championsId === ""
                                 ? ""
-                                : <div className='skill-press'><img src={require(`../../Images/Skills/${championsId}E.png`)} alt="" /><div className='skill-button'>E</div></div>
+                                : <div className='skill-press'><img src={require(`../../../Images/Skills/${championsId}E.png`)} alt="" /><div className='skill-button'>E</div></div>
                             }
                             {championsId === ""
                                 ? ""
-                                : <div className='skill-press'><img src={require(`../../Images/Skills/${championsId}R.png`)} alt="" /><div className='skill-button'>R</div></div>
+                                : <div className='skill-press'><img src={require(`../../../Images/Skills/${championsId}R.png`)} alt="" /><div className='skill-button'>R</div></div>
                             }
                         </div>
                         <div className='modal-price'>

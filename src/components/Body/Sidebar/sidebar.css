@@ -1,7 +1,7 @@
 .left-sidebar-background {
     width: 210px;
     height: 100%;
-    margin-right: 60px;
+    min-width: 210px;
 }
 
 
@@ -16,7 +16,6 @@
     overflow: hidden;
     position: fixed;
 }
-
 
 /* SCROLL ÇALIŞMIYOR */
 .left-sidebar::-webkit-scrollbar {

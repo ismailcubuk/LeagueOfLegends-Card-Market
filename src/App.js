@@ -3,7 +3,7 @@ import Carousel from './components/Body/Carousel/Carousel'
 import Navbar from './components/Body/Navbar/Navbar'
 import Pagination from './components/Body/Pagination/Pagination'
 import Sidebar from './components/Body/Sidebar/Sidebar'
-import MappedCard from './components/component/MappedCard'
+import MappedCard from './components/Body/Cards/MappedCard'
 
 function App() {
     return (

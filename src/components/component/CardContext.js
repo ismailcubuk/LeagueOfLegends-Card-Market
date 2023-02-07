@@ -20,16 +20,8 @@ export const CardContextprovider = ({ children }) => {
         }
     }, [isfetch])
 
+    const [roleFilter, SetRoleFilter] = useState("")
 
-
-
-    // filter area
-    const [datas, setDatas] = useState("")
-    const [search, setSearch] = useState("")
-    // CHAMPİON SEARCH
-    const handleChange = (e) => {
-        setSearch(e.target.value)
-    }
     //               + ALLROLES +
     const [activeAllRoles, setActiveAllRoles] = useState(true)
     const clickedAllRoles = {
@@ -40,7 +32,7 @@ export const CardContextprovider = ({ children }) => {
         paddingLeft: activeAllRoles ? "10px" : ""
     }
     const allRoleCLick = () => {
-        setDatas("")
+        SetRoleFilter("")
         setActiveAllRoles(true)
         setActiveFighter(false)
         setActiveTank(false)
@@ -51,7 +43,6 @@ export const CardContextprovider = ({ children }) => {
         setCarouselPage(1)
         setCurrentPage(1)
     }
-    //               - ALLROLES -
     //               + FİGHTER +
     const [activeFighter, setActiveFighter] = useState(false)
     const clickedFighter = {
@@ -61,7 +52,7 @@ export const CardContextprovider = ({ children }) => {
         borderTop: activeFighter ? "none" : "",
     }
     const fighterClick = () => {
-        setDatas("Fighter")
+        SetRoleFilter("Fighter")
         setActiveAllRoles(false)
         setActiveFighter(true)
         setActiveTank(false)
@@ -72,7 +63,6 @@ export const CardContextprovider = ({ children }) => {
         setCarouselPage(1)
         setCurrentPage(1)
     }
-    //               - FİGHTER -
     //                 + TANK +
     const [activeTank, setActiveTank] = useState(false)
     const clickedTank = {
@@ -82,7 +72,7 @@ export const CardContextprovider = ({ children }) => {
         borderTop: activeTank ? "none" : "",
     }
     const tankClick = () => {
-        setDatas("Tank")
+        SetRoleFilter("Tank")
         setActiveAllRoles(false)
         setActiveFighter(false)
         setActiveTank(true)
@@ -93,7 +83,6 @@ export const CardContextprovider = ({ children }) => {
         setCarouselPage(2)
         setCurrentPage(1)
     }
-    //                 - TANK -
     //                 + MAGE +
     const [activeMage, setActiveMage] = useState(false)
     const clickedMage = {
@@ -103,7 +92,7 @@ export const CardContextprovider = ({ children }) => {
         borderTop: activeMage ? "none" : "",
     }
     const mageClick = () => {
-        setDatas("Mage")
+        SetRoleFilter("Mage")
         setActiveAllRoles(false)
         setActiveFighter(false)
         setActiveTank(false)
@@ -115,7 +104,6 @@ export const CardContextprovider = ({ children }) => {
         setCurrentPage(1)
 
     }
-    //                 - MAGE -
     //                 + ASSASSİN +
     const [activeAssassin, setActiveAssassin] = useState(false)
     const clickedAssassin = {
@@ -125,7 +113,7 @@ export const CardContextprovider = ({ children }) => {
         borderTop: activeAssassin ? "none" : "",
     }
     const assassinClick = () => {
-        setDatas("Assassin")
+        SetRoleFilter("Assassin")
         setActiveAllRoles(false)
         setActiveFighter(false)
         setActiveTank(false)
@@ -136,7 +124,6 @@ export const CardContextprovider = ({ children }) => {
         setCarouselPage(4)
         setCurrentPage(1)
     }
-    //               - ASSASSİN -
     //               + MARKSMAN +
     const [activeMarksman, setActiveMarksman] = useState(false)
     const clickedMarksman = {
@@ -146,7 +133,7 @@ export const CardContextprovider = ({ children }) => {
         borderTop: activeMarksman ? "none" : "",
     }
     const marksmanClick = () => {
-        setDatas("Marksman")
+        SetRoleFilter("Marksman")
         setActiveAllRoles(false)
         setActiveFighter(false)
         setActiveTank(false)
@@ -157,7 +144,6 @@ export const CardContextprovider = ({ children }) => {
         setCarouselPage(5)
         setCurrentPage(1)
     }
-    //               - MARKSMAN -
     //               + SUPPORT +
     const [activeSupport, setActiveSupport] = useState(false)
     const clickedSupport = {
@@ -167,7 +153,7 @@ export const CardContextprovider = ({ children }) => {
         borderTop: activeSupport ? "none" : "",
     }
     const supportClick = () => {
-        setDatas("Support")
+        SetRoleFilter("Support")
         setActiveAllRoles(false)
         setActiveFighter(false)
         setActiveTank(false)
@@ -178,7 +164,6 @@ export const CardContextprovider = ({ children }) => {
         setCarouselPage(6)
         setCurrentPage(1)
     }
-    //               - SUPPORT -
     //              + UP MONEY +
     const [filterUpMoney, setFilterUpMoney] = useState(false)
     const filterUpMoneyActive = {
@@ -192,7 +177,6 @@ export const CardContextprovider = ({ children }) => {
         setFilterDownMoney(false);
         setUnFilteredMoney(false)
     }
-    //             - UP MONEY -
     //             + DOWN MONEY +
     const [filterDownMoney, setFilterDownMoney] = useState(false)
     const filterDownMoneyActive = {
@@ -206,7 +190,6 @@ export const CardContextprovider = ({ children }) => {
         setFilterUpMoney(false)
         setUnFilteredMoney(false)
     }
-    //             - DOWN MONEY -
     //             + UNFİLTERED MONEY +
     const [unFilteredMoney, setUnFilteredMoney] = useState(true)
     const unFilteredMoneyActive = {
@@ -220,9 +203,7 @@ export const CardContextprovider = ({ children }) => {
         setFilterDownMoney(false);
         setFilterUpMoney(false)
     }
-    //             - UNFİLTERED MONEY -
 
-    //                + FİLTER AREA +  
     //                + DELETE UNREADVALUES +
     const result = (Object.keys(champions).map((key) => champions[key]));
     const filtered = result.filter(filtered =>
@@ -233,8 +214,7 @@ export const CardContextprovider = ({ children }) => {
             filtered.id.toLowerCase().includes("seraphine"))
     )
 
-
-    //                  +CAROUSEL 
+    //                  + CAROUSEL +
     const [randomFighter, setRandomFighter] = useState()
     const [randomTank, setRandomTank] = useState()
     const [randomMage, setRandomMage] = useState()
@@ -242,90 +222,115 @@ export const CardContextprovider = ({ children }) => {
     const [randomMarksman, setRandomMarksman] = useState()
     const [randomSupport, setRandomSupport] = useState()
 
+    const maxLength = 4
+    const addThreeChamp = 3
 
-    // FİGHTER PİCS
+    // CAROUSEL FİGHTER PİCS
     const filteredFighter = filtered.filter(item => item.tags.some(tags => tags.includes("Fighter")))
     useEffect(() => {
-        let randomFighter = Math.floor(Math.random() * filteredFighter.length)
-        setRandomFighter(randomFighter)
+        setRandomFighter(Math.floor(Math.random() * (filteredFighter.length - 4)))
     }, [filteredFighter.length])
-    const slicePicsFighter = filteredFighter.slice(randomFighter, randomFighter + 3)
+    const slicePicsFighter = filteredFighter.slice(randomFighter, randomFighter + addThreeChamp)
     const filteredFighterPics = slicePicsFighter.map((heroPics) => {
         return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
-    // TANK PİCS
+    // CAROUSEL TANK PİCS
     const filteredTank = filtered.filter(item => item.tags.some(tags => tags.includes("Tank")))
     useEffect(() => {
-        let randomTank = Math.floor(Math.random() * filteredTank.length)
-        setRandomTank(randomTank)
+        setRandomTank(Math.floor(Math.random() * (filteredTank.length - 4)))
     }, [filteredTank.length])
-    const slicePicsTank = filteredTank.slice(randomTank, randomTank + 3)
+    const slicePicsTank = filteredTank.slice(randomTank, randomTank + addThreeChamp)
     const filteredTankPics = slicePicsTank?.map((heroPics) => {
         return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
-    // MAGE PİCS
+    // CAROUSEL MAGE PİCS
     const filteredMage = filtered.filter(item => item.tags.some(tags => tags.includes("Mage")))
     useEffect(() => {
-        let randomMage = Math.floor(Math.random() * filteredMage.length)
-        setRandomMage(randomMage)
+        setRandomMage(Math.floor(Math.random() * (filteredMage.length - 4)))
     }, [filteredMage.length])
-    const slicePicsMage = filteredMage.slice(randomMage, randomMage + 3)
+    const slicePicsMage = filteredMage.slice(randomMage, randomMage + addThreeChamp)
     const filteredMagePics = slicePicsMage?.map((heroPics) => {
         return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
-    // ASSASSİN PİCS
+    // CAROUSEL ASSASSİN PİCS
     const filteredAssassin = filtered.filter(item => item.tags.some(tags => tags.includes("Assassin")))
     useEffect(() => {
-        let randomAssassin = Math.floor(Math.random() * filteredAssassin.length)
-        setRandomAssassin(randomAssassin)
+        setRandomAssassin(Math.floor(Math.random() * (filteredAssassin.length - 4)))
     }, [filteredAssassin.length])
-    const slicePicsAssassin = filteredAssassin.slice(randomAssassin, randomAssassin + 3)
+    const slicePicsAssassin = filteredAssassin.slice(randomAssassin, randomAssassin + addThreeChamp)
     const filteredAssassinPics = slicePicsAssassin?.map((heroPics) => {
         return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
-    // MARKSMAN PİCS
+    // CAROUSEL MARKSMAN PİCS
     const filteredMarksman = filtered.filter(item => item.tags.some(tags => tags.includes("Marksman")))
     useEffect(() => {
-        let randomMarksman = Math.floor(Math.random() * filteredMarksman.length)
-        setRandomMarksman(randomMarksman)
+        setRandomMarksman(Math.floor(Math.random() * (filteredMarksman.length - 4)))
     }, [filteredMarksman.length])
-    const slicePicsMarksman = filteredMarksman.slice(randomMarksman, randomMarksman + 3)
+    const slicePicsMarksman = filteredMarksman.slice(randomMarksman, randomMarksman + addThreeChamp)
     const filteredMarksmanPics = slicePicsMarksman?.map((heroPics) => {
         return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
-    // SUPPORT PİCS
+    // CAROUSEL SUPPORT PİCS
     const filteredSupport = filtered.filter(item => item.tags.some(tags => tags.includes("Support")))
     useEffect(() => {
-        let randomSupport = Math.floor(Math.random() * filteredSupport.length)
-        setRandomSupport(randomSupport)
+        setRandomSupport(Math.floor(Math.random() * (filteredSupport.length - 4)))
     }, [filteredSupport.length])
-    const slicePicsSupport = filteredSupport.slice(randomSupport, randomSupport + 3)
+    const slicePicsSupport = filteredSupport.slice(randomSupport, randomSupport + addThreeChamp)
     const filteredSupportPics = slicePicsSupport?.map((heroPics) => {
         return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
+    // CAROUSEL HERO PİCTURES ARRAY
     const heroPicsMap = [
-        { id: 1, class: "Fighters", heroPics: filteredFighterPics, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" },
-        { id: 2, class: "Tanks", heroPics: filteredTankPics, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" },
-        { id: 3, class: "Mages", heroPics: filteredMagePics, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png" },
-        { id: 4, class: "Assassins", heroPics: filteredAssassinPics, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png" },
-        { id: 5, class: "Marksmans", heroPics: filteredMarksmanPics, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png" },
-        { id: 6, class: "Supports", heroPics: filteredSupportPics, img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png" },
+        {
+            id: 1,
+            class: "Fighters",
+            heroPics: filteredFighterPics,
+            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png"
+        },
+        {
+            id: 2,
+            class: "Tanks",
+            heroPics: filteredTankPics,
+            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png"
+        },
+        {
+            id: 3,
+            class: "Mages",
+            heroPics: filteredMagePics,
+            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png"
+        },
+        {
+            id: 4,
+            class: "Assassins",
+            heroPics: filteredAssassinPics,
+            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png"
+        },
+        {
+            id: 5,
+            class: "Marksmans",
+            heroPics: filteredMarksmanPics,
+            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png"
+        },
+        {
+            id: 6,
+            class: "Supports",
+            heroPics: filteredSupportPics,
+            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png"
+        },
     ]
-
+    //                     + CAROUSEL PAGİNATİON +
     const [carouselPage, setCarouselPage] = useState(1);
     const startIndexCarousel = (carouselPage - 1) * 1;
     const endIndexCarousel = startIndexCarousel + 1;
     const displayedIChampionsCarousel = heroPicsMap.slice(startIndexCarousel, endIndexCarousel);
     const totalPageCarousel = Math.ceil(heroPicsMap.length / 1)
     const pageNumbersCarousel = Array.from({ length: totalPageCarousel }, (_, index) => index + 1)
-
-    //                  -CAROUSEL 
 
     const dotPageClick = (page) => {
         setCarouselPage(page)
@@ -346,26 +351,30 @@ export const CardContextprovider = ({ children }) => {
         > {page} </button>
     ))
 
-
-
-
-
+    //                 + ARRAY TO STATE +
     useEffect(() => {
         setCards(filtered)
     }, [isfetch])
-    //                - DELETE UNREADVALUES -
-    //                + FİLTER SİDE BAR +
-    const filteredChamp = cards.filter(filteredText => filteredText.id.toLowerCase().includes(search.toLowerCase()))
-    const filteredTags = filteredChamp.filter(item => item.tags.some(tags => tags.includes(datas)))
-    const newArray = filterUpMoney === true ? filteredTags.sort(function (a, b) { return b.info.difficulty - a.info.difficulty })
-        : filterDownMoney === true ? filteredTags.sort(function (a, b) { return a.info.difficulty - b.info.difficulty })
-            : unFilteredMoney === true ? filteredTags : filteredTags
-                .map(obj => {
-                    return obj;
-                });
 
-    //                - FİLTER SİDE BAR -
-    //                + PAGİNATİON +
+    //                + FİLTER SİDE BAR +
+    const [search, setSearch] = useState("")
+    const handleChange = (e) => {
+        setSearch(e.target.value)
+    }
+    const filteredChamp = cards.filter(filteredText =>
+        filteredText.id.toLowerCase().includes(search.toLowerCase()))
+
+    const filteredTags = filteredChamp.filter(item =>
+        item.tags.some(tags => tags.includes(roleFilter)))
+
+    const newArray = filterUpMoney === true ?
+        filteredTags.sort(function (a, b) { return b.info.difficulty - a.info.difficulty })
+        : filterDownMoney === true ?
+            filteredTags.sort(function (a, b) { return a.info.difficulty - b.info.difficulty })
+            : unFilteredMoney === true ? filteredTags
+                : filteredTags
+
+    //                + BUY SOLD CLİCK +
     const [filteredId, setFilteredId] = useState([])
     const [myCardsArr, setMyCardsArr] = useState([])
     const [alertt, setAlertt] = useState()
@@ -383,6 +392,7 @@ export const CardContextprovider = ({ children }) => {
         setAlertt(money >= hero.info.difficulty ? null : alert("BAKİYE YETERSİZ"))
     }
 
+    //                + PAGİNATİON +
     const championsPerPage = 12
     const [currentPage, setCurrentPage] = useState(1);
     const startIndex = (currentPage - 1) * championsPerPage;
@@ -400,8 +410,6 @@ export const CardContextprovider = ({ children }) => {
     const handlePageClick = (page) => {
         setCurrentPage(page)
     }
-    //                - PAGİNATİON -
-    //                - FİLTER AREA - 
 
 
 
@@ -411,7 +419,6 @@ export const CardContextprovider = ({ children }) => {
         myCardsArr,
         filteredId,
         buyClick,
-        // filteredTags,
         dotPageNextClick,
         dotPagePrevClick,
         dots,
@@ -419,7 +426,6 @@ export const CardContextprovider = ({ children }) => {
         setCarouselPage,
         carouselPage,
         pageNumbersCarousel,
-        // asd
         filtered,
         displayedIChampions,
         totalPage,
@@ -435,7 +441,6 @@ export const CardContextprovider = ({ children }) => {
         filterUpMoneyClick,
         filterDownMoneyClick,
         unFilteredMoneyClick,
-        // newArray,
         clickedAllRoles,
         clickedFighter,
         clickedTank,

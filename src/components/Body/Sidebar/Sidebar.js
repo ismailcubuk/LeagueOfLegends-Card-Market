@@ -2,7 +2,7 @@ import { BsSearch } from 'react-icons/bs';
 import { AiOutlineArrowUp, AiOutlineArrowDown, AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 import './sidebar.css'
 import { useContext } from 'react';
-import CardContext from '../../CardContext';
+import CardContext from '../../component/CardContext';
 
 function Sidebar() {
     const { filterUpMoneyClick, unFilteredMoneyClick, unFilteredMoneyActive, filterDownMoneyActive, filterUpMoneyActive, filterDownMoneyClick, handleChange, allRoleCLick, clickedAllRoles, clickedFighter, clickedTank, clickedMage, clickedAssassin, clickedMarksman, clickedSupport, fighterClick, tankClick, mageClick, assassinClick, marksmanClick, supportClick } = useContext(CardContext)

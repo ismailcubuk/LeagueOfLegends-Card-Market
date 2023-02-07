@@ -11,13 +11,40 @@
 
 /* MY CARDS */
 .my-cards {
-  border: 2px solid red;
+  display: flex;
+  flex-direction: column;
+  color: white;
+}
+
+.cards-header {
+  padding-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.my-cards-header {
+  border-bottom: 4px solid red;
+}
+
+.shop-cards-header {
+  border-bottom: 4px solid green;
+}
+
+.mapped-my-cards {
   display: flex;
   flex-wrap: wrap;
   gap: 40px;
   padding-bottom: 1%;
+  padding-left: 4%;
+  border-bottom: 2px solid red;
+}
+
+.shop {
+  display: flex;
+  flex-direction: column;
   padding-top: 3%;
-  padding-left: 3%;
+  text-align: center;
+  color: white;
 }
 
 .mapped-card {
@@ -25,8 +52,7 @@
   flex-wrap: wrap;
   gap: 40px;
   padding-bottom: 1%;
-  padding-top: 3%;
-  padding-left: 3%;
+  padding-left: 4%;
 }
 
 /* PAGE */
@@ -36,10 +62,14 @@
 
 /* MAİN PAGE- CAROUSEL + MAPPED CHAMP */
 .carousel-map {
-  width: 85%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding-top: 80px;
   background-color: #141414;
   min-height: 100vh;
+  padding-right: 30px;
+  padding-left: 30px;
 }
 
 

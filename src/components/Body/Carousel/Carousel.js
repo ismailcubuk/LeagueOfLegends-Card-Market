@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import CardContext from '../../CardContext';
+import CardContext from '../../component/CardContext';
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 import './Carousel.css';
 
