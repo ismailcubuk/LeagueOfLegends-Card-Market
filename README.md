@@ -19,4 +19,6 @@ In the project directory, you can run:
 ## Carousel have a pagination and you can click point and change classes
 ## Price filter started with unfiltered, thats mean alphabetic filter.
 ## When you buy all champions on lastpage, last page deleted.
-## when you sold cards bring first in array
+## When you sold cards bring first in array
+
+![Screenshot_16](https://user-images.githubusercontent.com/116573908/217324060-272b9543-6580-4322-b657-905d09a4e243.png)
