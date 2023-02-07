@@ -6,13 +6,13 @@ import defanse from '../../Images/Stats/defanse.png'
 import magic from '../../Images/Stats/magic.png'
 
 function MappedCard() {
-    const { displayedIChampions, myCardsArr, buyClick } = useContext(CardContext)
+    const { displayedIChampions, myCardsArr, buyClick, sellClick } = useContext(CardContext)
     const [story, setStory] = useState("")
     const [show, setShow] = useState(false);
     const [hover, setHover] = useState(false);
     const [getId, setGetId] = useState()
     const [modalPrice, setModalPrice] = useState()
-    const [championsId, setChampionsId] = useState("Aatrox")
+    const [championsId, setChampionsId] = useState("Yasuo")
     const handleClose = () => setShow(false);
     const handleShow = (champID, story, modalPrice) => {
         setChampionsId(champID)
@@ -30,7 +30,7 @@ function MappedCard() {
             <div className='hero-id'>{req.id}</div>
             <div className='hero-image' onMouseEnter={() => handleHover(req.id)} onMouseLeave={() => handleHover(req.id)} >
                 {hover === true && getId === req.id
-                    ? <div className='hero-image-back' onClick={() => handleShow(req.id, req.blurb, req.info.difficulty,)} >
+                    ? <div className='hero-image-back' onClick={() => handleShow(req.id, req.blurb, req.info.difficulty)} >
                         <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${req.id}_0.jpg`} alt="champions" />
                         <div className='back-list'>
                             <div className='header-back' >
@@ -70,7 +70,7 @@ function MappedCard() {
                 }
             </div>
             <div className='card-trade'>
-                <button className='sell-button'>SELL</button>
+                <button className='sell-button' onClick={() => sellClick(req)}>SELL</button>
             </div>
         </div>
     })
@@ -129,7 +129,6 @@ function MappedCard() {
                 <div className='my-cards'>
                     {myCards}
                 </div>
-
                 <div className='mapped-card'>{mapped}</div>
                 <Modal show={show} onHide={handleClose} size="xl">
                     <div className='modal-title'>{championsId} </div>
@@ -164,7 +163,6 @@ function MappedCard() {
                             {story}
                         </div>
                     </Modal.Body>
-                    <button className='modal-button'>BUY</button>
                 </Modal>
             </div>
         </div>

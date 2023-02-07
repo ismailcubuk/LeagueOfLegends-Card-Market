@@ -4,20 +4,28 @@ const CardContext = createContext();
 
 export const CardContextprovider = ({ children }) => {
     const [champions, setChampions] = useState([])
-
+    const [isfetch, setIsFtech] = useState(false)
+    const [cards, setCards] = useState([])
+    const [money, setMoney] = useState(30)
     const fetchData = async () => {
         await fetch('http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
             .then(response => response.json())
             .then(json => setChampions(json.data))
+        setIsFtech(true)
     }
 
     useEffect(() => {
         fetchData();
-    }, [])
-    // filter area
-    const [search, setSearch] = useState("")
-    const [datas, setDatas] = useState("")
+        if (isfetch) {
+        }
+    }, [isfetch])
 
+
+
+
+    // filter area
+    const [datas, setDatas] = useState("")
+    const [search, setSearch] = useState("")
     // CHAMPİON SEARCH
     const handleChange = (e) => {
         setSearch(e.target.value)
@@ -105,6 +113,7 @@ export const CardContextprovider = ({ children }) => {
         setActiveSupport(false)
         setCarouselPage(3)
         setCurrentPage(1)
+
     }
     //                 - MAGE -
     //                 + ASSASSİN +
@@ -223,48 +232,7 @@ export const CardContextprovider = ({ children }) => {
             filtered.id.toLowerCase().includes("vex") +
             filtered.id.toLowerCase().includes("seraphine"))
     )
-    //                - DELETE UNREADVALUES -
-    //                + FİLTER SİDE BAR +
-    const filteredChamp = filtered.filter(filteredText => filteredText.id.toLowerCase().includes(search.toLowerCase()))
-    const filteredTags = filteredChamp.filter(item => item.tags.some(tags => tags.includes(datas)))
-    let newArray = filterUpMoney === true ? filteredTags.sort(function (a, b) { return b.info.difficulty - a.info.difficulty })
-        : filterDownMoney === true ? filteredTags.sort(function (a, b) { return a.info.difficulty - b.info.difficulty })
-            : unFilteredMoney === true ? filteredTags : filteredTags
-                .map(obj => {
-                    return obj;
-                });
 
-    //                - FİLTER SİDE BAR -
-    //                + PAGİNATİON +
-    const [filteredId, setFilteredId] = useState([])
-    const [myCardsArr, setMyCardsArr] = useState([])
-    const [heroID, setHeroID] = useState("")
-    const buyClick = (hero) => {
-        setMyCardsArr([hero, ...myCardsArr])
-        setFilteredId([hero.id, ...filteredId])
-        setHeroID(hero.id)
-    }
-    newArray = newArray.filter(qwe => filteredId.length > 0 ? !filteredId.some(x => x === qwe.id) : true)
-
-    const championsPerPage = 12
-    const [currentPage, setCurrentPage] = useState(1);
-    const startIndex = (currentPage - 1) * championsPerPage;
-    const endIndex = startIndex + championsPerPage;
-    const displayedIChampions = newArray.slice(startIndex, endIndex);
-    const totalPage = Math.ceil((newArray.length) / championsPerPage)
-    const pageNumbers = Array.from({ length: totalPage }, (_, index) => index + 1)
-    const handlePrevClick = () => {
-        setCurrentPage(currentPage - 1);
-    };
-
-    const handleNextClick = () => {
-        setCurrentPage(currentPage + 1);
-    };
-    const handlePageClick = (page) => {
-        setCurrentPage(page)
-    }
-    //                - PAGİNATİON -
-    //                - FİLTER AREA - 
 
     //                  +CAROUSEL 
     const [randomFighter, setRandomFighter] = useState()
@@ -379,12 +347,71 @@ export const CardContextprovider = ({ children }) => {
     ))
 
 
+
+
+
+    useEffect(() => {
+        setCards(filtered)
+    }, [isfetch])
+    //                - DELETE UNREADVALUES -
+    //                + FİLTER SİDE BAR +
+    const filteredChamp = cards.filter(filteredText => filteredText.id.toLowerCase().includes(search.toLowerCase()))
+    const filteredTags = filteredChamp.filter(item => item.tags.some(tags => tags.includes(datas)))
+    const newArray = filterUpMoney === true ? filteredTags.sort(function (a, b) { return b.info.difficulty - a.info.difficulty })
+        : filterDownMoney === true ? filteredTags.sort(function (a, b) { return a.info.difficulty - b.info.difficulty })
+            : unFilteredMoney === true ? filteredTags : filteredTags
+                .map(obj => {
+                    return obj;
+                });
+
+    //                - FİLTER SİDE BAR -
+    //                + PAGİNATİON +
+    const [filteredId, setFilteredId] = useState([])
+    const [myCardsArr, setMyCardsArr] = useState([])
+    const [alertt, setAlertt] = useState()
+    const sellClick = (req) => {
+        const newcard = myCardsArr.find((item) => item.id === req.id)
+        setCards([newcard, ...cards])
+        setMyCardsArr([...myCardsArr.filter((card) => card.id !== req.id)])
+        setMoney(money + req.info.difficulty)
+    }
+    const buyClick = (hero) => {
+        setMyCardsArr(hero.info.difficulty > money ? [...myCardsArr] : [hero, ...myCardsArr])
+        setFilteredId([hero.id, ...filteredId])
+        setCards(hero.info.difficulty > money ? [...cards] : [...cards.filter((card) => card.id !== hero.id)])
+        setMoney(money >= hero.info.difficulty ? money - hero.info.difficulty : money)
+        setAlertt(money >= hero.info.difficulty ? null : alert("BAKİYE YETERSİZ"))
+    }
+
+    const championsPerPage = 12
+    const [currentPage, setCurrentPage] = useState(1);
+    const startIndex = (currentPage - 1) * championsPerPage;
+    const endIndex = startIndex + championsPerPage;
+    const displayedIChampions = newArray.slice(startIndex, endIndex);
+    const totalPage = Math.ceil((newArray.length) / championsPerPage)
+    const pageNumbers = Array.from({ length: totalPage }, (_, index) => index + 1)
+    const handlePrevClick = () => {
+        setCurrentPage(currentPage - 1);
+    };
+
+    const handleNextClick = () => {
+        setCurrentPage(currentPage + 1);
+    };
+    const handlePageClick = (page) => {
+        setCurrentPage(page)
+    }
+    //                - PAGİNATİON -
+    //                - FİLTER AREA - 
+
+
+
     const data = {
-        heroID,
+        money,
+        sellClick,
         myCardsArr,
         filteredId,
         buyClick,
-        filteredTags,
+        // filteredTags,
         dotPageNextClick,
         dotPagePrevClick,
         dots,
@@ -400,7 +427,6 @@ export const CardContextprovider = ({ children }) => {
         pageNumbers,
         currentPage,
         championsPerPage,
-        filteredChamp,
         handlePrevClick,
         handleNextClick,
         unFilteredMoneyActive,
@@ -409,7 +435,7 @@ export const CardContextprovider = ({ children }) => {
         filterUpMoneyClick,
         filterDownMoneyClick,
         unFilteredMoneyClick,
-        newArray,
+        // newArray,
         clickedAllRoles,
         clickedFighter,
         clickedTank,
