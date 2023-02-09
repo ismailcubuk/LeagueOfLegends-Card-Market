@@ -81,7 +81,7 @@ function Sidebar() {
                             </button>
                             <div className='search'>
                                 <BsSearch className='search-icon' />
-                                <input type="text" spellcheck="false" placeholder='Search Champ..' onChange={handleChange} />
+                                <input type="text" spellCheck="false" placeholder='Search Champ..' onChange={handleChange} />
                             </div>
                         </div>
                     </div>

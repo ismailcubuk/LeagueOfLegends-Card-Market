@@ -222,9 +222,7 @@ export const CardContextprovider = ({ children }) => {
     const [randomMarksman, setRandomMarksman] = useState()
     const [randomSupport, setRandomSupport] = useState()
 
-    const maxLength = 4
     const addThreeChamp = 3
-
     // CAROUSEL FİGHTER PİCS
     const filteredFighter = filtered.filter(item => item.tags.some(tags => tags.includes("Fighter")))
     useEffect(() => {
@@ -377,7 +375,7 @@ export const CardContextprovider = ({ children }) => {
     //                + BUY SOLD CLİCK +
     const [filteredId, setFilteredId] = useState([])
     const [myCardsArr, setMyCardsArr] = useState([])
-    const [alertt, setAlertt] = useState()
+    const [alertt, setAlertt] = useState(false)
     const sellClick = (req) => {
         const newcard = myCardsArr.find((item) => item.id === req.id)
         setCards([newcard, ...cards])
@@ -389,7 +387,7 @@ export const CardContextprovider = ({ children }) => {
         setFilteredId([hero.id, ...filteredId])
         setCards(hero.info.difficulty > money ? [...cards] : [...cards.filter((card) => card.id !== hero.id)])
         setMoney(money >= hero.info.difficulty ? money - hero.info.difficulty : money)
-        setAlertt(money >= hero.info.difficulty ? null : alert("BAKİYE YETERSİZ"))
+        setAlertt(money >= hero.info.difficulty ? false : true)
     }
 
     //                + PAGİNATİON +
@@ -414,6 +412,8 @@ export const CardContextprovider = ({ children }) => {
 
 
     const data = {
+        setAlertt,
+        alertt,
         money,
         sellClick,
         myCardsArr,

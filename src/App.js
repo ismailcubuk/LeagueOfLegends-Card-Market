@@ -8,8 +8,8 @@ import MappedCard from './components/Body/Cards/MappedCard'
 function App() {
     return (
         <div className='page'>
-            <Navbar />
             <div className='main'>
+                <Navbar />
                 <div className='left-sidebar-background'>
                     <div className='left-sidebar' >
                         <Sidebar />

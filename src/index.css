@@ -60,6 +60,25 @@
   background-color: #141414;
 }
 
+/* SCROLL */
+
+::-webkit-scrollbar {
+  width: 15px;
+}
+
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 /* MAİN PAGE- CAROUSEL + MAPPED CHAMP */
 .carousel-map {
   display: flex;

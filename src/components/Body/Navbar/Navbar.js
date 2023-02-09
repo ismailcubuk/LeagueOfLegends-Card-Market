@@ -1,6 +1,4 @@
 import './navbar.css';
-import { MdMenu } from 'react-icons/md';
-import Dropdown from 'react-bootstrap/Dropdown';
 import Wallet from './Wallet';
 
 function TopNavbar() {
@@ -24,6 +22,7 @@ function TopNavbar() {
                 <Wallet />
             </div>
         </nav >
+
     );
 }
 

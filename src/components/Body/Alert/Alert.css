@@ -1,0 +1,13 @@
+.alert-moodle-header {
+    border: 2px solid red;
+    background-color: red;
+    text-align: start;
+    padding: 10px 20px 10px 20px;
+}
+
+.alert-moodle-body {
+    background-color: white;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 600;
+}

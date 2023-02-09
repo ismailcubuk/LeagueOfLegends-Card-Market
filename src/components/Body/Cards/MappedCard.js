@@ -5,6 +5,7 @@ import Modal from 'react-bootstrap/Modal';
 import attack from '../../../Images/Stats/attack.png'
 import defanse from '../../../Images/Stats/defanse.png'
 import magic from '../../../Images/Stats/magic.png'
+import Alert from '../Alert/Alert';
 
 function MappedCard() {
     const { displayedIChampions, myCardsArr, buyClick, sellClick } = useContext(CardContext)
@@ -27,8 +28,8 @@ function MappedCard() {
             <div className='hero-id'>{req.id}</div>
             <div className='hero-image'>
                 {/* back */}
-                <div class="flip-card">
-                    <div class="flip-card-inner">
+                <div className="flip-card">
+                    <div className="flip-card-inner">
                         <div className='hero-image-back' onClick={() => handleShow(req.id, req.blurb, req.info.difficulty)} >
                             <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${req.id}_0.jpg`} alt="champions" />
                             <div className='back-list'>
@@ -80,8 +81,8 @@ function MappedCard() {
             <div className='hero-id'>{hero.id}</div>
             <div className='hero-image'>
                 {/* back */}
-                <div class="flip-card" onClick={() => handleShow(hero.id, hero.blurb, hero.info.difficulty)}>
-                    <div class="flip-card-inner">
+                <div className="flip-card" onClick={() => handleShow(hero.id, hero.blurb, hero.info.difficulty)}>
+                    <div className="flip-card-inner">
                         <div className='hero-image-back'  >
                             <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
                             <div className='back-list'>
@@ -171,6 +172,7 @@ function MappedCard() {
                         </div>
                     </Modal.Body>
                 </Modal>
+                <Alert />
             </div>
         </div>
     )

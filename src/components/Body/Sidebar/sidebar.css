@@ -13,11 +13,10 @@
     width: 210px;
     height: 100%;
     border-right: 2px solid red;
-    overflow: hidden;
+    overflow-y: scroll;
     position: fixed;
 }
 
-/* SCROLL ÇALIŞMIYOR */
 .left-sidebar::-webkit-scrollbar {
     width: 3px;
 }
