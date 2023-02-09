@@ -2,7 +2,6 @@ import { useContext, useState } from 'react';
 import CardContext from '../../component/CardContext';
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 import './Carousel.css';
-import { useSearchParams } from 'react-router-dom';
 
 function Carousel() {
     const { displayedIChampionsCarousel, carouselPage, dotPagePrevClick, dots, dotPageNextClick } = useContext(CardContext)
