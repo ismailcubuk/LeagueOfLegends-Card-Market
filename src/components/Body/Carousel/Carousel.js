@@ -23,7 +23,6 @@ function Carousel() {
     })
     const [activate, setActivate] = useState(false)
     const handleClick = () => {
-
         setActivate(!activate)
     }
     const mappedHeroPics = displayedIChampionsCarousel.map((item) => {
