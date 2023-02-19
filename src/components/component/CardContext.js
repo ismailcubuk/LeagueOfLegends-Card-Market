@@ -20,6 +20,14 @@ export const CardContextprovider = ({ children }) => {
         }
     }, [isfetch])
 
+
+
+
+
+
+
+
+
     const [roleFilter, SetRoleFilter] = useState("")
 
     //               + ALLROLES +
@@ -374,7 +382,14 @@ export const CardContextprovider = ({ children }) => {
 
     //                + BUY SOLD CLİCK +
     const [filteredId, setFilteredId] = useState([])
-    const [myCardsArr, setMyCardsArr] = useState([])
+    const myCardsArrFromLocalStorage = JSON.parse(localStorage.getItem('myCardsArr') || '[]')
+    const [myCardsArr, setMyCardsArr] = useState(myCardsArrFromLocalStorage)
+    useEffect(() => {
+        localStorage.setItem("myCardsArr", JSON.stringify(myCardsArr))
+    }, [myCardsArr])
+
+
+
     const [alertt, setAlertt] = useState(false)
     const sellClick = (req) => {
         const newcard = myCardsArr.find((item) => item.id === req.id)
@@ -389,6 +404,7 @@ export const CardContextprovider = ({ children }) => {
         setMoney(money >= hero.info.difficulty ? money - hero.info.difficulty : money)
         setAlertt(money >= hero.info.difficulty ? false : true)
     }
+
 
     //                + PAGİNATİON +
     const championsPerPage = 12
