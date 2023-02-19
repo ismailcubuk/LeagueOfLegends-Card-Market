@@ -6,7 +6,13 @@ export const CardContextprovider = ({ children }) => {
     const [champions, setChampions] = useState([])
     const [isfetch, setIsFtech] = useState(false)
     const [cards, setCards] = useState([])
-    const [money, setMoney] = useState(30)
+
+    const moneyFromLocalStorage = JSON.parse(localStorage.getItem('money') || '[30]')
+    const [money, setMoney] = useState(moneyFromLocalStorage)
+    useEffect(() => {
+        localStorage.setItem("money", JSON.stringify(money))
+    }, [money])
+
     const fetchData = async () => {
         await fetch('http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
             .then(response => response.json())
@@ -19,14 +25,6 @@ export const CardContextprovider = ({ children }) => {
         if (isfetch) {
         }
     }, [isfetch])
-
-
-
-
-
-
-
-
 
     const [roleFilter, SetRoleFilter] = useState("")
 
