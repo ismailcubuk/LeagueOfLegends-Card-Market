@@ -6,7 +6,6 @@ export const CardContextprovider = ({ children }) => {
     const [champions, setChampions] = useState([])
     const [isfetch, setIsFtech] = useState(false)
     const [cards, setCards] = useState([])
-
     const moneyFromLocalStorage = JSON.parse(localStorage.getItem('money') || '[30]')
     const [money, setMoney] = useState(moneyFromLocalStorage)
     useEffect(() => {
@@ -356,6 +355,7 @@ export const CardContextprovider = ({ children }) => {
     ))
 
     //                 + ARRAY TO STATE +
+
     useEffect(() => {
         setCards(filtered)
     }, [isfetch])
@@ -386,8 +386,6 @@ export const CardContextprovider = ({ children }) => {
         localStorage.setItem("myCardsArr", JSON.stringify(myCardsArr))
     }, [myCardsArr])
 
-
-
     const [alertt, setAlertt] = useState(false)
     const sellClick = (req) => {
         const newcard = myCardsArr.find((item) => item.id === req.id)
@@ -402,7 +400,6 @@ export const CardContextprovider = ({ children }) => {
         setMoney(money >= hero.info.difficulty ? money - hero.info.difficulty : money)
         setAlertt(money >= hero.info.difficulty ? false : true)
     }
-
 
     //                + PAGİNATİON +
     const championsPerPage = 12

@@ -8,7 +8,7 @@ import magic from '../../../Images/Stats/magic.png'
 import Alert from '../Alert/Alert';
 
 function MappedCard() {
-    const { displayedIChampions, myCardsArr, buyClick, sellClick } = useContext(CardContext)
+    const { displayedIChampions, myCardsArr, buyClick, sellClick, cards } = useContext(CardContext)
     const [story, setStory] = useState("")
     const [show, setShow] = useState(false);
     const [modalPrice, setModalPrice] = useState()
