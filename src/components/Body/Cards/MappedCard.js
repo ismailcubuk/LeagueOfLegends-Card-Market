@@ -22,8 +22,6 @@ function MappedCard() {
         console.log(championsId)
     }
 
-
-
     const myCards = myCardsArr.map((req) => {
         return <div className='hero-border' key={req.id} id={req.id}>
             <div className='hero-id'>{req.id}</div>

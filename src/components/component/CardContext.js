@@ -3,7 +3,7 @@ import { createContext, useState, useEffect } from "react";
 const CardContext = createContext();
 
 export const CardContextprovider = ({ children }) => {
-    const [champions, setChampions] = useState([])
+    const [champions, setChampions] = useState(JSON.parse(localStorage.getItem('char') || '[]'))
     const [isfetch, setIsFtech] = useState(false)
     const [cards, setCards] = useState([])
     const moneyFromLocalStorage = JSON.parse(localStorage.getItem('money') || '[30]')
@@ -13,10 +13,12 @@ export const CardContextprovider = ({ children }) => {
     }, [money])
 
     const fetchData = async () => {
-        await fetch('http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
-            .then(response => response.json())
-            .then(json => setChampions(json.data))
-        setIsFtech(true)
+        if (myCardsArr.length === 0) {
+            await fetch('http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
+                .then(response => response.json())
+                .then(json => setChampions(json.data))
+            setIsFtech(true)
+        }
     }
 
     useEffect(() => {
@@ -407,6 +409,11 @@ export const CardContextprovider = ({ children }) => {
     const startIndex = (currentPage - 1) * championsPerPage;
     const endIndex = startIndex + championsPerPage;
     const displayedIChampions = newArray.slice(startIndex, endIndex);
+
+    useEffect(() => {
+        localStorage.setItem("char", JSON.stringify(cards))
+    }, [cards])
+
     const totalPage = Math.ceil((newArray.length) / championsPerPage)
     const pageNumbers = Array.from({ length: totalPage }, (_, index) => index + 1)
     const handlePrevClick = () => {
@@ -419,9 +426,6 @@ export const CardContextprovider = ({ children }) => {
     const handlePageClick = (page) => {
         setCurrentPage(page)
     }
-
-
-
     const data = {
         setAlertt,
         alertt,
