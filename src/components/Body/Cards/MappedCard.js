@@ -8,18 +8,17 @@ import magic from '../../../Images/Stats/magic.png'
 import Alert from '../Alert/Alert';
 
 function MappedCard() {
-    const { displayedIChampions, myCardsArr, buyClick, sellClick, cards } = useContext(CardContext)
+    const { displayedIChampions, myCardsArr, buyClick, sellClick, handleChange, isSearch } = useContext(CardContext)
     const [story, setStory] = useState("")
     const [show, setShow] = useState(false);
     const [modalPrice, setModalPrice] = useState()
-    const [championsId, setChampionsId] = useState("Yasuo")
+    const [championsId, setChampionsId] = useState("")
     const handleClose = () => setShow(false);
     const handleShow = (champID, story, modalPrice) => {
         setChampionsId(champID)
         setStory(story)
         setShow(true);
         setModalPrice(modalPrice)
-        console.log(championsId)
     }
 
     const myCards = myCardsArr.map((req) => {
@@ -130,6 +129,9 @@ function MappedCard() {
     })
     return (
         <div className='right-main'>
+            <div className='search-mobile'>
+                {isSearch === true ? <input type="text" spellCheck="false" placeholder='Search Champ..' onChange={handleChange} /> : null}
+            </div>
             <div className='parent'>
                 <div className='my-cards'>
                     <div className='cards-header'>
@@ -147,21 +149,32 @@ function MappedCard() {
                         {mapped}
                     </div>
                 </div>
-                <Modal show={show} onHide={handleClose} size="xl">
+                {championsId !== "" ? <Modal show={show} onHide={handleClose} size="xl">
                     <div className='modal-title'>{championsId} </div>
                     <Modal.Body className='modal-body'>
                         <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championsId}_0.jpg`} width="100%" height="100%" alt="champions" />
                         <div className='champion-skills'>
-                            <div className='skill-press'><img src={require(`../../../Images/Passive/${championsId}P.png`)} alt="" /><div className='skill-button'>P</div></div>
+                            <div className='skill-press'>
+                                <img src={require(`../../../Images/Passive/${championsId}P.png`)} alt="" />
+                                <div className='skill-button'>P</div>
+                            </div>
+                            <div className='skill-press'>
+                                <img src={require(`../../../Images/Skills/${championsId}Q.png`)} alt="" />
+                                <div className='skill-button'>Q</div>
+                            </div>
+                            <div className='skill-press'>
+                                <img src={require(`../../../Images/Skills/${championsId}W.png`)} alt="" />
+                                <div className='skill-button'>W</div>
+                            </div>
+                            <div className='skill-press'>
+                                <img src={require(`../../../Images/Skills/${championsId}E.png`)} alt="" />
+                                <div className='skill-button'>E</div>
+                            </div>
 
-                            <div className='skill-press'><img src={require(`../../../Images/Skills/${championsId}Q.png`)} alt="" /><div className='skill-button'>Q</div></div>
-
-                            <div className='skill-press'><img src={require(`../../../Images/Skills/${championsId}W.png`)} alt="" /><div className='skill-button'>W</div></div>
-
-                            <div className='skill-press'><img src={require(`../../../Images/Skills/${championsId}E.png`)} alt="" /><div className='skill-button'>E</div></div>
-
-                            <div className='skill-press'><img src={require(`../../../Images/Skills/${championsId}R.png`)} alt="" /><div className='skill-button'>R</div></div>
-
+                            <div className='skill-press'>
+                                <img src={require(`../../../Images/Skills/${championsId}R.png`)} alt="" />
+                                <div className='skill-button'>R</div>
+                            </div>
                         </div>
                         <div className='modal-price'>
                             ${modalPrice}
@@ -170,7 +183,7 @@ function MappedCard() {
                             {story}
                         </div>
                     </Modal.Body>
-                </Modal>
+                </Modal> : null}
                 <Alert />
             </div>
         </div>

@@ -39,6 +39,21 @@
 .carousel-class-img {
     width: 200px;
     height: 200px;
+    animation-name: leftToRight;
+    animation-duration: 1s;
+    position: relative;
+}
+
+@keyframes leftToRight {
+    0% {
+        left: -90px;
+        opacity: 0;
+    }
+
+    100% {
+        left: 0px;
+        opacity: 1;
+    }
 }
 
 .carousel-header {
@@ -48,6 +63,21 @@
     font-size: 60px;
     font-weight: 600;
     align-items: center;
+    animation-name: leftToRight;
+    animation-duration: 1s;
+    position: relative;
+}
+
+@keyframes leftToRight {
+    0% {
+        left: -90px;
+        opacity: 0;
+    }
+
+    100% {
+        left: 0px;
+        opacity: 1;
+    }
 }
 
 .carousel-left-border {
@@ -76,7 +106,21 @@
     justify-content: space-between;
     align-items: center;
     position: relative;
+    animation-name: RightToLeft;
+    animation-duration: 1s;
 
+}
+
+@keyframes RightToLeft {
+    0% {
+        left: 90px;
+        opacity: 0;
+    }
+
+    100% {
+        left: 0px;
+        opacity: 1;
+    }
 }
 
 .hero-pics>img:nth-child(1) {

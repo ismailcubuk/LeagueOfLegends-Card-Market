@@ -24,9 +24,6 @@
     visibility: hidden;
 }
 
-
-
-
 /* HERO TAGS */
 .hero-tags {
     position: absolute;
@@ -48,6 +45,7 @@
     color: white;
     background: linear-gradient(360deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.0) 100%);
     height: 60px;
+
 }
 
 .info-img {

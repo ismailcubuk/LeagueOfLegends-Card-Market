@@ -113,7 +113,7 @@
     display: none;
 }
 
-@media screen and (max-width:1200px) {
+@media screen and (max-width:950px) {
     .menu {
         width: 100%;
         max-height: 0;

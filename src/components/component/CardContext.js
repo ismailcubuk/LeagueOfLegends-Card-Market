@@ -13,7 +13,7 @@ export const CardContextprovider = ({ children }) => {
     }, [money])
 
     const fetchData = async () => {
-        if (myCardsArr.length === 0) {
+        if (champions.length === 0) {
             await fetch('http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
                 .then(response => response.json())
                 .then(json => setChampions(json.data))
@@ -23,8 +23,6 @@ export const CardContextprovider = ({ children }) => {
 
     useEffect(() => {
         fetchData();
-        if (isfetch) {
-        }
     }, [isfetch])
 
     const [roleFilter, SetRoleFilter] = useState("")
@@ -367,6 +365,10 @@ export const CardContextprovider = ({ children }) => {
     const handleChange = (e) => {
         setSearch(e.target.value)
     }
+    const [isSearch, setIsSearch] = useState(false)
+    const searchClick = () => {
+        setIsSearch(!isSearch)
+    }
     const filteredChamp = cards.filter(filteredText =>
         filteredText.id.toLowerCase().includes(search.toLowerCase()))
 
@@ -427,6 +429,8 @@ export const CardContextprovider = ({ children }) => {
         setCurrentPage(page)
     }
     const data = {
+        isSearch,
+        searchClick,
         setAlertt,
         alertt,
         money,
