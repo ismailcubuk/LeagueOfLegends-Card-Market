@@ -253,6 +253,8 @@
         color: white;
         border: 2px solid red;
         padding: 10px 5px 10px 5px;
+        border-left: none;
+        border-right: none;
     }
 
     .search-icon {
