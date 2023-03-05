@@ -364,6 +364,9 @@ export const CardContextprovider = ({ children }) => {
     const [search, setSearch] = useState("")
     const handleChange = (e) => {
         setSearch(e.target.value)
+        if (e.target.value !== "") {
+            setCurrentPage(1)
+        }
     }
     const [isSearch, setIsSearch] = useState(false)
     const searchClick = () => {
