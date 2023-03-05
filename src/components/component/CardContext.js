@@ -14,7 +14,7 @@ export const CardContextprovider = ({ children }) => {
 
     const fetchData = async () => {
         if (champions.length === 0) {
-            await fetch('https://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
+            await fetch('httpss://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
                 .then(response => response.json())
                 .then(json => setChampions(json.data))
             setIsFtech(true)
@@ -235,7 +235,7 @@ export const CardContextprovider = ({ children }) => {
     }, [filteredFighter.length])
     const slicePicsFighter = filteredFighter.slice(randomFighter, randomFighter + addThreeChamp)
     const filteredFighterPics = slicePicsFighter.map((heroPics) => {
-        return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
+        return <img src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
     // CAROUSEL TANK PİCS
@@ -245,7 +245,7 @@ export const CardContextprovider = ({ children }) => {
     }, [filteredTank.length])
     const slicePicsTank = filteredTank.slice(randomTank, randomTank + addThreeChamp)
     const filteredTankPics = slicePicsTank?.map((heroPics) => {
-        return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
+        return <img src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
     // CAROUSEL MAGE PİCS
@@ -255,7 +255,7 @@ export const CardContextprovider = ({ children }) => {
     }, [filteredMage.length])
     const slicePicsMage = filteredMage.slice(randomMage, randomMage + addThreeChamp)
     const filteredMagePics = slicePicsMage?.map((heroPics) => {
-        return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
+        return <img src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
     // CAROUSEL ASSASSİN PİCS
@@ -265,7 +265,7 @@ export const CardContextprovider = ({ children }) => {
     }, [filteredAssassin.length])
     const slicePicsAssassin = filteredAssassin.slice(randomAssassin, randomAssassin + addThreeChamp)
     const filteredAssassinPics = slicePicsAssassin?.map((heroPics) => {
-        return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
+        return <img src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
     // CAROUSEL MARKSMAN PİCS
@@ -275,7 +275,7 @@ export const CardContextprovider = ({ children }) => {
     }, [filteredMarksman.length])
     const slicePicsMarksman = filteredMarksman.slice(randomMarksman, randomMarksman + addThreeChamp)
     const filteredMarksmanPics = slicePicsMarksman?.map((heroPics) => {
-        return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
+        return <img src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
     // CAROUSEL SUPPORT PİCS
@@ -285,7 +285,7 @@ export const CardContextprovider = ({ children }) => {
     }, [filteredSupport.length])
     const slicePicsSupport = filteredSupport.slice(randomSupport, randomSupport + addThreeChamp)
     const filteredSupportPics = slicePicsSupport?.map((heroPics) => {
-        return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
+        return <img src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
     })
 
     // CAROUSEL HERO PİCTURES ARRAY
@@ -294,37 +294,37 @@ export const CardContextprovider = ({ children }) => {
             id: 1,
             class: "Fighters",
             heroPics: filteredFighterPics,
-            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png"
+            img: "httpss://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png"
         },
         {
             id: 2,
             class: "Tanks",
             heroPics: filteredTankPics,
-            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png"
+            img: "httpss://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png"
         },
         {
             id: 3,
             class: "Mages",
             heroPics: filteredMagePics,
-            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png"
+            img: "httpss://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png"
         },
         {
             id: 4,
             class: "Assassins",
             heroPics: filteredAssassinPics,
-            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png"
+            img: "httpss://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png"
         },
         {
             id: 5,
             class: "Marksmans",
             heroPics: filteredMarksmanPics,
-            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png"
+            img: "httpss://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png"
         },
         {
             id: 6,
             class: "Supports",
             heroPics: filteredSupportPics,
-            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png"
+            img: "httpss://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png"
         },
     ]
     //                     + CAROUSEL PAGİNATİON +
