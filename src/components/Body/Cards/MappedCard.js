@@ -26,9 +26,9 @@ function MappedCard() {
             <div className='hero-id'>{req.id}</div>
             <div className='hero-image'>
                 {/* back */}
-                <div className="flip-card">
+                <div className="flip-card" onClick={() => handleShow(req.id, req.blurb, req.info.difficulty)}>
                     <div className="flip-card-inner">
-                        <div className='hero-image-back' onClick={() => handleShow(req.id, req.blurb, req.info.difficulty)} >
+                        <div className='hero-image-back'  >
                             <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${req.id}_0.jpg`} alt="champions" />
                             <div className='back-list'>
                                 <div className='header-back' >
