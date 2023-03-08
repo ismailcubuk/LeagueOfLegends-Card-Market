@@ -152,7 +152,7 @@ function MappedCard() {
                 {championsId !== "" ? <Modal show={show} onHide={handleClose} size="xl">
                     <div className='modal-title'>{championsId} </div>
                     <Modal.Body className='modal-body'>
-                        <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championsId}_0.jpg`} width="100%" height="100%" alt="champions" />
+                        <img loading='lazy' src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championsId}_0.jpg`} width="100%" height="100%" alt="champions" />
                         <div className='champion-skills'>
                             <div className='skill-press'>
                                 <img src={require(`../../../Images/Passive/${championsId}P.png`)} alt="" />
