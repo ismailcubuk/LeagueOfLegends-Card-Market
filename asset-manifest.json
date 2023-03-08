@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/LeagueOfLegends-Card-Market/static/css/main.a64ef157.css",
+    "main.js": "/LeagueOfLegends-Card-Market/static/js/main.221af1ea.js",
+    "index.html": "/LeagueOfLegends-Card-Market/index.html",
+    "main.a64ef157.css.map": "/LeagueOfLegends-Card-Market/static/css/main.a64ef157.css.map",
+    "main.221af1ea.js.map": "/LeagueOfLegends-Card-Market/static/js/main.221af1ea.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.a64ef157.css",
+    "static/js/main.221af1ea.js"
+  ]
+}
