@@ -14,7 +14,7 @@ export const CardContextprovider = ({ children }) => {
 
     const fetchData = async () => {
         if (champions.length === 0) {
-            await fetch('http://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
+            await fetch('https://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
                 .then(response => response.json())
                 .then(json => setChampions(json.data))
             setIsFtech(true)
