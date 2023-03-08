@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/LeagueOfLegends-Card-Market/static/css/main.a64ef157.css",
-    "main.js": "/LeagueOfLegends-Card-Market/static/js/main.6bce1485.js",
+    "main.js": "/LeagueOfLegends-Card-Market/static/js/main.70bfb5a3.js",
     "index.html": "/LeagueOfLegends-Card-Market/index.html",
     "main.a64ef157.css.map": "/LeagueOfLegends-Card-Market/static/css/main.a64ef157.css.map",
-    "main.6bce1485.js.map": "/LeagueOfLegends-Card-Market/static/js/main.6bce1485.js.map"
+    "main.70bfb5a3.js.map": "/LeagueOfLegends-Card-Market/static/js/main.70bfb5a3.js.map"
   },
   "entrypoints": [
     "static/css/main.a64ef157.css",
-    "static/js/main.6bce1485.js"
+    "static/js/main.70bfb5a3.js"
   ]
 }
