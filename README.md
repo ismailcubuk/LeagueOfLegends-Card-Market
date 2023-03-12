@@ -1,7 +1,7 @@
 <h1><strong>React App</strong></h1>
-<h1>League of Legends Card Market</h1>
+<h1> Click go to website => <a href="https://ismailcubuk.github.io/LeagueOfLegends-Card-Market/">Card Shop</a></h1>
 
-#This application create with league of legends api
+<p>This application create with league of legends api</p>
 <p>30 dolar money with buy cards </p>
 <p>Carousel champions always diffrent </p>
 <p>Role filter buttons synchronization with carousel </p>
