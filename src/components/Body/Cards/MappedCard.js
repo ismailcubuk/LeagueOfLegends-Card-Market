@@ -1,193 +1,173 @@
 import './Cards.css';
-import React, { useContext, useState } from 'react'
-import CardContext from '../../component/CardContext'
+import React, { useContext, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
-import attack from '../../../Images/Stats/attack.png'
-import defanse from '../../../Images/Stats/defanse.png'
-import magic from '../../../Images/Stats/magic.png'
+import CardContext from '../../component/CardContext';
+import attack from '../../../Images/Stats/attack.png';
+import defanse from '../../../Images/Stats/defanse.png';
+import magic from '../../../Images/Stats/magic.png';
 import Alert from '../Alert/Alert';
 
-function MappedCard() {
-    const { displayedIChampions, myCardsArr, buyClick, sellClick, handleChange, isSearch } = useContext(CardContext)
-    const [story, setStory] = useState("")
-    const [show, setShow] = useState(false);
-    const [modalPrice, setModalPrice] = useState()
-    const [championsId, setChampionsId] = useState("")
-    const handleClose = () => setShow(false);
-    const handleShow = (champID, story, modalPrice) => {
-        setChampionsId(champID)
-        setStory(story)
-        setShow(true);
-        setModalPrice(modalPrice)
-    }
+const championLoadingImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${id}_0.jpg`;
+const championSplashImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_0.jpg`;
 
-    const myCards = myCardsArr.map((req) => {
-        return <div className='hero-border' key={req.id} id={req.id}>
-            <div className='hero-id'>{req.id}</div>
-            <div className='hero-image'>
-                {/* back */}
-                <div className="flip-card" onClick={() => handleShow(req.id, req.blurb, req.info.difficulty)}>
-                    <div className="flip-card-inner">
-                        <div className='hero-image-back'  >
-                            <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${req.id}_0.jpg`} alt="champions" />
-                            <div className='back-list'>
-                                <div className='header-back' >
-                                    <div className='hero-title'>{req.title}</div>
-                                    <div className='info'>
-                                        <div>
-                                            <img src={attack} alt="" />
-                                            <div className='info-img'>{req.info.attack}</div>
-                                        </div>
-                                        <div>
-                                            <img src={defanse} alt="" />
-                                            <div className='info-img'>{req.info.defense}</div>
-                                        </div>
-                                        <div>
-                                            <img src={magic} alt="" />
-                                            <div className='info-img'>{req.info.magic}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className='hero-image'>
-                            <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${req.id}_0.jpg`} alt="champions" />
-                            <div className='hero-money'>${req.info.difficulty}</div>
-                            <div className='hero-tags'>
-                                {(req.tags).map(
-                                    a => a === "Fighter"
-                                        ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" width="40px" height="40px" alt="" />
-                                        : a === "Tank" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" width="40px" height="40px" alt="" />
-                                            : a === "Mage" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png" width="40px" height="40px" alt="" />
-                                                : a === "Assassin" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png" width="40px" height="40px" alt="" />
-                                                    : a === "Marksman" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png" width="40px" height="40px" alt="" />
-                                                        : a === "Support" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png" width="40px" height="40px" alt="" />
-                                                            : a)}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className='card-trade'>
-                <button className='sell-button' onClick={() => sellClick(req)}>SELL</button>
-            </div>
-        </div>
-    })
-    const mapped = displayedIChampions.map((hero) => {
-        return <div className='hero-border' key={hero.id} id={hero.id}>
-            <div className='hero-id'>{hero.id}</div>
-            <div className='hero-image'>
-                {/* back */}
-                <div className="flip-card" onClick={() => handleShow(hero.id, hero.blurb, hero.info.difficulty)}>
-                    <div className="flip-card-inner">
-                        <div className='hero-image-back'  >
-                            <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
-                            <div className='back-list'>
-                                <div className='header-back' >
-                                    <div className='hero-title'>{hero.title}</div>
-                                    <div className='info'>
-                                        <div>
-                                            <img src={attack} alt="" />
-                                            <div className='info-img'>{hero.info.attack}</div>
-                                        </div>
-                                        <div>
-                                            <img src={defanse} alt="" />
-                                            <div className='info-img'>{hero.info.defense}</div>
-                                        </div>
-                                        <div>
-                                            <img src={magic} alt="" />
-                                            <div className='info-img'>{hero.info.magic}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {/* front */}
-                        <div className='hero-image'>
-                            <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${hero.id}_0.jpg`} alt="champions" />
-                            <div className='hero-money'>${hero.info.difficulty}</div>
-                            <div className='hero-tags'>
-                                {(hero.tags).map(
-                                    a => a === "Fighter"
-                                        ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png" width="40px" height="40px" alt="" />
-                                        : a === "Tank" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png" width="40px" height="40px" alt="" />
-                                            : a === "Mage" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png" width="40px" height="40px" alt="" />
-                                                : a === "Assassin" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png" width="40px" height="40px" alt="" />
-                                                    : a === "Marksman" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png" width="40px" height="40px" alt="" />
-                                                        : a === "Support" ? <img src="https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png" width="40px" height="40px" alt="" />
-                                                            : a)}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className='card-trade'>
-                <button className='buy-button' onClick={() => buyClick(hero)}>BUY</button>
-            </div>
-        </div >
-    })
+function ChampionCard({ champion, actionLabel, actionClass, onAction, onOpen, roleIcons }) {
     return (
-        <div className='right-main'>
-            <div className='search-mobile'>
-                {isSearch === true ? <input type="text" spellCheck="false" placeholder='Search Champ..' onChange={handleChange} /> : null}
-            </div>
-            <div className='parent'>
-                <div className='my-cards'>
-                    <div className='cards-header'>
-                        <h1 className='my-cards-header'>MY CARDS</h1>
-                    </div>
-                    <div className='mapped-my-cards'>
-                        {myCards}
-                    </div>
-                </div>
-                <div className='shop'>
-                    <div className='cards-header'>
-                        <h1 className='shop-cards-header'>SHOP</h1>
-                    </div>
-                    <div className='mapped-card'>
-                        {mapped}
-                    </div>
-                </div>
-                {championsId !== "" ? <Modal show={show} onHide={handleClose} size="xl">
-                    <div className='modal-title'>{championsId} </div>
-                    <Modal.Body className='modal-body'>
-                        <img loading='lazy' src={`http://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championsId}_0.jpg`} width="100%" height="100%" alt="champions" />
-                        <div className='champion-skills'>
-                            <div className='skill-press'>
-                                <img src={require(`../../../Images/Passive/${championsId}P.png`)} alt="" />
-                                <div className='skill-button'>P</div>
+        <article className='hero-border' id={champion.id}>
+            <div className='hero-id'>{champion.id}</div>
+            <button
+                type='button'
+                className='flip-card'
+                onClick={() => onOpen(champion.id, champion.blurb, champion.info.difficulty)}
+                aria-label={`Open ${champion.name} details`}
+            >
+                <div className='flip-card-inner'>
+                    <div className='hero-image-back'>
+                        <img src={championLoadingImage(champion.id)} loading='lazy' alt='' />
+                        <div className='back-list'>
+                            <div className='header-back'>
+                                <div className='hero-title'>{champion.title}</div>
+                                <div className='info'>
+                                    <div>
+                                        <img src={attack} alt='Attack' />
+                                        <div className='info-img'>{champion.info.attack}</div>
+                                    </div>
+                                    <div>
+                                        <img src={defanse} alt='Defense' />
+                                        <div className='info-img'>{champion.info.defense}</div>
+                                    </div>
+                                    <div>
+                                        <img src={magic} alt='Magic' />
+                                        <div className='info-img'>{champion.info.magic}</div>
+                                    </div>
+                                </div>
                             </div>
-                            <div className='skill-press'>
-                                <img src={require(`../../../Images/Skills/${championsId}Q.png`)} alt="" />
-                                <div className='skill-button'>Q</div>
-                            </div>
-                            <div className='skill-press'>
-                                <img src={require(`../../../Images/Skills/${championsId}W.png`)} alt="" />
-                                <div className='skill-button'>W</div>
-                            </div>
-                            <div className='skill-press'>
-                                <img src={require(`../../../Images/Skills/${championsId}E.png`)} alt="" />
-                                <div className='skill-button'>E</div>
-                            </div>
+                        </div>
+                    </div>
 
-                            <div className='skill-press'>
-                                <img src={require(`../../../Images/Skills/${championsId}R.png`)} alt="" />
-                                <div className='skill-button'>R</div>
-                            </div>
+                    <div className='hero-image'>
+                        <img src={championLoadingImage(champion.id)} loading='lazy' alt={champion.name} />
+                        <div className='hero-money'>${champion.info.difficulty}</div>
+                        <div className='hero-tags'>
+                            {champion.tags.map((tag) => (
+                                <img key={tag} src={roleIcons[tag]} width='40' height='40' alt={tag} />
+                            ))}
                         </div>
-                        <div className='modal-price'>
-                            ${modalPrice}
-                        </div>
-                        <div className='short-story'>
-                            {story}
-                        </div>
-                    </Modal.Body>
-                </Modal> : null}
-                <Alert />
+                    </div>
+                </div>
+            </button>
+            <div className='card-trade'>
+                <button className={actionClass} onClick={() => onAction(champion)}>{actionLabel}</button>
             </div>
-        </div>
-    )
+        </article>
+    );
 }
 
-export default MappedCard
+function MappedCard() {
+    const {
+        displayedIChampions,
+        myCardsArr,
+        buyClick,
+        sellClick,
+        handleChange,
+        isSearch,
+        roleIcons,
+    } = useContext(CardContext);
+    const [selectedChampion, setSelectedChampion] = useState(null);
+
+    const handleClose = () => setSelectedChampion(null);
+    const handleShow = (id, story, price) => {
+        setSelectedChampion({ id, story, price });
+    };
+
+    return (
+        <main className='right-main'>
+            <div className='search-mobile'>
+                {isSearch ? (
+                    <input type='text' spellCheck='false' placeholder='Search champion' onChange={handleChange} />
+                ) : null}
+            </div>
+            <div className='parent'>
+                <section className='my-cards' aria-labelledby='my-cards-title'>
+                    <div className='cards-header'>
+                        <h1 className='my-cards-header' id='my-cards-title'>My Cards</h1>
+                    </div>
+                    <div className='mapped-my-cards'>
+                        {myCardsArr.length > 0 ? (
+                            myCardsArr.map((champion) => (
+                                <ChampionCard
+                                    key={champion.id}
+                                    champion={champion}
+                                    actionLabel='Sell'
+                                    actionClass='sell-button'
+                                    onAction={sellClick}
+                                    onOpen={handleShow}
+                                    roleIcons={roleIcons}
+                                />
+                            ))
+                        ) : (
+                            <div className='empty-state'>Your collection is waiting for its first champion.</div>
+                        )}
+                    </div>
+                </section>
+
+                <section className='shop' aria-labelledby='shop-title'>
+                    <div className='cards-header'>
+                        <h1 className='shop-cards-header' id='shop-title'>Shop</h1>
+                    </div>
+                    <div className='mapped-card'>
+                        {displayedIChampions.length > 0 ? (
+                            displayedIChampions.map((champion) => (
+                                <ChampionCard
+                                    key={champion.id}
+                                    champion={champion}
+                                    actionLabel='Buy'
+                                    actionClass='buy-button'
+                                    onAction={buyClick}
+                                    onOpen={handleShow}
+                                    roleIcons={roleIcons}
+                                />
+                            ))
+                        ) : (
+                            <div className='empty-state'>No champions match the current filters.</div>
+                        )}
+                    </div>
+                </section>
+
+                {selectedChampion ? (
+                    <Modal show onHide={handleClose} size='xl' centered>
+                        <div className='modal-title'>{selectedChampion.id}</div>
+                        <Modal.Body className='modal-body'>
+                            <img
+                                loading='lazy'
+                                src={championSplashImage(selectedChampion.id)}
+                                width='100%'
+                                height='100%'
+                                alt={selectedChampion.id}
+                            />
+                            <div className='champion-skills'>
+                                {['P', 'Q', 'W', 'E', 'R'].map((skill) => (
+                                    <div className='skill-press' key={skill}>
+                                        <img
+                                            src={
+                                                skill === 'P'
+                                                    ? require(`../../../Images/Passive/${selectedChampion.id}P.png`)
+                                                    : require(`../../../Images/Skills/${selectedChampion.id}${skill}.png`)
+                                            }
+                                            alt={`${selectedChampion.id} ${skill}`}
+                                        />
+                                        <div className='skill-button'>{skill}</div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className='modal-price'>${selectedChampion.price}</div>
+                            <div className='short-story'>{selectedChampion.story}</div>
+                        </Modal.Body>
+                    </Modal>
+                ) : null}
+                <Alert />
+            </div>
+        </main>
+    );
+}
+
+export default MappedCard;

@@ -1,439 +1,246 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 
 const CardContext = createContext();
 
+const DDRAGON_VERSION = "13.1.1";
+const CHAMPIONS_PER_PAGE = 16;
+const EXCLUDED_CHAMPIONS = new Set(["akshan", "rell", "vex", "seraphine"]);
+
+const rolePages = {
+    Fighter: 1,
+    Tank: 2,
+    Mage: 3,
+    Assassin: 4,
+    Marksman: 5,
+    Support: 6,
+};
+
+const roleIcons = {
+    Fighter: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png",
+    Tank: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png",
+    Mage: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png",
+    Assassin: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png",
+    Marksman: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png",
+    Support: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png",
+};
+
+const getStoredJson = (key, fallback) => {
+    try {
+        return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
+    } catch {
+        return fallback;
+    }
+};
+
+const activeStyle = (isActive) => ({
+    marginLeft: isActive ? "-4px" : "",
+    opacity: isActive ? 1 : "",
+    borderLeft: isActive ? "4px solid #d4af37" : "",
+    borderTop: isActive ? "none" : "",
+    paddingLeft: isActive ? "10px" : "",
+});
+
+const randomStart = (length) => {
+    if (length <= 3) {
+        return 0;
+    }
+
+    return Math.floor(Math.random() * (length - 2));
+};
+
 export const CardContextprovider = ({ children }) => {
-    const [champions, setChampions] = useState(JSON.parse(localStorage.getItem('char') || '[]'))
-    const [isfetch, setIsFtech] = useState(false)
-    const [cards, setCards] = useState([])
-    const moneyFromLocalStorage = JSON.parse(localStorage.getItem('money') || '[30]')
-    const [money, setMoney] = useState(moneyFromLocalStorage)
-    useEffect(() => {
-        localStorage.setItem("money", JSON.stringify(money))
-    }, [money])
+    const storedMoney = getStoredJson("money", 30);
+    const initialMoney = Array.isArray(storedMoney) ? Number(storedMoney[0] || 30) : Number(storedMoney || 30);
+    const storedCards = getStoredJson("char", []);
 
-    const fetchData = async () => {
-        if (champions.length === 0) {
-            await fetch('https://ddragon.leagueoflegends.com/cdn/13.1.1/data/en_US/champion.json')
-                .then(response => response.json())
-                .then(json => setChampions(json.data))
-            setIsFtech(true)
-        }
-    }
-
-    useEffect(() => {
-        fetchData();
-    }, [isfetch])
-
-    const [roleFilter, SetRoleFilter] = useState("")
-
-    //               + ALLROLES +
-    const [activeAllRoles, setActiveAllRoles] = useState(true)
-    const clickedAllRoles = {
-        marginLeft: activeAllRoles ? "-4px" : "",
-        opacity: activeAllRoles ? 1 : "",
-        borderLeft: activeAllRoles ? "4px solid red" : "",
-        borderTop: activeAllRoles ? "none" : "",
-        paddingLeft: activeAllRoles ? "10px" : ""
-    }
-    const allRoleCLick = () => {
-        SetRoleFilter("")
-        setActiveAllRoles(true)
-        setActiveFighter(false)
-        setActiveTank(false)
-        setActiveMage(false)
-        setActiveAssassin(false)
-        setActiveMarksman(false)
-        setActiveSupport(false)
-        setCarouselPage(1)
-        setCurrentPage(1)
-    }
-    //               + FİGHTER +
-    const [activeFighter, setActiveFighter] = useState(false)
-    const clickedFighter = {
-        marginLeft: activeFighter ? "-4px" : "",
-        opacity: activeFighter ? 1 : "",
-        borderLeft: activeFighter ? "4px solid red" : "",
-        borderTop: activeFighter ? "none" : "",
-    }
-    const fighterClick = () => {
-        SetRoleFilter("Fighter")
-        setActiveAllRoles(false)
-        setActiveFighter(true)
-        setActiveTank(false)
-        setActiveMage(false)
-        setActiveAssassin(false)
-        setActiveMarksman(false)
-        setActiveSupport(false)
-        setCarouselPage(1)
-        setCurrentPage(1)
-    }
-    //                 + TANK +
-    const [activeTank, setActiveTank] = useState(false)
-    const clickedTank = {
-        marginLeft: activeTank ? "-4px" : "",
-        opacity: activeTank ? 1 : "",
-        borderLeft: activeTank ? "4px solid red" : "",
-        borderTop: activeTank ? "none" : "",
-    }
-    const tankClick = () => {
-        SetRoleFilter("Tank")
-        setActiveAllRoles(false)
-        setActiveFighter(false)
-        setActiveTank(true)
-        setActiveMage(false)
-        setActiveAssassin(false)
-        setActiveMarksman(false)
-        setActiveSupport(false)
-        setCarouselPage(2)
-        setCurrentPage(1)
-    }
-    //                 + MAGE +
-    const [activeMage, setActiveMage] = useState(false)
-    const clickedMage = {
-        marginLeft: activeMage ? "-4px" : "",
-        opacity: activeMage ? 1 : "",
-        borderLeft: activeMage ? "4px solid red" : "",
-        borderTop: activeMage ? "none" : "",
-    }
-    const mageClick = () => {
-        SetRoleFilter("Mage")
-        setActiveAllRoles(false)
-        setActiveFighter(false)
-        setActiveTank(false)
-        setActiveMage(true)
-        setActiveAssassin(false)
-        setActiveMarksman(false)
-        setActiveSupport(false)
-        setCarouselPage(3)
-        setCurrentPage(1)
-
-    }
-    //                 + ASSASSİN +
-    const [activeAssassin, setActiveAssassin] = useState(false)
-    const clickedAssassin = {
-        marginLeft: activeAssassin ? "-4px" : "",
-        opacity: activeAssassin ? 1 : "",
-        borderLeft: activeAssassin ? "4px solid red" : "",
-        borderTop: activeAssassin ? "none" : "",
-    }
-    const assassinClick = () => {
-        SetRoleFilter("Assassin")
-        setActiveAllRoles(false)
-        setActiveFighter(false)
-        setActiveTank(false)
-        setActiveMage(false)
-        setActiveAssassin(true)
-        setActiveMarksman(false)
-        setActiveSupport(false)
-        setCarouselPage(4)
-        setCurrentPage(1)
-    }
-    //               + MARKSMAN +
-    const [activeMarksman, setActiveMarksman] = useState(false)
-    const clickedMarksman = {
-        marginLeft: activeMarksman ? "-4px" : "",
-        opacity: activeMarksman ? 1 : "",
-        borderLeft: activeMarksman ? "4px solid red" : "",
-        borderTop: activeMarksman ? "none" : "",
-    }
-    const marksmanClick = () => {
-        SetRoleFilter("Marksman")
-        setActiveAllRoles(false)
-        setActiveFighter(false)
-        setActiveTank(false)
-        setActiveMage(false)
-        setActiveAssassin(false)
-        setActiveMarksman(true)
-        setActiveSupport(false)
-        setCarouselPage(5)
-        setCurrentPage(1)
-    }
-    //               + SUPPORT +
-    const [activeSupport, setActiveSupport] = useState(false)
-    const clickedSupport = {
-        marginLeft: activeSupport ? "-4px" : "",
-        opacity: activeSupport ? 1 : "",
-        borderLeft: activeSupport ? "4px solid red" : "",
-        borderTop: activeSupport ? "none" : "",
-    }
-    const supportClick = () => {
-        SetRoleFilter("Support")
-        setActiveAllRoles(false)
-        setActiveFighter(false)
-        setActiveTank(false)
-        setActiveMage(false)
-        setActiveAssassin(false)
-        setActiveMarksman(false)
-        setActiveSupport(true)
-        setCarouselPage(6)
-        setCurrentPage(1)
-    }
-    //              + UP MONEY +
-    const [filterUpMoney, setFilterUpMoney] = useState(false)
-    const filterUpMoneyActive = {
-        marginLeft: filterUpMoney ? "-4px" : "",
-        opacity: filterUpMoney ? 1 : "",
-        borderLeft: filterUpMoney ? "4px solid red" : "",
-        borderTop: filterUpMoney ? "none" : "",
-    }
-    const filterUpMoneyClick = () => {
-        setFilterUpMoney(true);
-        setFilterDownMoney(false);
-        setUnFilteredMoney(false)
-    }
-    //             + DOWN MONEY +
-    const [filterDownMoney, setFilterDownMoney] = useState(false)
-    const filterDownMoneyActive = {
-        marginLeft: filterDownMoney ? "-4px" : "",
-        opacity: filterDownMoney ? 1 : "",
-        borderLeft: filterDownMoney ? "4px solid red" : "",
-        borderTop: filterDownMoney ? "none" : "",
-    }
-    const filterDownMoneyClick = () => {
-        setFilterDownMoney(true);
-        setFilterUpMoney(false)
-        setUnFilteredMoney(false)
-    }
-    //             + UNFİLTERED MONEY +
-    const [unFilteredMoney, setUnFilteredMoney] = useState(true)
-    const unFilteredMoneyActive = {
-        marginLeft: unFilteredMoney ? "-4px" : "",
-        opacity: unFilteredMoney ? 1 : "",
-        borderLeft: unFilteredMoney ? "4px solid red" : "",
-        borderTop: unFilteredMoney ? "none" : "",
-    }
-    const unFilteredMoneyClick = () => {
-        setUnFilteredMoney(true)
-        setFilterDownMoney(false);
-        setFilterUpMoney(false)
-    }
-
-    //                + DELETE UNREADVALUES +
-    const result = (Object.keys(champions).map((key) => champions[key]));
-    const filtered = result.filter(filtered =>
-        filtered.id.toLowerCase().includes("") -
-        (filtered.id.toLowerCase().includes("akshan") +
-            filtered.id.toLowerCase().includes("rell") +
-            filtered.id.toLowerCase().includes("vex") +
-            filtered.id.toLowerCase().includes("seraphine"))
-    )
-
-    //                  + CAROUSEL +
-    const [randomFighter, setRandomFighter] = useState()
-    const [randomTank, setRandomTank] = useState()
-    const [randomMage, setRandomMage] = useState()
-    const [randomAssassin, setRandomAssassin] = useState()
-    const [randomMarksman, setRandomMarksman] = useState()
-    const [randomSupport, setRandomSupport] = useState()
-
-    const addThreeChamp = 3
-    // CAROUSEL FİGHTER PİCS
-    const filteredFighter = filtered.filter(item => item.tags.some(tags => tags.includes("Fighter")))
-    useEffect(() => {
-        setRandomFighter(Math.floor(Math.random() * (filteredFighter.length - 4)))
-    }, [filteredFighter.length])
-    const slicePicsFighter = filteredFighter.slice(randomFighter, randomFighter + addThreeChamp)
-    const filteredFighterPics = slicePicsFighter.map((heroPics) => {
-        return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
-    })
-
-    // CAROUSEL TANK PİCS
-    const filteredTank = filtered.filter(item => item.tags.some(tags => tags.includes("Tank")))
-    useEffect(() => {
-        setRandomTank(Math.floor(Math.random() * (filteredTank.length - 4)))
-    }, [filteredTank.length])
-    const slicePicsTank = filteredTank.slice(randomTank, randomTank + addThreeChamp)
-    const filteredTankPics = slicePicsTank?.map((heroPics) => {
-        return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
-    })
-
-    // CAROUSEL MAGE PİCS
-    const filteredMage = filtered.filter(item => item.tags.some(tags => tags.includes("Mage")))
-    useEffect(() => {
-        setRandomMage(Math.floor(Math.random() * (filteredMage.length - 4)))
-    }, [filteredMage.length])
-    const slicePicsMage = filteredMage.slice(randomMage, randomMage + addThreeChamp)
-    const filteredMagePics = slicePicsMage?.map((heroPics) => {
-        return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
-    })
-
-    // CAROUSEL ASSASSİN PİCS
-    const filteredAssassin = filtered.filter(item => item.tags.some(tags => tags.includes("Assassin")))
-    useEffect(() => {
-        setRandomAssassin(Math.floor(Math.random() * (filteredAssassin.length - 4)))
-    }, [filteredAssassin.length])
-    const slicePicsAssassin = filteredAssassin.slice(randomAssassin, randomAssassin + addThreeChamp)
-    const filteredAssassinPics = slicePicsAssassin?.map((heroPics) => {
-        return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
-    })
-
-    // CAROUSEL MARKSMAN PİCS
-    const filteredMarksman = filtered.filter(item => item.tags.some(tags => tags.includes("Marksman")))
-    useEffect(() => {
-        setRandomMarksman(Math.floor(Math.random() * (filteredMarksman.length - 4)))
-    }, [filteredMarksman.length])
-    const slicePicsMarksman = filteredMarksman.slice(randomMarksman, randomMarksman + addThreeChamp)
-    const filteredMarksmanPics = slicePicsMarksman?.map((heroPics) => {
-        return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
-    })
-
-    // CAROUSEL SUPPORT PİCS
-    const filteredSupport = filtered.filter(item => item.tags.some(tags => tags.includes("Support")))
-    useEffect(() => {
-        setRandomSupport(Math.floor(Math.random() * (filteredSupport.length - 4)))
-    }, [filteredSupport.length])
-    const slicePicsSupport = filteredSupport.slice(randomSupport, randomSupport + addThreeChamp)
-    const filteredSupportPics = slicePicsSupport?.map((heroPics) => {
-        return <img src={`http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`} width='150px' height='250px' alt="champions" />
-    })
-
-    // CAROUSEL HERO PİCTURES ARRAY
-    const heroPicsMap = [
-        {
-            id: 1,
-            class: "Fighters",
-            heroPics: filteredFighterPics,
-            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-fighter.png"
-        },
-        {
-            id: 2,
-            class: "Tanks",
-            heroPics: filteredTankPics,
-            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-tank.png"
-        },
-        {
-            id: 3,
-            class: "Mages",
-            heroPics: filteredMagePics,
-            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-mage.png"
-        },
-        {
-            id: 4,
-            class: "Assassins",
-            heroPics: filteredAssassinPics,
-            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-assassin.png"
-        },
-        {
-            id: 5,
-            class: "Marksmans",
-            heroPics: filteredMarksmanPics,
-            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-marksman.png"
-        },
-        {
-            id: 6,
-            class: "Supports",
-            heroPics: filteredSupportPics,
-            img: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png"
-        },
-    ]
-    //                     + CAROUSEL PAGİNATİON +
+    const [champions, setChampions] = useState([]);
+    const [cards, setCards] = useState(Array.isArray(storedCards) ? storedCards : Object.values(storedCards));
+    const [money, setMoney] = useState(initialMoney);
+    const [roleFilter, setRoleFilter] = useState("");
+    const [priceFilter, setPriceFilter] = useState("default");
+    const [search, setSearch] = useState("");
+    const [isSearch, setIsSearch] = useState(false);
+    const [filteredId, setFilteredId] = useState([]);
+    const [myCardsArr, setMyCardsArr] = useState(getStoredJson("myCardsArr", []));
+    const [alertt, setAlertt] = useState(false);
     const [carouselPage, setCarouselPage] = useState(1);
-    const startIndexCarousel = (carouselPage - 1) * 1;
-    const endIndexCarousel = startIndexCarousel + 1;
-    const displayedIChampionsCarousel = heroPicsMap.slice(startIndexCarousel, endIndexCarousel);
-    const totalPageCarousel = Math.ceil(heroPicsMap.length / 1)
-    const pageNumbersCarousel = Array.from({ length: totalPageCarousel }, (_, index) => index + 1)
+    const [currentPage, setCurrentPage] = useState(1);
+    const [carouselStarts, setCarouselStarts] = useState({});
 
-    const dotPageClick = (page) => {
-        setCarouselPage(page)
-    }
+    useEffect(() => {
+        localStorage.setItem("money", JSON.stringify(money));
+    }, [money]);
 
-    const dotPageNextClick = () => {
-        setCarouselPage(carouselPage + 1);
-    };
-    const dotPagePrevClick = () => {
-        setCarouselPage(carouselPage - 1);
-    }
+    useEffect(() => {
+        localStorage.setItem("myCardsArr", JSON.stringify(myCardsArr));
+    }, [myCardsArr]);
+
+    useEffect(() => {
+        localStorage.setItem("char", JSON.stringify(cards));
+    }, [cards]);
+
+    useEffect(() => {
+        if (cards.length > 0) {
+            setChampions(cards);
+            return;
+        }
+
+        const controller = new AbortController();
+
+        fetch(`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/data/en_US/champion.json`, {
+            signal: controller.signal,
+        })
+            .then((response) => response.json())
+            .then((json) => {
+                const fetchedChampions = Object.values(json.data || {}).filter(
+                    (champion) => !EXCLUDED_CHAMPIONS.has(champion.id.toLowerCase())
+                );
+                setChampions(fetchedChampions);
+                setCards(fetchedChampions);
+            })
+            .catch((error) => {
+                if (error.name !== "AbortError") {
+                    console.error("Champion data could not be loaded", error);
+                }
+            });
+
+        return () => controller.abort();
+    }, [cards.length]);
+
+    const filtered = useMemo(() => {
+        const source = champions.length > 0 ? champions : cards;
+
+        return source.filter((champion) => !EXCLUDED_CHAMPIONS.has(champion.id.toLowerCase()));
+    }, [cards, champions]);
+
+    const groupedByRole = useMemo(() => (
+        Object.keys(rolePages).reduce((groups, role) => {
+            groups[role] = filtered.filter((item) => item.tags.some((tag) => tag === role));
+            return groups;
+        }, {})
+    ), [filtered]);
+
+    useEffect(() => {
+        const starts = Object.keys(rolePages).reduce((acc, role) => {
+            acc[role] = randomStart(groupedByRole[role]?.length || 0);
+            return acc;
+        }, {});
+
+        setCarouselStarts(starts);
+    }, [groupedByRole]);
+
+    const heroPicsMap = useMemo(() => (
+        Object.keys(rolePages).map((role) => {
+            const start = carouselStarts[role] || 0;
+            const championPics = (groupedByRole[role] || []).slice(start, start + 3);
+
+            return {
+                id: rolePages[role],
+                class: role === "Marksman" ? "Marksmen" : `${role}s`,
+                heroPics: championPics.map((heroPics) => (
+                    <img
+                        key={heroPics.id}
+                        src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`}
+                        width="150"
+                        height="250"
+                        loading="lazy"
+                        alt={heroPics.name}
+                    />
+                )),
+                img: roleIcons[role],
+            };
+        })
+    ), [carouselStarts, groupedByRole]);
+
+    const pageNumbersCarousel = useMemo(() => (
+        Array.from({ length: heroPicsMap.length }, (_, index) => index + 1)
+    ), [heroPicsMap.length]);
+
+    const displayedIChampionsCarousel = useMemo(() => (
+        heroPicsMap.slice(carouselPage - 1, carouselPage)
+    ), [carouselPage, heroPicsMap]);
+
+    const handleRoleClick = useCallback((role) => {
+        setRoleFilter(role);
+        setCarouselPage(role ? rolePages[role] : 1);
+        setCurrentPage(1);
+    }, []);
+
+    const handleChange = useCallback((event) => {
+        setSearch(event.target.value);
+        setCurrentPage(1);
+    }, []);
+
+    const filteredChampions = useMemo(() => {
+        const normalizedSearch = search.trim().toLowerCase();
+
+        const searched = cards.filter((champion) => (
+            champion.id.toLowerCase().includes(normalizedSearch) ||
+            champion.name.toLowerCase().includes(normalizedSearch)
+        ));
+
+        const roleFiltered = roleFilter
+            ? searched.filter((champion) => champion.tags.some((tag) => tag === roleFilter))
+            : searched;
+
+        const sorted = [...roleFiltered];
+
+        if (priceFilter === "high") {
+            sorted.sort((a, b) => b.info.difficulty - a.info.difficulty);
+        }
+
+        if (priceFilter === "low") {
+            sorted.sort((a, b) => a.info.difficulty - b.info.difficulty);
+        }
+
+        return sorted;
+    }, [cards, priceFilter, roleFilter, search]);
+
+    const totalPage = Math.ceil(filteredChampions.length / CHAMPIONS_PER_PAGE);
+    const pageNumbers = useMemo(() => (
+        Array.from({ length: totalPage }, (_, index) => index + 1)
+    ), [totalPage]);
+
+    const displayedIChampions = useMemo(() => {
+        const startIndex = (currentPage - 1) * CHAMPIONS_PER_PAGE;
+
+        return filteredChampions.slice(startIndex, startIndex + CHAMPIONS_PER_PAGE);
+    }, [currentPage, filteredChampions]);
+
+    const sellClick = useCallback((req) => {
+        setCards((prevCards) => [req, ...prevCards]);
+        setMyCardsArr((prevCards) => prevCards.filter((card) => card.id !== req.id));
+        setMoney((currentMoney) => currentMoney + req.info.difficulty);
+    }, []);
+
+    const buyClick = useCallback((hero) => {
+        setMoney((currentMoney) => {
+            if (hero.info.difficulty > currentMoney) {
+                setAlertt(true);
+                return currentMoney;
+            }
+
+            setMyCardsArr((prevCards) => [hero, ...prevCards]);
+            setFilteredId((prevIds) => [hero.id, ...prevIds]);
+            setCards((prevCards) => prevCards.filter((card) => card.id !== hero.id));
+            setAlertt(false);
+
+            return currentMoney - hero.info.difficulty;
+        });
+    }, []);
 
     const dots = pageNumbersCarousel.map((page) => (
         <button
             key={page}
             disabled={page === carouselPage}
-            onClick={() => dotPageClick(page)}
-        > {page} </button>
-    ))
+            onClick={() => setCarouselPage(page)}
+            aria-label={`Show carousel page ${page}`}
+        />
+    ));
 
-    //                 + ARRAY TO STATE +
-
-    useEffect(() => {
-        setCards(filtered)
-    }, [isfetch])
-
-    //                + FİLTER SİDE BAR +
-    const [search, setSearch] = useState("")
-    const handleChange = (e) => {
-        setSearch(e.target.value)
-        if (e.target.value !== "") {
-            setCurrentPage(1)
-        }
-    }
-    const [isSearch, setIsSearch] = useState(false)
-    const searchClick = () => {
-        setIsSearch(!isSearch)
-    }
-    const filteredChamp = cards.filter(filteredText =>
-        filteredText.id.toLowerCase().includes(search.toLowerCase()))
-
-    const filteredTags = filteredChamp.filter(item =>
-        item.tags.some(tags => tags.includes(roleFilter)))
-
-    const newArray = filterUpMoney === true ?
-        filteredTags.sort(function (a, b) { return b.info.difficulty - a.info.difficulty })
-        : filterDownMoney === true ?
-            filteredTags.sort(function (a, b) { return a.info.difficulty - b.info.difficulty })
-            : unFilteredMoney === true ? filteredTags
-                : filteredTags
-
-    //                + BUY SOLD CLİCK +
-    const [filteredId, setFilteredId] = useState([])
-    const myCardsArrFromLocalStorage = JSON.parse(localStorage.getItem('myCardsArr') || '[]')
-    const [myCardsArr, setMyCardsArr] = useState(myCardsArrFromLocalStorage)
-    useEffect(() => {
-        localStorage.setItem("myCardsArr", JSON.stringify(myCardsArr))
-    }, [myCardsArr])
-
-    const [alertt, setAlertt] = useState(false)
-    const sellClick = (req) => {
-        const newcard = myCardsArr.find((item) => item.id === req.id)
-        setCards([newcard, ...cards])
-        setMyCardsArr([...myCardsArr.filter((card) => card.id !== req.id)])
-        setMoney(money + req.info.difficulty)
-    }
-    const buyClick = (hero) => {
-        setMyCardsArr(hero.info.difficulty > money ? [...myCardsArr] : [hero, ...myCardsArr])
-        setFilteredId([hero.id, ...filteredId])
-        setCards(hero.info.difficulty > money ? [...cards] : [...cards.filter((card) => card.id !== hero.id)])
-        setMoney(money >= hero.info.difficulty ? money - hero.info.difficulty : money)
-        setAlertt(money >= hero.info.difficulty ? false : true)
-    }
-
-    //                + PAGİNATİON +
-    const championsPerPage = 12
-    const [currentPage, setCurrentPage] = useState(1);
-    const startIndex = (currentPage - 1) * championsPerPage;
-    const endIndex = startIndex + championsPerPage;
-    const displayedIChampions = newArray.slice(startIndex, endIndex);
-
-    useEffect(() => {
-        localStorage.setItem("char", JSON.stringify(cards))
-    }, [cards])
-
-    const totalPage = Math.ceil((newArray.length) / championsPerPage)
-    const pageNumbers = Array.from({ length: totalPage }, (_, index) => index + 1)
-    const handlePrevClick = () => {
-        setCurrentPage(currentPage - 1);
-    };
-
-    const handleNextClick = () => {
-        setCurrentPage(currentPage + 1);
-    };
-    const handlePageClick = (page) => {
-        setCurrentPage(page)
-    }
     const data = {
         isSearch,
-        searchClick,
+        searchClick: () => setIsSearch((current) => !current),
         setAlertt,
         alertt,
         money,
@@ -441,8 +248,8 @@ export const CardContextprovider = ({ children }) => {
         myCardsArr,
         filteredId,
         buyClick,
-        dotPageNextClick,
-        dotPagePrevClick,
+        dotPageNextClick: () => setCarouselPage((page) => Math.min(page + 1, heroPicsMap.length)),
+        dotPagePrevClick: () => setCarouselPage((page) => Math.max(page - 1, 1)),
         dots,
         displayedIChampionsCarousel,
         setCarouselPage,
@@ -451,39 +258,41 @@ export const CardContextprovider = ({ children }) => {
         filtered,
         displayedIChampions,
         totalPage,
-        handlePageClick,
+        handlePageClick: setCurrentPage,
         pageNumbers,
         currentPage,
-        championsPerPage,
-        handlePrevClick,
-        handleNextClick,
-        unFilteredMoneyActive,
-        filterDownMoneyActive,
-        filterUpMoneyActive,
-        filterUpMoneyClick,
-        filterDownMoneyClick,
-        unFilteredMoneyClick,
-        clickedAllRoles,
-        clickedFighter,
-        clickedTank,
-        clickedMage,
-        clickedAssassin,
-        clickedMarksman,
-        clickedSupport,
+        championsPerPage: CHAMPIONS_PER_PAGE,
+        handlePrevClick: () => setCurrentPage((page) => Math.max(page - 1, 1)),
+        handleNextClick: () => setCurrentPage((page) => Math.min(page + 1, totalPage || 1)),
+        unFilteredMoneyActive: activeStyle(priceFilter === "default"),
+        filterDownMoneyActive: activeStyle(priceFilter === "low"),
+        filterUpMoneyActive: activeStyle(priceFilter === "high"),
+        filterUpMoneyClick: () => setPriceFilter("high"),
+        filterDownMoneyClick: () => setPriceFilter("low"),
+        unFilteredMoneyClick: () => setPriceFilter("default"),
+        clickedAllRoles: activeStyle(roleFilter === ""),
+        clickedFighter: activeStyle(roleFilter === "Fighter"),
+        clickedTank: activeStyle(roleFilter === "Tank"),
+        clickedMage: activeStyle(roleFilter === "Mage"),
+        clickedAssassin: activeStyle(roleFilter === "Assassin"),
+        clickedMarksman: activeStyle(roleFilter === "Marksman"),
+        clickedSupport: activeStyle(roleFilter === "Support"),
         handleChange,
-        allRoleCLick,
-        fighterClick,
-        tankClick,
-        mageClick,
-        assassinClick,
-        marksmanClick,
-        supportClick
-    }
+        allRoleCLick: () => handleRoleClick(""),
+        fighterClick: () => handleRoleClick("Fighter"),
+        tankClick: () => handleRoleClick("Tank"),
+        mageClick: () => handleRoleClick("Mage"),
+        assassinClick: () => handleRoleClick("Assassin"),
+        marksmanClick: () => handleRoleClick("Marksman"),
+        supportClick: () => handleRoleClick("Support"),
+        roleIcons,
+    };
+
     return (
         <CardContext.Provider value={data}>
             {children}
         </CardContext.Provider>
-    )
-}
+    );
+};
 
-export default CardContext
+export default CardContext;

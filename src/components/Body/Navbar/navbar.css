@@ -1,75 +1,53 @@
-/* HEADER */
-
 .nav {
-    color: white;
-    background-color: #000000;
-    width: 100%;
-    height: 70px;
-    display: flex;
-    justify-content: space-between;
     position: fixed;
-    z-index: 3;
+    z-index: 10;
+    display: flex;
+    width: 100%;
+    height: 72px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.22);
+    background: rgba(5, 8, 13, 0.88);
+    color: var(--text);
+    backdrop-filter: blur(16px);
 }
 
 .menu {
     display: flex;
-    height: 100%;
     width: 100%;
+    height: 100%;
     align-items: center;
     justify-content: space-between;
+    padding: 0 32px;
 }
 
-/* LEFT MENU */
 .menu-left {
     display: flex;
-    height: 100%;
     align-items: center;
-    margin-left: 40px;
+    min-width: 0;
+    gap: 14px;
 }
 
-.menu-left>img {
-    width: 50px;
-    height: 50px;
-    margin-right: 20px;
+.lol-logo {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    border-radius: 8px;
+    object-fit: contain;
 }
 
 .lol {
+    min-width: 0;
+    color: var(--text);
     cursor: default;
-    font-size: 24px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 325px;
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    font-weight: 900;
+    letter-spacing: 0;
+    white-space: nowrap;
 }
 
-.menu-button {
-    margin-left: 40px;
-    display: flex;
-    width: 120px;
-    justify-content: space-between;
-}
-
-.menu-button>a {
-    text-decoration: none;
-    color: white;
-    opacity: 0.6;
-}
-
-.menu-button>a:hover {
-    opacity: 1;
-    text-decoration: underline solid red 20%;
-    text-decoration-color: red;
-}
-
-/* RİGHT MENU */
 .menu-right {
-    height: 100%;
-    width: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 40px;
 }
 
 .money {
@@ -80,81 +58,66 @@
 .wallet-border {
     display: flex;
     align-items: center;
-    border-radius: 10px;
-    background-color: #282828;
-    height: 40px;
-    width: 100%;
+    overflow: hidden;
+    min-width: 112px;
+    height: 42px;
+    border: 1px solid rgba(212, 175, 55, 0.26);
+    border-radius: 8px;
+    background: rgba(16, 25, 40, 0.92);
 }
 
 .money-wallet {
-    font-size: 24px;
-    width: 55px;
-    height: 100%;
+    min-width: 72px;
+    color: var(--gold-bright);
+    font-size: 1.2rem;
+    font-weight: 900;
+    padding: 0 12px;
 }
 
 .w-icon-border {
-    background-color: red;
-    border-radius: 10px 0px 0px 10px;
+    display: grid;
+    width: 38px;
     height: 100%;
-    width: 25px;
-    margin-right: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    place-items: center;
+    background: linear-gradient(135deg, #9b2832, #c83f49);
 }
 
 .w-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
 }
 
-/* DROP DOWN */
 .drop-down {
     display: none;
 }
 
-@media screen and (max-width:950px) {
+@media (max-width: 950px) {
     .menu {
-        width: 100%;
-        max-height: 0;
-        overflow: hidden;
-        border: none;
-    }
-
-    .nav {
-        display: flex;
-
+        display: none;
     }
 
     .drop-down {
         display: flex;
         width: 100%;
-        justify-content: space-around;
         align-items: center;
-        min-width: 580px;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 0 14px;
     }
 
-    .drop-down>img {
-        width: 50px;
-        height: 50px;
-        margin-right: 20px;
-    }
-
-    .drop-toggle {
-        width: 60px;
-        height: 40px;
-        background-color: #282828;
-        border: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .dropdown-toggle::after {
-        display: none;
+    .drop-down .lol {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .wallet-border {
-        width: 100px;
+        min-width: 92px;
+    }
+
+    .money-wallet {
+        min-width: 54px;
+        font-size: 1rem;
+        padding: 0 8px;
     }
 }

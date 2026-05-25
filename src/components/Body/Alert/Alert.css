@@ -1,13 +1,22 @@
 .alert-moodle-header {
-    border: 2px solid red;
-    background-color: red;
-    text-align: start;
-    padding: 10px 20px 10px 20px;
+    border: 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.22);
+    background: #101928;
+    color: var(--gold-bright);
+    padding: 14px 18px;
+}
+
+.alert-moodle-header h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 900;
 }
 
 .alert-moodle-body {
-    background-color: white;
+    background: #101928;
+    color: var(--text);
+    font-size: 1.2rem;
+    font-weight: 800;
+    padding: 28px;
     text-align: center;
-    font-size: 2rem;
-    font-weight: 600;
 }

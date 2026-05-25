@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import CardContext from '../../component/CardContext';
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 import './Carousel.css';
@@ -20,14 +20,10 @@ function Carousel() {
             </div>
         )
     })
-    const [activate, setActivate] = useState(false)
-    const handleClick = () => {
-        setActivate(!activate)
-    }
     const mappedHeroPics = displayedIChampionsCarousel.map((item) => {
         return (
             <div key={item.id} >
-                <div className='hero-pics' onClick={handleClick}>{item.heroPics}</div>
+                <div className='hero-pics'>{item.heroPics}</div>
             </div>
         )
     })

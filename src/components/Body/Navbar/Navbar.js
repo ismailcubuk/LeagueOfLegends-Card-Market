@@ -1,12 +1,16 @@
 import './navbar.css';
 import Wallet from './Wallet';
 
+const LOL_ICON_URL = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/lol_icon.png';
+
 function TopNavbar() {
+    const logo = <img className='lol-logo' src={LOL_ICON_URL} alt='League of Legends icon' />;
+
     return (
         <nav className='nav'>
             <div className="menu">
                 <div className='menu-left'>
-                    <img src="http://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/LoL_icon.svg/1200px-LoL_icon.svg.png" alt="Lol logo" />
+                    {logo}
                     <div className='lol'>League of Legends Card Shop</div>
                 </div>
                 <div className='menu-right'>
@@ -17,7 +21,7 @@ function TopNavbar() {
             </div>
 
             <div className='drop-down'>
-                <img src="http://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/LoL_icon.svg/1200px-LoL_icon.svg.png" alt="Lol logo" />
+                {logo}
                 <div className='lol'>League of Legends Card Shop</div>
                 <Wallet />
             </div>

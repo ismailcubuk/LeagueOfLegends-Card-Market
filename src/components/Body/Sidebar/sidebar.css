@@ -1,24 +1,21 @@
 .left-sidebar-background {
-    width: 210px;
-    height: 100%;
-    min-width: 210px;
+    width: 232px;
+    min-width: 232px;
 }
 
-
 .left-sidebar {
-    border-left: none;
-    border-bottom: none;
-    border-top: none;
-    padding-top: 90px;
-    width: 210px;
-    height: 100%;
-    border-right: 2px solid red;
-    overflow-y: scroll;
     position: fixed;
+    top: 72px;
+    bottom: 0;
+    width: 232px;
+    overflow-y: auto;
+    border-right: 1px solid rgba(212, 175, 55, 0.2);
+    background: rgba(8, 14, 24, 0.78);
+    backdrop-filter: blur(14px);
 }
 
 .left-sidebar::-webkit-scrollbar {
-    width: 3px;
+    width: 4px;
 }
 
 .left-sidebar::-webkit-scrollbar-track {
@@ -26,270 +23,231 @@
 }
 
 .left-sidebar::-webkit-scrollbar-thumb {
-    background: #5e5e5e;
-}
-
-.left-sidebar::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: rgba(212, 175, 55, 0.4);
 }
 
 .sidebar-border {
-    color: white;
     width: 100%;
+    color: var(--text);
 }
 
 .sidebar-inside {
     display: flex;
     flex-direction: column;
     height: 100%;
-    margin-top: 20px;
-    padding: 10px 5px 0px 5px;
+    padding: 18px 12px 28px;
 }
 
-
-/* ALL ROLE */
-.all-role {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: transparent;
-    color: white;
-    border-right: none;
-    border-left: none;
-    border-top: none;
-    margin-left: 4px;
-
-}
-
-.all-role-header {
+.all-role-header,
+.role-filter-header {
     display: flex;
     justify-content: center;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
+}
+
+.all-role {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px 0 18px 4px;
+    border: 0;
+    background: transparent;
+    color: var(--text);
 }
 
 .all-role-images {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
-    margin: 10px;
-    opacity: 0.3;
-    transition: 0.5s;
+    opacity: 0.52;
+    padding: 10px;
+    transition: opacity 180ms ease;
 }
 
 .all-role-images:hover {
     opacity: 1;
 }
 
-.all-role-images>img {
-    height: 40px;
-}
-
-/* ROLE FİLTER */
-.role-filter-header {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+.all-role-images > img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
 }
 
 .role-filter-main {
-    margin-bottom: 10px;
+    margin: 12px 0 20px;
 }
 
-.role {
-    height: 60px;
+.role,
+.sidebar-button {
     display: flex;
-    align-items: center;
-    background-color: transparent;
     width: 100%;
-    border-top: none;
-    border-right: none;
-    border-left: none;
-    color: white;
-    opacity: 0.3;
-    transition: 0.5s;
-
+    min-height: 48px;
+    align-items: center;
+    border: 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.12);
+    background: transparent;
+    color: var(--text);
+    opacity: 0.58;
+    transition: opacity 160ms ease, background-color 160ms ease;
 }
 
-.role:hover {
+.role:hover,
+.sidebar-button:hover {
+    background: rgba(212, 175, 55, 0.07);
     opacity: 1;
 }
 
-.role>label {
-    margin-left: 15px;
+.role > img {
+    width: 34px;
+    height: 34px;
+    margin: 0 14px 0 18px;
+    object-fit: contain;
 }
 
-.role>img {
-    height: 40px;
-    margin: 0px 20px 0px 30px;
+.role > div,
+.price-text {
+    overflow: hidden;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-/* FİLTER BOTTOM */
 .filter-bottom {
     width: 100%;
 }
 
-
-/* PRİCE */
 .price-filter {
     display: flex;
-    flex-direction: column;
     width: 100%;
+    flex-direction: column;
     text-align: center;
 }
 
-.price-text {
-    margin: 10px;
+.sidebar-header {
+    margin-bottom: 8px;
+    color: var(--muted);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0;
+    text-transform: uppercase;
 }
 
 .sidebar-button {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    opacity: 0.3;
-    background-color: transparent;
-    color: white;
-    border-left: none;
-    border-top: none;
-    border-right: none;
+    justify-content: space-between;
+    padding: 0 12px;
 }
 
-.sidebar-button:hover {
-    opacity: 1;
-    transition: 0.5s;
+.price-text {
+    margin: 0 8px;
 }
 
-/* İNPUT */
 .search {
-    padding: 0px 10px 40px 10px;
     display: flex;
-    align-items: center;
     width: 100%;
+    align-items: center;
     justify-content: center;
-    margin-top: 20px;
+    gap: 8px;
+    margin-top: 18px;
 }
 
-.search>input {
-    width: 130px;
-    background-color: transparent;
-    color: white;
-    border: 2px solid white;
-    border-radius: 5px;
+.search > input {
+    width: 100%;
+    border: 1px solid rgba(212, 175, 55, 0.28);
+    border-radius: 8px;
+    background: rgba(5, 8, 13, 0.45);
+    color: var(--text);
     outline: none;
-    opacity: 0.3;
-    padding: 2px 5px 2px 5px;
+    padding: 10px 12px;
 }
 
-.search>input::placeholder {
-    text-align: center;
-    color: white;
+.search > input::placeholder {
+    color: var(--muted);
 }
 
-.search>input:hover {
-    opacity: 0.5;
-    transition: 0.5s;
-}
-
-.search>input:focus {
-    opacity: 1;
+.search > input:focus {
+    border-color: rgba(212, 175, 55, 0.72);
 }
 
 .search-icon {
     width: 20px;
     height: 20px;
-    margin-right: 5px;
+    flex: 0 0 auto;
+    color: var(--gold-bright);
 }
 
-.search-mobile {
+.search-mobile-btn,
+.search-mobile-btn-border {
     display: none;
 }
 
-.search-mobile-btn {
-    display: none;
-}
+@media (max-width: 950px) {
+    .left-sidebar-background {
+        width: 98px;
+        min-width: 98px;
+    }
 
-@media screen and (max-width:950px) {
     .left-sidebar {
-        width: 100px;
+        width: 98px;
     }
 
-    .all-role-images>img {
-        height: 20px;
+    .sidebar-inside {
+        padding: 12px 8px 24px;
     }
 
-    .sidebar-header {
-        border: 2px solid red;
-        border-left: none;
-        border-right: none;
-        margin-bottom: 10px;
-    }
-
-    .role>img {
-        margin: 0px 20px 0px 20px;
-    }
-
-    .role>div {
+    .all-role-header,
+    .role > div,
+    .price-text,
+    .search,
+    .role-filter-header {
         display: none;
     }
 
-    .search {
-        display: none;
+    .all-role-images {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 7px;
+        padding: 6px;
+    }
+
+    .all-role-images > img,
+    .role > img {
+        width: 28px;
+        height: 28px;
+        margin: 0;
+    }
+
+    .role,
+    .sidebar-button {
+        justify-content: center;
+        min-height: 46px;
     }
 
     .search-mobile-btn-border {
         display: flex;
-        align-items: center;
         justify-content: center;
+        margin-bottom: 10px;
     }
 
     .search-mobile-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 20px;
-        background-color: transparent;
-        border: none;
-        color: white;
-        border: 2px solid red;
-        padding: 10px 5px 10px 5px;
-        border-left: none;
-        border-right: none;
+        display: grid;
+        width: 52px;
+        height: 42px;
+        place-items: center;
+        border: 1px solid rgba(212, 175, 55, 0.28);
+        border-radius: 8px;
+        background: rgba(5, 8, 13, 0.42);
+        color: var(--text);
     }
 
-    .search-icon {
-        width: 80px;
-        height: 20px;
-    }
-
-    .search-mobile {
-        display: flex;
-    }
-
-    .search-mobile>input {
-        display: flex;
-        position: fixed;
-        width: 120px;
-        top: 85px;
-        left: 105px;
-        animation-name: example;
-        animation-duration: 1s;
-        padding: 2px;
-    }
-
-    .sidebar-inside {
-        margin-top: -20px;
-    }
-
-    @keyframes example {
-        0% {
-            left: 90px;
-            opacity: 0;
-        }
-
-        100% {
-            left: 105px;
-            opacity: 1;
-        }
+    .search-mobile-btn .search-icon {
+        margin: 0;
     }
 }
