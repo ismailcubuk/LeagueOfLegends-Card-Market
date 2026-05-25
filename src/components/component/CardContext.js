@@ -137,15 +137,17 @@ export const CardContextprovider = ({ children }) => {
             return {
                 id: rolePages[role],
                 class: role === "Marksman" ? "Marksmen" : `${role}s`,
-                heroPics: championPics.map((heroPics) => (
-                    <img
-                        key={heroPics.id}
-                        src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${heroPics.id}_0.jpg`}
-                        width="150"
-                        height="250"
-                        loading="lazy"
-                        alt={heroPics.name}
-                    />
+                heroPics: championPics.map((champion) => (
+                    <figure className="carousel-champion-card" key={champion.id}>
+                        <img
+                            src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champion.id}_0.jpg`}
+                            width="150"
+                            height="250"
+                            loading="lazy"
+                            alt={champion.name}
+                        />
+                        <figcaption>{champion.name}</figcaption>
+                    </figure>
                 )),
                 img: roleIcons[role],
             };

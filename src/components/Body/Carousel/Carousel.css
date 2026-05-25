@@ -70,9 +70,16 @@
     gap: 0;
 }
 
-.hero-pics > img {
+.carousel-champion-card {
+    position: relative;
     width: 100%;
     max-width: 180px;
+    margin: 0;
+}
+
+.carousel-champion-card > img {
+    display: block;
+    width: 100%;
     height: auto;
     aspect-ratio: 150 / 250;
     border: 1px solid rgba(212, 175, 55, 0.28);
@@ -81,12 +88,32 @@
     object-fit: cover;
 }
 
-.hero-pics > img:nth-child(1),
-.hero-pics > img:nth-child(3) {
+.carousel-champion-card > figcaption {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 6px;
+    background: rgba(5, 8, 13, 0.76);
+    color: var(--gold-bright);
+    font-size: 0.86rem;
+    font-weight: 900;
+    line-height: 1.1;
+    padding: 7px 8px;
+    text-align: center;
+    text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.hero-pics > .carousel-champion-card:nth-child(1),
+.hero-pics > .carousel-champion-card:nth-child(3) {
     transform: translateY(34px) scale(0.92);
 }
 
-.hero-pics > img:nth-child(2) {
+.hero-pics > .carousel-champion-card:nth-child(2) {
     z-index: 2;
     transform: scale(1.06);
 }
