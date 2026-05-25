@@ -75,6 +75,8 @@
     width: 100%;
     max-width: 180px;
     margin: 0;
+    animation: carouselCardIn 520ms ease both;
+    transition: transform 220ms ease, filter 220ms ease;
 }
 
 .carousel-champion-card > img {
@@ -116,6 +118,20 @@
 .hero-pics > .carousel-champion-card:nth-child(2) {
     z-index: 2;
     transform: scale(1.06);
+}
+
+.hero-pics > .carousel-champion-card:hover {
+    filter: brightness(1.08);
+}
+
+@keyframes carouselCardIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 .carousel-buttons {

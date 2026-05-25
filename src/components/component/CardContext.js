@@ -48,24 +48,36 @@ const randomStart = (length) => {
     return Math.floor(Math.random() * (length - 2));
 };
 
+const uniqueById = (items) => (
+    Array.from(new Map((items || []).filter(Boolean).map((item) => [item.id, item])).values())
+);
+
 export const CardContextprovider = ({ children }) => {
     const storedMoney = getStoredJson("money", 30);
     const initialMoney = Array.isArray(storedMoney) ? Number(storedMoney[0] || 30) : Number(storedMoney || 30);
     const storedCards = getStoredJson("char", []);
 
     const [champions, setChampions] = useState([]);
-    const [cards, setCards] = useState(Array.isArray(storedCards) ? storedCards : Object.values(storedCards));
+    const [cards, setCards] = useState(uniqueById(Array.isArray(storedCards) ? storedCards : Object.values(storedCards)));
     const [money, setMoney] = useState(initialMoney);
     const [roleFilter, setRoleFilter] = useState("");
     const [priceFilter, setPriceFilter] = useState("default");
     const [search, setSearch] = useState("");
     const [isSearch, setIsSearch] = useState(false);
     const [filteredId, setFilteredId] = useState([]);
-    const [myCardsArr, setMyCardsArr] = useState(getStoredJson("myCardsArr", []));
+    const [myCardsArr, setMyCardsArr] = useState(uniqueById(getStoredJson("myCardsArr", [])));
     const [alertt, setAlertt] = useState(false);
     const [carouselPage, setCarouselPage] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [carouselStarts, setCarouselStarts] = useState({});
+    const [recentlyBoughtId, setRecentlyBoughtId] = useState("");
+    const [recentlySoldId, setRecentlySoldId] = useState("");
+    const [deniedChampionId, setDeniedChampionId] = useState("");
+
+    const pulseCardState = useCallback((setter, id) => {
+        setter(id);
+        window.setTimeout(() => setter(""), 650);
+    }, []);
 
     useEffect(() => {
         localStorage.setItem("money", JSON.stringify(money));
@@ -210,26 +222,37 @@ export const CardContextprovider = ({ children }) => {
     }, [currentPage, filteredChampions]);
 
     const sellClick = useCallback((req) => {
-        setCards((prevCards) => [req, ...prevCards]);
+        setCards((prevCards) => (
+            prevCards.some((card) => card.id === req.id) ? prevCards : [req, ...prevCards]
+        ));
         setMyCardsArr((prevCards) => prevCards.filter((card) => card.id !== req.id));
         setMoney((currentMoney) => currentMoney + req.info.difficulty);
-    }, []);
+        pulseCardState(setRecentlySoldId, req.id);
+    }, [pulseCardState]);
 
     const buyClick = useCallback((hero) => {
-        setMoney((currentMoney) => {
-            if (hero.info.difficulty > currentMoney) {
-                setAlertt(true);
-                return currentMoney;
-            }
-
-            setMyCardsArr((prevCards) => [hero, ...prevCards]);
-            setFilteredId((prevIds) => [hero.id, ...prevIds]);
+        if (myCardsArr.some((card) => card.id === hero.id)) {
             setCards((prevCards) => prevCards.filter((card) => card.id !== hero.id));
-            setAlertt(false);
+            return;
+        }
 
-            return currentMoney - hero.info.difficulty;
-        });
-    }, []);
+        if (hero.info.difficulty > money) {
+            setAlertt(true);
+            pulseCardState(setDeniedChampionId, hero.id);
+            return;
+        }
+
+        setMyCardsArr((prevCards) => (
+            prevCards.some((card) => card.id === hero.id) ? prevCards : [hero, ...prevCards]
+        ));
+        setFilteredId((prevIds) => (
+            prevIds.includes(hero.id) ? prevIds : [hero.id, ...prevIds]
+        ));
+        setCards((prevCards) => prevCards.filter((card) => card.id !== hero.id));
+        setMoney((currentMoney) => currentMoney - hero.info.difficulty);
+        setAlertt(false);
+        pulseCardState(setRecentlyBoughtId, hero.id);
+    }, [money, myCardsArr, pulseCardState]);
 
     const dots = pageNumbersCarousel.map((page) => (
         <button
@@ -246,6 +269,9 @@ export const CardContextprovider = ({ children }) => {
         setAlertt,
         alertt,
         money,
+        recentlyBoughtId,
+        recentlySoldId,
+        deniedChampionId,
         sellClick,
         myCardsArr,
         filteredId,

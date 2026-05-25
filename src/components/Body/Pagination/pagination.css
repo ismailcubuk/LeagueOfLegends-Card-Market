@@ -1,16 +1,10 @@
 .pagination-border {
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    left: 232px;
-    z-index: 5;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 58px;
-    border-top: 1px solid rgba(212, 175, 55, 0.18);
-    background: rgba(5, 8, 13, 0.82);
-    backdrop-filter: blur(14px);
+    width: 100%;
+    margin-top: 28px;
+    padding: 18px 0 4px;
 }
 
 .pagination-border-inside {
@@ -48,10 +42,4 @@
 .page-icon-right {
     width: 18px;
     height: 18px;
-}
-
-@media (max-width: 950px) {
-    .pagination-border {
-        left: 98px;
-    }
 }

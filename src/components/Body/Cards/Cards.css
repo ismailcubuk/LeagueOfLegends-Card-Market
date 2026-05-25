@@ -74,6 +74,14 @@
     box-shadow: 0 24px 46px rgba(0, 0, 0, 0.36);
 }
 
+.hero-border.is-new-card {
+    animation: cardPopIn 560ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.hero-border.is-denied-card {
+    animation: cardShake 420ms ease;
+}
+
 .hero-id {
     position: absolute;
     top: 10px;
@@ -266,6 +274,69 @@
 .buy-button:hover,
 .sell-button:hover {
     filter: brightness(1.08);
+}
+
+.buy-button:active,
+.sell-button:active {
+    transform: translateY(1px);
+}
+
+.skill-loading {
+    aspect-ratio: 1;
+    border: 2px solid rgba(212, 175, 55, 0.35);
+    border-radius: 6px;
+    background: linear-gradient(110deg, rgba(255, 255, 255, 0.08), rgba(212, 175, 55, 0.16), rgba(255, 255, 255, 0.08));
+    background-size: 220% 100%;
+    animation: skillShimmer 900ms linear infinite;
+}
+
+@keyframes cardPopIn {
+    0% {
+        opacity: 0;
+        transform: translateY(18px) scale(0.94);
+    }
+
+    60% {
+        opacity: 1;
+        transform: translateY(-4px) scale(1.02);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes cardShake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-7px);
+    }
+
+    40% {
+        transform: translateX(7px);
+    }
+
+    60% {
+        transform: translateX(-5px);
+    }
+
+    80% {
+        transform: translateX(5px);
+    }
+}
+
+@keyframes skillShimmer {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
 }
 
 .search-mobile {
