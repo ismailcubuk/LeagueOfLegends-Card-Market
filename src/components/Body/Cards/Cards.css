@@ -39,6 +39,13 @@
     justify-content: center;
 }
 
+@media (min-width: 2200px) {
+    .mapped-my-cards,
+    .mapped-card {
+        grid-template-columns: repeat(8, minmax(180px, 1fr));
+    }
+}
+
 .mapped-my-cards {
     min-height: 132px;
     border-bottom: 1px solid rgba(212, 175, 55, 0.22);
@@ -344,28 +351,106 @@
 }
 
 @media (max-width: 950px) {
+    .shop {
+        padding-top: 22px;
+    }
+
+    .cards-header {
+        margin-bottom: 14px;
+    }
+
     .mapped-my-cards,
     .mapped-card {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 16px;
         justify-content: stretch;
     }
 
     .search-mobile {
         position: sticky;
-        top: 76px;
+        top: 130px;
         z-index: 2;
         display: flex;
+        justify-content: center;
         margin-bottom: 14px;
     }
 
     .search-mobile input {
-        width: min(260px, 100%);
+        width: min(420px, 100%);
         border: 1px solid rgba(212, 175, 55, 0.35);
         border-radius: 8px;
         background: rgba(8, 14, 24, 0.9);
         color: var(--text);
         outline: none;
         padding: 10px 12px;
+    }
+}
+
+@media (max-width: 520px) {
+    .cards-header h1 {
+        font-size: 1.35rem;
+    }
+
+    .mapped-my-cards,
+    .mapped-card {
+        gap: 12px;
+    }
+
+    .hero-id {
+        top: 8px;
+        left: 8px;
+        max-width: calc(100% - 58px);
+        font-size: 0.72rem;
+        padding: 5px 7px;
+    }
+
+    .hero-money {
+        min-width: 48px;
+        height: 36px;
+        font-size: 0.88rem;
+    }
+
+    .hero-tags {
+        right: 7px;
+        bottom: 7px;
+        gap: 3px;
+        padding: 4px;
+    }
+
+    .hero-tags img {
+        width: 24px;
+        height: 24px;
+    }
+
+    .card-trade {
+        height: 42px;
+    }
+
+    .buy-button,
+    .sell-button {
+        font-size: 0.86rem;
+    }
+
+    .hero-title {
+        min-height: 70px;
+        font-size: 0.84rem;
+        padding: 36px 10px 10px;
+    }
+
+    .info {
+        min-height: 70px;
+        padding: 16px 5px 10px;
+    }
+
+    .info img {
+        width: 21px;
+        height: 21px;
+    }
+}
+
+@media (max-width: 360px) {
+    .mapped-my-cards,
+    .mapped-card {
+        grid-template-columns: 1fr;
     }
 }

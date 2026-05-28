@@ -43,3 +43,26 @@
     width: 18px;
     height: 18px;
 }
+
+@media (max-width: 520px) {
+    .pagination-border {
+        margin-top: 22px;
+        padding-top: 12px;
+    }
+
+    .pagination-border-inside {
+        max-width: 100%;
+        height: 36px;
+        gap: 5px;
+        overflow-x: auto;
+        padding: 0 2px;
+    }
+
+    .page-numbers,
+    .page-icons {
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        font-size: 0.9rem;
+    }
+}

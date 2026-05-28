@@ -1,11 +1,101 @@
 import { BsSearch } from 'react-icons/bs';
-import { AiOutlineArrowUp, AiOutlineArrowDown, AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
+import { AiOutlineArrowUp, AiOutlineArrowDown, AiOutlineArrowLeft, AiOutlineArrowRight, AiOutlineSortAscending, AiOutlineAppstore, AiOutlineClose } from 'react-icons/ai';
 import './sidebar.css'
-import { useContext } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import CardContext from '../../component/CardContext';
 
 function Sidebar() {
-    const { searchClick, filterUpMoneyClick, unFilteredMoneyClick, unFilteredMoneyActive, filterDownMoneyActive, filterUpMoneyActive, filterDownMoneyClick, handleChange, allRoleCLick, clickedAllRoles, clickedFighter, clickedTank, clickedMage, clickedAssassin, clickedMarksman, clickedSupport, fighterClick, tankClick, mageClick, assassinClick, marksmanClick, supportClick } = useContext(CardContext)
+    const {
+        searchClick,
+        filterUpMoneyClick,
+        unFilteredMoneyClick,
+        unFilteredMoneyActive,
+        filterDownMoneyActive,
+        filterUpMoneyActive,
+        filterDownMoneyClick,
+        search,
+        clearSearch,
+        handleChange,
+        allRoleCLick,
+        clickedAllRoles,
+        clickedFighter,
+        clickedTank,
+        clickedMage,
+        clickedAssassin,
+        clickedMarksman,
+        clickedSupport,
+        fighterClick,
+        tankClick,
+        mageClick,
+        assassinClick,
+        marksmanClick,
+        supportClick,
+        roleIcons,
+    } = useContext(CardContext);
+    const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+    const [isClassOpen, setIsClassOpen] = useState(false);
+    const [isPriceOpen, setIsPriceOpen] = useState(false);
+    const classMenuRef = useRef(null);
+    const priceMenuRef = useRef(null);
+
+    const closeMobileMenus = () => {
+        setIsClassOpen(false);
+        setIsPriceOpen(false);
+    };
+
+    const handleClassToggle = () => {
+        setIsClassOpen((current) => !current);
+        setIsPriceOpen(false);
+    };
+
+    const handlePriceToggle = () => {
+        setIsPriceOpen((current) => !current);
+        setIsClassOpen(false);
+    };
+
+    const handleRoleSelect = (selectRole) => {
+        selectRole();
+        setIsClassOpen(false);
+    };
+
+    const handlePriceSelect = (selectPrice) => {
+        selectPrice();
+        setIsPriceOpen(false);
+    };
+
+    useEffect(() => {
+        const handleOutsideClick = (event) => {
+            if (classMenuRef.current && !classMenuRef.current.contains(event.target)) {
+                setIsClassOpen(false);
+            }
+
+            if (priceMenuRef.current && !priceMenuRef.current.contains(event.target)) {
+                setIsPriceOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleOutsideClick);
+
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick);
+        };
+    }, []);
+
+    useEffect(() => {
+        const handleEscape = (event) => {
+            if (event.key === 'Escape') {
+                setIsSearchModalOpen(false);
+                closeMobileMenus();
+            }
+        };
+
+        document.addEventListener('keydown', handleEscape);
+
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+        };
+    }, []);
 
     return (
         <div className='sidebar-border'>
@@ -87,13 +177,84 @@ function Sidebar() {
                             </button>
                             <div className='search'>
                                 <BsSearch className='search-icon' />
-                                <input type="text" spellCheck="false" placeholder='Search Champ..' onChange={handleChange} />
+                                <input type="text" spellCheck="false" placeholder='Search Champ..' value={search} onChange={handleChange} />
                             </div>
                         </div>
                     </div>
                 </div>
 
             </div>
+
+            {createPortal(
+                <div className='mobile-bottom-filter'>
+                    <div className='mobile-filter-menu mobile-filter-menu--price' ref={priceMenuRef}>
+                        {isPriceOpen ? (
+                            <div className='mobile-dropdown mobile-dropdown-up'>
+                                <button type='button' className='mobile-dropdown-item mobile-price-item' onClick={() => handlePriceSelect(filterUpMoneyClick)}><AiOutlineArrowUp />High to Low</button>
+                                <button type='button' className='mobile-dropdown-item mobile-price-item' onClick={() => handlePriceSelect(unFilteredMoneyClick)}><AiOutlineArrowLeft />Unfiltered<AiOutlineArrowRight /></button>
+                                <button type='button' className='mobile-dropdown-item mobile-price-item' onClick={() => handlePriceSelect(filterDownMoneyClick)}><AiOutlineArrowDown />Low to High</button>
+                            </div>
+                        ) : null}
+                        <button type='button' className='mobile-filter-button' onClick={handlePriceToggle} aria-label='Price Filter' title='Price Filter'>
+                            <AiOutlineSortAscending className='mobile-filter-icon' />
+                        </button>
+                    </div>
+
+                    <button
+                        type='button'
+                        className='mobile-filter-button'
+                        onClick={() => {
+                            setIsSearchModalOpen(true);
+                            closeMobileMenus();
+                        }}
+                        aria-label='Search'
+                        title='Search'
+                    >
+                        <BsSearch className='mobile-filter-icon' />
+                    </button>
+
+                    <div className='mobile-filter-menu mobile-filter-menu--class' ref={classMenuRef}>
+                        {isClassOpen ? (
+                            <div className='mobile-dropdown mobile-dropdown-up'>
+                                <button type='button' className='mobile-dropdown-item' onClick={() => handleRoleSelect(allRoleCLick)}>All Role</button>
+                                <button type='button' className='mobile-dropdown-item mobile-role-item' onClick={() => handleRoleSelect(fighterClick)}><img src={roleIcons.Fighter} alt='' />Fighter</button>
+                                <button type='button' className='mobile-dropdown-item mobile-role-item' onClick={() => handleRoleSelect(tankClick)}><img src={roleIcons.Tank} alt='' />Tank</button>
+                                <button type='button' className='mobile-dropdown-item mobile-role-item' onClick={() => handleRoleSelect(mageClick)}><img src={roleIcons.Mage} alt='' />Mage</button>
+                                <button type='button' className='mobile-dropdown-item mobile-role-item' onClick={() => handleRoleSelect(assassinClick)}><img src={roleIcons.Assassin} alt='' />Assassin</button>
+                                <button type='button' className='mobile-dropdown-item mobile-role-item' onClick={() => handleRoleSelect(marksmanClick)}><img src={roleIcons.Marksman} alt='' />Marksman</button>
+                                <button type='button' className='mobile-dropdown-item mobile-role-item' onClick={() => handleRoleSelect(supportClick)}><img src={roleIcons.Support} alt='' />Support</button>
+                            </div>
+                        ) : null}
+                        <button type='button' className='mobile-filter-button' onClick={handleClassToggle} aria-label='Class Filter' title='Class Filter'>
+                            <AiOutlineAppstore className='mobile-filter-icon' />
+                        </button>
+                    </div>
+                </div>,
+                document.body
+            )}
+
+            {isSearchModalOpen ? createPortal(
+                <div className='mobile-search-modal-overlay' onClick={() => setIsSearchModalOpen(false)}>
+                    <div className='mobile-search-modal' onClick={(event) => event.stopPropagation()}>
+                        <div className='mobile-search-modal-header'>
+                            <h2>Search Champion</h2>
+                            <div className='mobile-search-modal-actions'>
+                                <button type='button' className='mobile-search-close' onClick={() => setIsSearchModalOpen(false)}>Close</button>
+                            </div>
+                        </div>
+                        <div className='mobile-search-modal-input'>
+                            <BsSearch className='search-icon' />
+                            <input type='text' spellCheck='false' placeholder='Search Champ..' value={search} onChange={handleChange} autoFocus />
+                            {search ? (
+                                <button type='button' className='mobile-search-input-clear' onClick={clearSearch} aria-label='Clear Search' title='Clear Search'>
+                                    <AiOutlineClose />
+                                </button>
+                            ) : null}
+                        </div>
+                    </div>
+                </div>,
+                document.body
+            ) : null}
         </div>
     )
 }

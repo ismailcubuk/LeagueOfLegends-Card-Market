@@ -188,22 +188,68 @@ button:disabled {
   }
 
   .carousel-map {
-    padding: 88px 14px 72px 112px;
+    padding: 18px 14px 112px;
   }
 }
 
 @media (max-width: 620px) {
+  .left-sidebar-background {
+    top: 64px;
+  }
+
   .carousel-map {
-    padding-left: 92px;
-    padding-right: 10px;
+    padding: 14px 10px 106px;
+  }
+
+  .modal-dialog {
+    margin: 10px;
+  }
+
+  .modal-body > img {
+    height: 72vh;
+    min-height: 440px;
+    object-position: center top;
+  }
+
+  .modal-title {
+    max-width: calc(100% - 120px);
+    overflow: hidden;
+    font-size: 1.25rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .champion-skills {
+    top: auto;
+    right: 10px;
+    bottom: 112px;
+    left: 10px;
+    width: auto;
+    flex-direction: row;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .champion-skills img,
+  .skill-loading {
+    width: 42px;
+    height: 42px;
+  }
+
+  .modal-price {
+    min-width: 72px;
+    min-height: 54px;
+    font-size: 1.15rem;
   }
 
   .short-story {
     right: 10px;
     bottom: 10px;
     left: 10px;
-    max-height: 34%;
+    max-height: 96px;
     overflow: auto;
-    padding: 12px;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    line-height: 1.35;
   }
 }

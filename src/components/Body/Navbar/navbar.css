@@ -121,3 +121,45 @@
         padding: 0 8px;
     }
 }
+
+@media (max-width: 520px) {
+    .nav {
+        height: 64px;
+    }
+
+    .drop-down {
+        gap: 8px;
+        padding: 0 12px;
+    }
+
+    .lol-logo {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+    }
+
+    .drop-down .lol {
+        font-size: 0;
+    }
+
+    .drop-down .lol::after {
+        content: "LoL Card Shop";
+        font-size: 1rem;
+        font-weight: 900;
+    }
+
+    .wallet-border {
+        min-width: 82px;
+        height: 38px;
+    }
+
+    .w-icon-border {
+        width: 32px;
+    }
+
+    .money-wallet {
+        min-width: 48px;
+        font-size: 0.92rem;
+        padding: 0 7px;
+    }
+}

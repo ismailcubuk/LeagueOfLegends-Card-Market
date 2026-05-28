@@ -185,6 +185,11 @@ export const CardContextprovider = ({ children }) => {
         setCurrentPage(1);
     }, []);
 
+    const clearSearch = useCallback(() => {
+        setSearch("");
+        setCurrentPage(1);
+    }, []);
+
     const filteredChampions = useMemo(() => {
         const normalizedSearch = search.trim().toLowerCase();
 
@@ -305,6 +310,8 @@ export const CardContextprovider = ({ children }) => {
         clickedAssassin: activeStyle(roleFilter === "Assassin"),
         clickedMarksman: activeStyle(roleFilter === "Marksman"),
         clickedSupport: activeStyle(roleFilter === "Support"),
+        search,
+        clearSearch,
         handleChange,
         allRoleCLick: () => handleRoleClick(""),
         fighterClick: () => handleRoleClick("Fighter"),
