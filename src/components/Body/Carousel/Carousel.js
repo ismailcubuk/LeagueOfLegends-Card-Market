@@ -4,7 +4,7 @@ import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 import './Carousel.css';
 
 function Carousel() {
-    const { displayedIChampionsCarousel, carouselPage, dotPagePrevClick, dots, dotPageNextClick } = useContext(CardContext)
+    const { displayedIChampionsCarousel, carouselPage, dotPagePrevClick, dots, dotPageNextClick, openChampionModal } = useContext(CardContext)
 
     const mappedHeroIcons = displayedIChampionsCarousel.map((item) => {
         return (
@@ -23,7 +23,27 @@ function Carousel() {
     const mappedHeroPics = displayedIChampionsCarousel.map((item) => {
         return (
             <div key={item.id} >
-                <div className='hero-pics'>{item.heroPics}</div>
+                <div className='hero-pics'>
+                    {item.heroPics.map((champion) => (
+                        <figure className='carousel-champion-card' key={champion.id}>
+                            <button
+                                type='button'
+                                className='carousel-champion-button'
+                                onClick={() => openChampionModal(champion)}
+                                aria-label={`Open ${champion.name} details`}
+                            >
+                                <img
+                                    src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champion.id}_0.jpg`}
+                                    width='150'
+                                    height='250'
+                                    loading='lazy'
+                                    alt={champion.name}
+                                />
+                                <figcaption>{champion.name}</figcaption>
+                            </button>
+                        </figure>
+                    ))}
+                </div>
             </div>
         )
     })

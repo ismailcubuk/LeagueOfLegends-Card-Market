@@ -5,6 +5,8 @@ const CardContext = createContext();
 const DDRAGON_VERSION = "13.1.1";
 const CHAMPIONS_PER_PAGE = 16;
 const EXCLUDED_CHAMPIONS = new Set(["akshan", "rell", "vex", "seraphine"]);
+const passiveImage = (fileName) => `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/passive/${fileName}`;
+const spellImage = (fileName) => `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/spell/${fileName}`;
 
 const rolePages = {
     Fighter: 1,
@@ -73,6 +75,8 @@ export const CardContextprovider = ({ children }) => {
     const [recentlyBoughtId, setRecentlyBoughtId] = useState("");
     const [recentlySoldId, setRecentlySoldId] = useState("");
     const [deniedChampionId, setDeniedChampionId] = useState("");
+    const [selectedChampion, setSelectedChampion] = useState(null);
+    const [championDetails, setChampionDetails] = useState({});
 
     const pulseCardState = useCallback((setter, id) => {
         setter(id);
@@ -149,18 +153,7 @@ export const CardContextprovider = ({ children }) => {
             return {
                 id: rolePages[role],
                 class: role === "Marksman" ? "Marksmen" : `${role}s`,
-                heroPics: championPics.map((champion) => (
-                    <figure className="carousel-champion-card" key={champion.id}>
-                        <img
-                            src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champion.id}_0.jpg`}
-                            width="150"
-                            height="250"
-                            loading="lazy"
-                            alt={champion.name}
-                        />
-                        <figcaption>{champion.name}</figcaption>
-                    </figure>
-                )),
+                heroPics: championPics,
                 img: roleIcons[role],
             };
         })
@@ -259,6 +252,95 @@ export const CardContextprovider = ({ children }) => {
         pulseCardState(setRecentlyBoughtId, hero.id);
     }, [money, myCardsArr, pulseCardState]);
 
+    const loadChampionDetails = useCallback((championId) => {
+        if (!championId || championDetails[championId]) {
+            return undefined;
+        }
+
+        const controller = new AbortController();
+
+        fetch(`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/data/en_US/champion/${championId}.json`, {
+            signal: controller.signal,
+        })
+            .then((response) => response.json())
+            .then((json) => {
+                const champion = json.data?.[championId];
+
+                if (!champion) {
+                    return;
+                }
+
+                const skills = [
+                    passiveImage(champion.passive.image.full),
+                    ...champion.spells.map((spell) => spellImage(spell.image.full)),
+                ];
+
+                skills.forEach((src) => {
+                    const image = new Image();
+                    image.src = src;
+                });
+
+                setChampionDetails((currentDetails) => ({
+                    ...currentDetails,
+                    [championId]: {
+                        passive: {
+                            name: champion.passive.name,
+                            src: passiveImage(champion.passive.image.full),
+                        },
+                        spells: champion.spells.map((spell) => ({
+                            id: spell.id,
+                            name: spell.name,
+                            src: spellImage(spell.image.full),
+                        })),
+                    },
+                }));
+            })
+            .catch((error) => {
+                if (error.name !== "AbortError") {
+                    console.error("Champion details could not be loaded", error);
+                }
+            });
+
+        return controller;
+    }, [championDetails]);
+
+    const openChampionModal = useCallback((champion) => {
+        if (!champion) {
+            return;
+        }
+
+        loadChampionDetails(champion.id);
+        setSelectedChampion({
+            id: champion.id,
+            story: champion.blurb,
+            price: champion.info.difficulty,
+        });
+    }, [loadChampionDetails]);
+
+    const closeChampionModal = useCallback(() => {
+        setSelectedChampion(null);
+    }, []);
+
+    useEffect(() => {
+        if (!selectedChampion) {
+            return undefined;
+        }
+
+        const controller = loadChampionDetails(selectedChampion.id);
+
+        return () => controller?.abort();
+    }, [loadChampionDetails, selectedChampion]);
+
+    const selectedChampionDetails = selectedChampion ? championDetails[selectedChampion.id] : null;
+    const selectedChampionSkills = selectedChampionDetails ? [
+        { key: "P", ...selectedChampionDetails.passive },
+        ...selectedChampionDetails.spells.map((spell, index) => ({
+            key: ["Q", "W", "E", "R"][index],
+            name: spell.name,
+            src: spell.src,
+        })),
+    ] : [];
+
     const dots = pageNumbersCarousel.map((page) => (
         <button
             key={page}
@@ -281,6 +363,11 @@ export const CardContextprovider = ({ children }) => {
         myCardsArr,
         filteredId,
         buyClick,
+        openChampionModal,
+        closeChampionModal,
+        preloadChampionDetails: loadChampionDetails,
+        selectedChampion,
+        selectedChampionSkills,
         dotPageNextClick: () => setCarouselPage((page) => Math.min(page + 1, heroPicsMap.length)),
         dotPagePrevClick: () => setCarouselPage((page) => Math.max(page - 1, 1)),
         dots,

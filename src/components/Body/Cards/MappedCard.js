@@ -1,5 +1,5 @@
 import './Cards.css';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import CardContext from '../../component/CardContext';
 import attack from '../../../Images/Stats/attack.png';
@@ -10,9 +10,6 @@ import Pagination from '../Pagination/Pagination';
 
 const championLoadingImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${id}_0.jpg`;
 const championSplashImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_0.jpg`;
-const DDRAGON_VERSION = '13.1.1';
-const passiveImage = (fileName) => `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/passive/${fileName}`;
-const spellImage = (fileName) => `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/spell/${fileName}`;
 
 function ChampionCard({ champion, actionLabel, actionClass, onAction, onOpen, onPreview, roleIcons, statusClass = '' }) {
     return (
@@ -27,7 +24,7 @@ function ChampionCard({ champion, actionLabel, actionClass, onAction, onOpen, on
             <button
                 type='button'
                 className='flip-card'
-                onClick={() => onOpen(champion.id, champion.blurb, champion.info.difficulty)}
+                onClick={onOpen}
                 aria-label={`Open ${champion.name} details`}
             >
                 <div className='flip-card-inner'>
@@ -84,87 +81,12 @@ function MappedCard() {
         recentlyBoughtId,
         recentlySoldId,
         deniedChampionId,
+        openChampionModal,
+        closeChampionModal,
+        preloadChampionDetails,
+        selectedChampion,
+        selectedChampionSkills,
     } = useContext(CardContext);
-    const [selectedChampion, setSelectedChampion] = useState(null);
-    const [championDetails, setChampionDetails] = useState({});
-
-    const handleClose = () => setSelectedChampion(null);
-    const loadChampionDetails = (championId) => {
-        if (!championId || championDetails[championId]) {
-            return undefined;
-        }
-
-        const controller = new AbortController();
-
-        fetch(`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/data/en_US/champion/${championId}.json`, {
-            signal: controller.signal,
-        })
-            .then((response) => response.json())
-            .then((json) => {
-                const champion = json.data?.[championId];
-
-                if (!champion) {
-                    return;
-                }
-
-                const skills = [
-                    passiveImage(champion.passive.image.full),
-                    ...champion.spells.map((spell) => spellImage(spell.image.full)),
-                ];
-
-                skills.forEach((src) => {
-                    const image = new Image();
-                    image.src = src;
-                });
-
-                setChampionDetails((currentDetails) => ({
-                    ...currentDetails,
-                    [championId]: {
-                        passive: {
-                            name: champion.passive.name,
-                            src: passiveImage(champion.passive.image.full),
-                        },
-                        spells: champion.spells.map((spell) => ({
-                            id: spell.id,
-                            name: spell.name,
-                            src: spellImage(spell.image.full),
-                        })),
-                    },
-                }));
-            })
-            .catch((error) => {
-                if (error.name !== 'AbortError') {
-                    console.error('Champion details could not be loaded', error);
-                }
-            });
-
-        return controller;
-    };
-
-    const handleShow = (id, story, price) => {
-        loadChampionDetails(id);
-        setSelectedChampion({ id, story, price });
-    };
-
-    useEffect(() => {
-        if (!selectedChampion) {
-            return undefined;
-        }
-
-        const controller = loadChampionDetails(selectedChampion.id);
-
-        return () => controller?.abort();
-    }, [championDetails, selectedChampion]);
-
-    const selectedChampionDetails = selectedChampion ? championDetails[selectedChampion.id] : null;
-    const selectedChampionSkills = selectedChampionDetails ? [
-        { key: 'P', ...selectedChampionDetails.passive },
-        ...selectedChampionDetails.spells.map((spell, index) => ({
-            key: ['Q', 'W', 'E', 'R'][index],
-            name: spell.name,
-            src: spell.src,
-        })),
-    ] : [];
 
     return (
         <main className='right-main'>
@@ -187,8 +109,8 @@ function MappedCard() {
                                     actionLabel='Sell'
                                     actionClass='sell-button'
                                     onAction={sellClick}
-                                    onOpen={handleShow}
-                                    onPreview={loadChampionDetails}
+                                    onOpen={() => openChampionModal(champion)}
+                                    onPreview={preloadChampionDetails}
                                     roleIcons={roleIcons}
                                     statusClass={recentlyBoughtId === champion.id ? 'is-new-card' : ''}
                                 />
@@ -212,8 +134,8 @@ function MappedCard() {
                                     actionLabel='Buy'
                                     actionClass='buy-button'
                                     onAction={buyClick}
-                                    onOpen={handleShow}
-                                    onPreview={loadChampionDetails}
+                                    onOpen={() => openChampionModal(champion)}
+                                    onPreview={preloadChampionDetails}
                                     roleIcons={roleIcons}
                                     statusClass={[
                                         recentlySoldId === champion.id ? 'is-new-card' : '',
@@ -229,7 +151,7 @@ function MappedCard() {
                 </section>
 
                 {selectedChampion ? (
-                    <Modal show onHide={handleClose} size='xl' centered>
+                    <Modal show onHide={closeChampionModal} size='xl' centered>
                         <div className='modal-title'>{selectedChampion.id}</div>
                         <Modal.Body className='modal-body'>
                             <img

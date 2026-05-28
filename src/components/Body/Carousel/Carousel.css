@@ -79,7 +79,7 @@
     transition: transform 220ms ease, filter 220ms ease;
 }
 
-.carousel-champion-card > img {
+.carousel-champion-button > img {
     display: block;
     width: 100%;
     height: auto;
@@ -90,7 +90,16 @@
     object-fit: cover;
 }
 
-.carousel-champion-card > figcaption {
+.carousel-champion-button {
+    display: block;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    padding: 0;
+}
+
+.carousel-champion-button > figcaption {
     position: absolute;
     right: 8px;
     bottom: 8px;
