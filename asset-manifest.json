@@ -1,13 +1,16 @@
 {
   "files": {
-    "main.css": "/LeagueOfLegends-Card-Market/static/css/main.a64ef157.css",
-    "main.js": "/LeagueOfLegends-Card-Market/static/js/main.70bfb5a3.js",
+    "main.css": "/LeagueOfLegends-Card-Market/static/css/main.ab217953.css",
+    "main.js": "/LeagueOfLegends-Card-Market/static/js/main.515fb52b.js",
+    "static/media/attack.png": "/LeagueOfLegends-Card-Market/static/media/attack.95516a13daa2780c45b7.png",
     "index.html": "/LeagueOfLegends-Card-Market/index.html",
-    "main.a64ef157.css.map": "/LeagueOfLegends-Card-Market/static/css/main.a64ef157.css.map",
-    "main.70bfb5a3.js.map": "/LeagueOfLegends-Card-Market/static/js/main.70bfb5a3.js.map"
+    "static/media/defanse.png": "/LeagueOfLegends-Card-Market/static/media/defanse.471726a64468332b7984.png",
+    "static/media/magic.png": "/LeagueOfLegends-Card-Market/static/media/magic.c8f4fabfcc7d7110e25c.png",
+    "main.ab217953.css.map": "/LeagueOfLegends-Card-Market/static/css/main.ab217953.css.map",
+    "main.515fb52b.js.map": "/LeagueOfLegends-Card-Market/static/js/main.515fb52b.js.map"
   },
   "entrypoints": [
-    "static/css/main.a64ef157.css",
-    "static/js/main.70bfb5a3.js"
+    "static/css/main.ab217953.css",
+    "static/js/main.515fb52b.js"
   ]
 }
