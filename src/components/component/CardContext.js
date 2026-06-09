@@ -1,4 +1,5 @@
 import { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import LolData from "./Lol.json";
 
 const CardContext = createContext();
 
@@ -54,13 +55,20 @@ const uniqueById = (items) => (
     Array.from(new Map((items || []).filter(Boolean).map((item) => [item.id, item])).values())
 );
 
+const localChampions = Object.values(LolData.data || {}).filter(
+    (champion) => !EXCLUDED_CHAMPIONS.has(champion.id.toLowerCase())
+);
+
 export const CardContextprovider = ({ children }) => {
     const storedMoney = getStoredJson("money", 30);
     const initialMoney = Array.isArray(storedMoney) ? Number(storedMoney[0] || 30) : Number(storedMoney || 30);
     const storedCards = getStoredJson("char", []);
 
-    const [champions, setChampions] = useState([]);
-    const [cards, setCards] = useState(uniqueById(Array.isArray(storedCards) ? storedCards : Object.values(storedCards)));
+    const [champions, setChampions] = useState(localChampions);
+    const [cards, setCards] = useState(() => {
+        const savedCards = uniqueById(Array.isArray(storedCards) ? storedCards : Object.values(storedCards));
+        return savedCards.length > 0 ? savedCards : localChampions;
+    });
     const [money, setMoney] = useState(initialMoney);
     const [roleFilter, setRoleFilter] = useState("");
     const [priceFilter, setPriceFilter] = useState("default");
@@ -96,32 +104,8 @@ export const CardContextprovider = ({ children }) => {
     }, [cards]);
 
     useEffect(() => {
-        if (cards.length > 0) {
-            setChampions(cards);
-            return;
-        }
-
-        const controller = new AbortController();
-
-        fetch(`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/data/en_US/champion.json`, {
-            signal: controller.signal,
-        })
-            .then((response) => response.json())
-            .then((json) => {
-                const fetchedChampions = Object.values(json.data || {}).filter(
-                    (champion) => !EXCLUDED_CHAMPIONS.has(champion.id.toLowerCase())
-                );
-                setChampions(fetchedChampions);
-                setCards(fetchedChampions);
-            })
-            .catch((error) => {
-                if (error.name !== "AbortError") {
-                    console.error("Champion data could not be loaded", error);
-                }
-            });
-
-        return () => controller.abort();
-    }, [cards.length]);
+        setChampions(localChampions);
+    }, []);
 
     const filtered = useMemo(() => {
         const source = champions.length > 0 ? champions : cards;
