@@ -1142,7 +1142,7 @@ img {
 }
 
 .trending-card:hover {
-  transform: translateY(-6px) scale(1.03);
+  transform: translateY(-6px);
 }
 
 .trending-card img {
