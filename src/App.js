@@ -3,8 +3,6 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import {
-    AiOutlineArrowDown,
-    AiOutlineArrowUp,
     AiOutlineClose,
     AiOutlineHeart,
     AiOutlineLeft,
@@ -317,16 +315,16 @@ function App() {
         roleFilters,
         rarityFilters,
         handleRarityClick,
-        allRoleCLick,
+        collectionFilter,
+        handleCollectionFilterClick,
+        sortFilter,
+        handleSortClick,
         fighterClick,
         tankClick,
         mageClick,
         assassinClick,
         marksmanClick,
         supportClick,
-        filterUpMoneyClick,
-        filterDownMoneyClick,
-        unFilteredMoneyClick,
         maxPrice,
         setMaxPrice,
         openChampionModal,
@@ -347,6 +345,13 @@ function App() {
         Marksman: marksmanClick,
         Support: supportClick,
     };
+    const sortOptions = [
+        { key: 'featured', label: 'Featured' },
+        { key: 'price-low', label: 'Price: Low to High' },
+        { key: 'price-high', label: 'Price: High to Low' },
+        { key: 'alphabetical', label: 'Alphabetical' },
+        { key: 'rarity', label: 'Rarity' },
+    ];
 
     const featured = useMemo(() => (
         [...filtered].sort((a, b) => scoreChampion(b) - scoreChampion(a)).slice(0, 4)
@@ -502,14 +507,28 @@ function App() {
                         <div className='filter-collection-list'>
                             <button
                                 type='button'
-                                className='active'
-                                onClick={allRoleCLick}
+                                className={collectionFilter === 'all' ? 'active' : ''}
+                                onClick={() => handleCollectionFilterClick('all')}
                             >
                                 All Cards
-                                <Check size={16} strokeWidth={2.2} />
+                                {collectionFilter === 'all' ? <Check size={16} strokeWidth={2.2} /> : null}
                             </button>
-                            <button type='button'>Owned</button>
-                            <button type='button'>Not Owned</button>
+                            <button
+                                type='button'
+                                className={collectionFilter === 'owned' ? 'active' : ''}
+                                onClick={() => handleCollectionFilterClick('owned')}
+                            >
+                                Owned
+                                {collectionFilter === 'owned' ? <Check size={16} strokeWidth={2.2} /> : null}
+                            </button>
+                            <button
+                                type='button'
+                                className={collectionFilter === 'not-owned' ? 'active' : ''}
+                                onClick={() => handleCollectionFilterClick('not-owned')}
+                            >
+                                Not Owned
+                                {collectionFilter === 'not-owned' ? <Check size={16} strokeWidth={2.2} /> : null}
+                            </button>
                         </div>
                     </section>
 
@@ -519,9 +538,17 @@ function App() {
                             <ChevronDown size={16} strokeWidth={2.2} className='filter-chevron-collapsed' />
                         </button>
                         <div className='filter-sort-list'>
-                            <button type='button' onClick={filterUpMoneyClick}><AiOutlineArrowUp /> Price High</button>
-                            <button type='button' onClick={unFilteredMoneyClick}>Default Order</button>
-                            <button type='button' onClick={filterDownMoneyClick}><AiOutlineArrowDown /> Price Low</button>
+                            {sortOptions.map((option) => (
+                                <button
+                                    type='button'
+                                    key={option.key}
+                                    className={sortFilter === option.key ? 'active' : ''}
+                                    onClick={() => handleSortClick(option.key)}
+                                >
+                                    <span>{option.label}</span>
+                                    {sortFilter === option.key ? <Check size={16} strokeWidth={2.2} /> : null}
+                                </button>
+                            ))}
                         </div>
                     </section>
                 </div>
@@ -654,15 +681,20 @@ function App() {
                             ))}
                         </div>
                         <div className='market-grid'>
-                            {displayedIChampions.map((champion) => (
-                                <ChampionCard
-                                    key={champion.id}
-                                    champion={champion}
-                                    onAction={buyClick}
-                                    onOpen={openChampionModal}
-                                    roleIcons={roleIcons}
-                                />
-                            ))}
+                            {displayedIChampions.map((champion) => {
+                                const owned = myCardsArr.some((card) => card.id === champion.id);
+
+                                return (
+                                    <ChampionCard
+                                        key={champion.id}
+                                        champion={champion}
+                                        owned={owned}
+                                        onAction={owned ? sellClick : buyClick}
+                                        onOpen={openChampionModal}
+                                        roleIcons={roleIcons}
+                                    />
+                                );
+                            })}
                         </div>
                         {displayedIChampions.length === 0 ? (
                             <div className='empty-market'>No champions match this search.</div>
@@ -671,27 +703,6 @@ function App() {
                     </div>
                 </section>
 
-                <section className='owned-grid'>
-                    <div className='section-heading'>
-                        <span>Collection</span>
-                        <h2>My cards</h2>
-                    </div>
-                    <div className='market-grid market-grid-owned'>
-                        {myCardsArr.map((champion) => (
-                            <ChampionCard
-                                key={champion.id}
-                                champion={champion}
-                                owned
-                                onAction={sellClick}
-                                onOpen={openChampionModal}
-                                roleIcons={roleIcons}
-                            />
-                        ))}
-                    </div>
-                    {myCardsArr.length === 0 ? (
-                        <div className='empty-market'>Your collection is waiting for its first champion.</div>
-                    ) : null}
-                </section>
             </main>
 
             {mobileFiltersOpen ? (

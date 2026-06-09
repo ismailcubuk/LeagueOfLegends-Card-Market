@@ -53,6 +53,14 @@ const rarityFor = (champion) => {
     return "common";
 };
 
+const rarityWeight = {
+    mythic: 5,
+    legendary: 4,
+    epic: 3,
+    rare: 2,
+    common: 1,
+};
+
 const getStoredJson = (key, fallback) => {
     try {
         return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
@@ -98,7 +106,8 @@ export const CardContextprovider = ({ children }) => {
     const [money, setMoney] = useState(initialMoney);
     const [roleFilters, setRoleFilters] = useState([]);
     const [rarityFilters, setRarityFilters] = useState([]);
-    const [priceFilter, setPriceFilter] = useState("default");
+    const [collectionFilter, setCollectionFilter] = useState("all");
+    const [sortFilter, setSortFilter] = useState("featured");
     const [maxPrice, setMaxPrice] = useState(10);
     const [search, setSearch] = useState("");
     const [isSearch, setIsSearch] = useState(false);
@@ -215,10 +224,28 @@ export const CardContextprovider = ({ children }) => {
         setCurrentPage(1);
     }, []);
 
+    const handleCollectionFilterClick = useCallback((filter) => {
+        setCollectionFilter(filter);
+        setCurrentPage(1);
+    }, []);
+
+    const handleSortClick = useCallback((filter) => {
+        setSortFilter(filter);
+        setCurrentPage(1);
+    }, []);
+
     const filteredChampions = useMemo(() => {
         const normalizedSearch = search.trim().toLowerCase();
+        const ownedIds = new Set(myCardsArr.map((champion) => champion.id));
+        const collectionSource = collectionFilter === "owned"
+            ? myCardsArr
+            : uniqueById([...cards, ...myCardsArr]);
 
-        const searched = cards.filter((champion) => (
+        const collectionFiltered = collectionFilter === "not-owned"
+            ? collectionSource.filter((champion) => !ownedIds.has(champion.id))
+            : collectionSource;
+
+        const searched = collectionFiltered.filter((champion) => (
             champion.id.toLowerCase().includes(normalizedSearch) ||
             champion.name.toLowerCase().includes(normalizedSearch)
         ));
@@ -234,16 +261,28 @@ export const CardContextprovider = ({ children }) => {
         const priceFiltered = rarityFiltered.filter((champion) => champion.info.difficulty <= maxPrice);
         const sorted = [...priceFiltered];
 
-        if (priceFilter === "high") {
+        if (sortFilter === "price-high") {
             sorted.sort((a, b) => b.info.difficulty - a.info.difficulty);
         }
 
-        if (priceFilter === "low") {
+        if (sortFilter === "price-low") {
             sorted.sort((a, b) => a.info.difficulty - b.info.difficulty);
         }
 
+        if (sortFilter === "alphabetical") {
+            sorted.sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        if (sortFilter === "rarity") {
+            sorted.sort((a, b) => (
+                rarityWeight[rarityFor(b)] - rarityWeight[rarityFor(a)] ||
+                b.info.difficulty - a.info.difficulty ||
+                a.name.localeCompare(b.name)
+            ));
+        }
+
         return sorted;
-    }, [cards, maxPrice, priceFilter, rarityFilters, roleFilters, search]);
+    }, [cards, collectionFilter, maxPrice, myCardsArr, rarityFilters, roleFilters, search, sortFilter]);
 
     const totalPage = Math.ceil(filteredChampions.length / CHAMPIONS_PER_PAGE);
     const pageNumbers = useMemo(() => (
@@ -421,12 +460,8 @@ export const CardContextprovider = ({ children }) => {
         championsPerPage: CHAMPIONS_PER_PAGE,
         handlePrevClick: () => setCurrentPage((page) => Math.max(page - 1, 1)),
         handleNextClick: () => setCurrentPage((page) => Math.min(page + 1, totalPage || 1)),
-        unFilteredMoneyActive: activeStyle(priceFilter === "default"),
-        filterDownMoneyActive: activeStyle(priceFilter === "low"),
-        filterUpMoneyActive: activeStyle(priceFilter === "high"),
-        filterUpMoneyClick: () => setPriceFilter("high"),
-        filterDownMoneyClick: () => setPriceFilter("low"),
-        unFilteredMoneyClick: () => setPriceFilter("default"),
+        sortFilter,
+        handleSortClick,
         maxPrice,
         setMaxPrice: (value) => {
             setMaxPrice(Number(value));
@@ -442,6 +477,8 @@ export const CardContextprovider = ({ children }) => {
         roleFilters,
         rarityFilters,
         handleRarityClick,
+        collectionFilter,
+        handleCollectionFilterClick,
         search,
         clearSearch,
         handleChange,

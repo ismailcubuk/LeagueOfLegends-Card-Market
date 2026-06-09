@@ -1359,8 +1359,9 @@ img {
 }
 
 .filter-sort-list button {
-  justify-content: flex-start;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 36px;
 }
 
 .filter-collection-list button:hover,
@@ -1369,12 +1370,15 @@ img {
   color: var(--foreground);
 }
 
-.filter-collection-list button.active {
-  background: color-mix(in srgb, var(--primary) 10%, transparent);
+.filter-collection-list button.active,
+.filter-sort-list button.active {
+  background: rgba(255, 255, 255, 0.1);
   color: var(--foreground);
+  font-weight: 800;
 }
 
-.filter-collection-list button.active svg {
+.filter-collection-list button.active svg,
+.filter-sort-list button.active svg {
   color: var(--primary);
 }
 
