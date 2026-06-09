@@ -805,7 +805,7 @@ function App() {
                         <div className='section-heading shop-heading'>
                             <div>
                                 <span>Marketplace</span>
-                                <h2>Champion cards</h2>
+                                <h2>Champion Vault</h2>
                             </div>
                             <button type='button' className='mobile-filter-toggle' onClick={() => setMobileFiltersOpen(true)}>
                                 Filters

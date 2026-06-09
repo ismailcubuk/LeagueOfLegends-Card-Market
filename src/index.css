@@ -1442,7 +1442,8 @@ img {
   position: relative;
   overflow: hidden;
   border-color: var(--card-rarity-border, var(--border));
-  background: color-mix(in oklch, var(--panel-strong) 92%, transparent);
+  border-radius: 16px;
+  background: var(--panel-strong);
   box-shadow: 0 8px 24px -16px rgba(0, 0, 0, 0.6);
   transform-style: preserve-3d;
   transition: border-color 300ms ease, box-shadow 300ms ease;
@@ -1549,10 +1550,10 @@ img {
   border: 1px solid;
   border-radius: 999px;
   font-size: 0.63rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.14em;
   line-height: 1;
-  padding: 4px 8px;
+  padding: 3px 8px;
   text-transform: uppercase;
   white-space: nowrap;
 }
@@ -1623,7 +1624,7 @@ img {
 
 .market-card-body {
   display: grid;
-  gap: 18px;
+  gap: 0;
   padding: 16px;
 }
 
@@ -1652,7 +1653,7 @@ img {
   margin: 4px 0 0;
   overflow: hidden;
   color: var(--muted);
-  font-size: 0.86rem;
+  font-size: 0.75rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1678,6 +1679,7 @@ img {
   gap: 12px;
   align-items: center;
   justify-content: space-between;
+  margin-top: 16px;
 }
 
 .market-card-price {
@@ -1723,7 +1725,7 @@ img {
   min-height: 30px;
   border: 0;
   border-radius: 999px;
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 900;
   letter-spacing: 0.08em;
   line-height: 1;
