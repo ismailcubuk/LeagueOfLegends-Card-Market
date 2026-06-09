@@ -1777,14 +1777,19 @@ img {
   display: inline-flex;
   gap: 5px;
   align-items: center;
-  min-height: 21px;
+  min-height: 23px;
   border: 1px solid;
   border-radius: 999px;
-  font-size: 0.63rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  background: rgba(7, 11, 18, 0.72);
+  box-shadow: 0 0 16px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(10px) saturate(150%);
+  -webkit-backdrop-filter: blur(10px) saturate(150%);
+  font-size: 0.67rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
   line-height: 1;
-  padding: 3px 8px;
+  padding: 4px 9px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.72);
   text-transform: uppercase;
   white-space: nowrap;
 }

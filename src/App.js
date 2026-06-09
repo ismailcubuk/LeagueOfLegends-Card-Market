@@ -202,7 +202,7 @@ function ChampionCard({ champion, owned = false, onAction, onOpen }) {
                 <span className='market-card-top'>
                     <span
                         className='market-card-rarity'
-                        style={{ color: config.color, borderColor: config.border, backgroundColor: `color-mix(in oklch, ${config.color} 14%, transparent)` }}
+                        style={{ color: config.color, borderColor: config.border, backgroundColor: `color-mix(in srgb, #070b12 78%, ${config.color})` }}
                     >
                         {isHolo ? <Sparkles size={12} strokeWidth={2.2} aria-hidden='true' /> : null}
                         {config.label}
