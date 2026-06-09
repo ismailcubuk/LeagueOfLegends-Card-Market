@@ -1628,14 +1628,19 @@ img {
   border-color: var(--card-rarity-border, var(--border));
   border-radius: 16px;
   background: var(--panel-strong);
+  clip-path: inset(0 round 16px);
   box-shadow: 0 8px 24px -16px rgba(0, 0, 0, 0.6);
-  transform-style: preserve-3d;
+  background-clip: padding-box;
+  backface-visibility: hidden;
+  transform: translateZ(0);
   transition: border-color 300ms ease, box-shadow 300ms ease;
 }
 
 .market-card:hover {
   border-color: var(--rarity);
-  box-shadow: 0 16px 50px -12px var(--card-rarity-glow), 0 0 0 1px color-mix(in oklch, var(--rarity) 60%, transparent);
+  box-shadow:
+    0 16px 50px -12px var(--card-rarity-glow),
+    inset 0 0 0 1px color-mix(in oklch, var(--rarity) 60%, transparent);
 }
 
 .market-card-media {
@@ -1644,6 +1649,8 @@ img {
   width: 100%;
   aspect-ratio: 3 / 4;
   overflow: hidden;
+  border-radius: 15px 15px 0 0;
+  clip-path: inset(0 round 15px 15px 0 0);
   background: #101722;
   color: inherit;
   cursor: pointer;
@@ -1659,6 +1666,7 @@ img {
   inset: 0;
   width: 100%;
   height: 100%;
+  border-radius: inherit;
   object-fit: cover;
   object-position: top;
   user-select: none;
@@ -1676,6 +1684,7 @@ img {
 .market-card-top,
 .market-card-quick-actions {
   position: absolute;
+  border-radius: inherit;
 }
 
 .market-card-vignette {

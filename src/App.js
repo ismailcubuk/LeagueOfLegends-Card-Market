@@ -134,8 +134,8 @@ function ChampionCard({ champion, owned = false, onAction, onOpen }) {
     const [inCompare, setInCompare] = useState(false);
     const mx = useMotionValue(0);
     const my = useMotionValue(0);
-    const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [8, -8]), { stiffness: 250, damping: 20 });
-    const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-10, 10]), { stiffness: 250, damping: 20 });
+    const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [3, -3]), { stiffness: 250, damping: 24 });
+    const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-4, 4]), { stiffness: 250, damping: 24 });
     const glareX = useTransform(mx, [-0.5, 0.5], ['0%', '100%']);
 
     const handleMove = (event) => {
