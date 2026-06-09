@@ -68,6 +68,27 @@ const heroTextItem = {
     },
 };
 
+const filterContentVariants = {
+    closed: {
+        height: 0,
+        opacity: 0,
+        y: -4,
+        transition: {
+            duration: 0.18,
+            ease: 'easeInOut',
+        },
+    },
+    open: {
+        height: 'auto',
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.24,
+            ease: 'easeOut',
+        },
+    },
+};
+
 function scoreChampion(champion) {
     return champion.info.attack + champion.info.defense + champion.info.magic + champion.info.difficulty;
 }
@@ -238,6 +259,35 @@ function RarityPill({ rarity }) {
     );
 }
 
+function FilterSection({ title, isOpen, onToggle, last = false, children }) {
+    return (
+        <section className={`filter-section ${last ? 'filter-section-last' : ''} ${isOpen ? '' : 'filter-section-closed'}`}>
+            <button
+                type='button'
+                className='filter-section-trigger'
+                onClick={onToggle}
+                aria-expanded={isOpen}
+            >
+                <span>{title}</span>
+                <ChevronDown size={16} strokeWidth={2.2} className='filter-chevron' />
+            </button>
+            <AnimatePresence initial={false}>
+                {isOpen ? (
+                    <motion.div
+                        className='filter-section-content'
+                        initial='closed'
+                        animate='open'
+                        exit='closed'
+                        variants={filterContentVariants}
+                    >
+                        {children}
+                    </motion.div>
+                ) : null}
+            </AnimatePresence>
+        </section>
+    );
+}
+
 function TrendingCarousel({ champions, openChampionModal }) {
     const scrollerRef = useRef(null);
     const trending = useMemo(() => (
@@ -336,6 +386,13 @@ function App() {
     } = useContext(CardContext);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
     const [activeHeroIndex, setActiveHeroIndex] = useState(0);
+    const [openFilterSections, setOpenFilterSections] = useState({
+        role: true,
+        price: true,
+        rarity: true,
+        collection: true,
+        sort: true,
+    });
 
     const roleActions = {
         Fighter: fighterClick,
@@ -364,6 +421,12 @@ function App() {
     const selectedRoleNames = Array.from(new Set(filtered.flatMap((champion) => champion.tags)));
     const heroChampion = featured.length > 0 ? featured[activeHeroIndex % featured.length] : null;
     const heroChampionOwned = heroChampion ? myCardsArr.some((champion) => champion.id === heroChampion.id) : false;
+    const toggleFilterSection = (section) => {
+        setOpenFilterSections((sections) => ({
+            ...sections,
+            [section]: !sections[section],
+        }));
+    };
 
     const showPrevHero = () => {
         if (featured.length === 0) {
@@ -427,11 +490,7 @@ function App() {
                 </div>
 
                 <div className='filter-panel-body'>
-                    <section className='filter-section'>
-                        <button type='button' className='filter-section-trigger'>
-                            <span>Role</span>
-                            <ChevronDown size={16} strokeWidth={2.2} />
-                        </button>
+                    <FilterSection title='Role' isOpen={openFilterSections.role} onToggle={() => toggleFilterSection('role')}>
                         <div className='filter-role-grid'>
                             {sidebarRoles.map((role) => (
                                 <button
@@ -445,13 +504,9 @@ function App() {
                                 </button>
                             ))}
                         </div>
-                    </section>
+                    </FilterSection>
 
-                    <section className='filter-section'>
-                        <button type='button' className='filter-section-trigger'>
-                            <span>Price Range</span>
-                            <ChevronDown size={16} strokeWidth={2.2} />
-                        </button>
+                    <FilterSection title='Price Range' isOpen={openFilterSections.price} onToggle={() => toggleFilterSection('price')}>
                         <div className='filter-price-range'>
                             <div>
                                 <span>1</span>
@@ -467,13 +522,9 @@ function App() {
                                 aria-label='Maximum price'
                             />
                         </div>
-                    </section>
+                    </FilterSection>
 
-                    <section className='filter-section'>
-                        <button type='button' className='filter-section-trigger'>
-                            <span>Rarity</span>
-                            <ChevronDown size={16} strokeWidth={2.2} />
-                        </button>
+                    <FilterSection title='Rarity' isOpen={openFilterSections.rarity} onToggle={() => toggleFilterSection('rarity')}>
                         <div className='filter-rarity-list'>
                             {Object.entries(rarityConfig).map(([key, rarity]) => (
                                 <button
@@ -497,13 +548,9 @@ function App() {
                                 </button>
                             ))}
                         </div>
-                    </section>
+                    </FilterSection>
 
-                    <section className='filter-section'>
-                        <button type='button' className='filter-section-trigger'>
-                            <span>Collection</span>
-                            <ChevronDown size={16} strokeWidth={2.2} />
-                        </button>
+                    <FilterSection title='Collection' isOpen={openFilterSections.collection} onToggle={() => toggleFilterSection('collection')}>
                         <div className='filter-collection-list'>
                             <button
                                 type='button'
@@ -530,13 +577,9 @@ function App() {
                                 {collectionFilter === 'not-owned' ? <Check size={16} strokeWidth={2.2} /> : null}
                             </button>
                         </div>
-                    </section>
+                    </FilterSection>
 
-                    <section className='filter-section filter-section-last'>
-                        <button type='button' className='filter-section-trigger'>
-                            <span>Sort By</span>
-                            <ChevronDown size={16} strokeWidth={2.2} className='filter-chevron-collapsed' />
-                        </button>
+                    <FilterSection title='Sort By' isOpen={openFilterSections.sort} onToggle={() => toggleFilterSection('sort')} last>
                         <div className='filter-sort-list'>
                             {sortOptions.map((option) => (
                                 <button
@@ -550,7 +593,7 @@ function App() {
                                 </button>
                             ))}
                         </div>
-                    </section>
+                    </FilterSection>
                 </div>
             </div>
         </aside>

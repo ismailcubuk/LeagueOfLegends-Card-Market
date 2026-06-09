@@ -1142,6 +1142,12 @@ img {
   background: transparent;
   color: var(--muted);
   padding: 0;
+  transition: color 160ms ease;
+}
+
+.filter-section-trigger:hover,
+.filter-section-trigger[aria-expanded="true"] {
+  color: var(--foreground);
 }
 
 .filter-section-trigger span {
@@ -1155,8 +1161,25 @@ img {
   color: var(--muted);
 }
 
-.filter-chevron-collapsed {
+.filter-section-trigger:hover svg,
+.filter-section-trigger[aria-expanded="true"] svg {
+  color: var(--primary);
+}
+
+.filter-chevron {
+  transition: color 160ms ease, transform 180ms ease;
+}
+
+.filter-section-trigger[aria-expanded="false"] .filter-chevron {
   transform: rotate(-90deg);
+}
+
+.filter-section-content {
+  overflow: hidden;
+}
+
+.filter-section-closed {
+  padding-bottom: 16px;
 }
 
 .filter-role-grid {
