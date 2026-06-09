@@ -4,27 +4,35 @@ import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import {
     AiOutlineClose,
-    AiOutlineHeart,
     AiOutlineLeft,
-    AiOutlinePlayCircle,
     AiOutlineRight,
-    AiOutlineSearch,
-    AiOutlineShoppingCart,
     AiOutlineStar,
     AiOutlineTrophy,
 } from 'react-icons/ai';
-import { BsClock, BsCollection, BsGrid3X3Gap, BsWallet2 } from 'react-icons/bs';
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Eye, Flame, Heart, Play, Plus, ShoppingCart, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { BsClock, BsCollection } from 'react-icons/bs';
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Coins, Eye, Flame, Heart, Menu, Play, Plus, Search, ShoppingCart, SlidersHorizontal, Sparkles } from 'lucide-react';
 import CardContext from './components/component/CardContext';
 import Alert from './components/Body/Alert/Alert';
 import Pagination from './components/Body/Pagination/Pagination';
 
-const LOL_ICON_URL = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/lol_icon.png';
 const championLoadingImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${id}_0.jpg`;
 const championSplashImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_0.jpg`;
+const LOL_ICON_URL = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/lol_icon.png';
 
-const roles = ['Fighter', 'Tank', 'Mage', 'Assassin', 'Marksman', 'Support'];
 const sidebarRoles = ['Assassin', 'Mage', 'Fighter', 'Tank', 'Marksman', 'Support'];
+const navLinks = [
+    { label: 'Store', href: '#marketplace' },
+    { label: 'Collection', href: '#collection' },
+    { label: 'Trends', href: '#trending' },
+];
+
+function GoldCoin({ className = '' }) {
+    return (
+        <span className={`gold-coin ${className}`}>
+            <Coins size={16} strokeWidth={2.4} />
+        </span>
+    );
+}
 
 const heroTextParent = {
     hidden: {},
@@ -479,6 +487,7 @@ function App() {
     } = useContext(CardContext);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
     const [activeHeroIndex, setActiveHeroIndex] = useState(0);
+    const [activeLink, setActiveLink] = useState('Store');
     const [openFilterSections, setOpenFilterSections] = useState({
         role: true,
         price: true,
@@ -694,33 +703,56 @@ function App() {
 
     return (
         <div className='market-shell'>
-            <nav className='topbar'>
-                <div className='brand'>
-                    <img src={LOL_ICON_URL} alt='League of Legends' />
-                    <div className='brand-copy'>
-                        <span>NEXUS</span>
-                        <small>Champion Marketplace</small>
+            <header className='topbar'>
+                <div className='topbar-inner'>
+                    <a href='#marketplace' className='brand' aria-label='Nexus home'>
+                        <span className='brand-mark'>
+                            <img src={LOL_ICON_URL} alt='League of Legends' />
+                        </span>
+                        <div className='brand-copy'>
+                            <span>League</span>
+                            <small>Champion Marketplace</small>
+                        </div>
+                    </a>
+                    <div className='topbar-links'>
+                        {navLinks.map((link) => (
+                            <a
+                                key={link.label}
+                                href={link.href}
+                                className={activeLink === link.label ? 'active' : ''}
+                                onClick={() => setActiveLink(link.label)}
+                            >
+                                {link.label}
+                                {activeLink === link.label ? <motion.span layoutId='nav-underline' className='topbar-link-underline' /> : null}
+                            </a>
+                        ))}
                     </div>
+                    <label className='top-search'>
+                        <Search size={17} strokeWidth={2.2} />
+                        <input type='text' spellCheck='false' placeholder='Search champions, roles, regions...' value={search} onChange={handleChange} />
+                        {search ? (
+                            <button type='button' onClick={clearSearch} aria-label='Clear search'>
+                                <AiOutlineClose />
+                            </button>
+                        ) : <kbd>/</kbd>}
+                    </label>
+                    <motion.div
+                        key={money}
+                        className='wallet-pill'
+                        initial={{ scale: 1 }}
+                        animate={{ scale: [1, 1.06, 1] }}
+                        transition={{ duration: 0.35 }}
+                    >
+                        <span className='wallet-coin'>
+                            <GoldCoin />
+                        </span>
+                        <span>{money.toLocaleString()}</span>
+                    </motion.div>
+                    <button type='button' className='icon-button mobile-menu-button' onClick={() => setMobileFiltersOpen(true)} aria-label='Menu'>
+                        <Menu size={20} strokeWidth={2.2} />
+                    </button>
                 </div>
-                <div className='topbar-links'>
-                    <a href='#collection'>Collection</a>
-                    <a href='#trending'>Trending</a>
-                    <a href='#marketplace'>Marketplace</a>
-                </div>
-                <label className='top-search'>
-                    <AiOutlineSearch />
-                    <input type='text' spellCheck='false' placeholder='Search champion' value={search} onChange={handleChange} />
-                    {search ? (
-                        <button type='button' onClick={clearSearch} aria-label='Clear search'>
-                            <AiOutlineClose />
-                        </button>
-                    ) : null}
-                </label>
-                <div className='wallet-pill'>
-                    <BsWallet2 />
-                    <span>${money}</span>
-                </div>
-            </nav>
+            </header>
 
             <main className='market-main'>
                 {heroChampion ? (
