@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import {
@@ -14,7 +14,7 @@ import {
     AiOutlineTrophy,
 } from 'react-icons/ai';
 import { BsClock, BsCollection, BsGrid3X3Gap, BsWallet2 } from 'react-icons/bs';
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Flame, Heart, Play, ShoppingCart, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Eye, Flame, Heart, Play, Plus, ShoppingCart, SlidersHorizontal, Sparkles } from 'lucide-react';
 import CardContext from './components/component/CardContext';
 import Alert from './components/Body/Alert/Alert';
 import Pagination from './components/Body/Pagination/Pagination';
@@ -115,36 +115,129 @@ function rarityFor(champion) {
     return 'common';
 }
 
-function ChampionCard({ champion, owned = false, onAction, onOpen, roleIcons }) {
+function ChampionCard({ champion, owned = false, onAction, onOpen }) {
     const rarity = rarityFor(champion);
+    const config = rarityConfig[rarity];
+    const isHolo = rarity === 'legendary' || rarity === 'mythic';
+    const primaryRole = champion.tags[0] || 'Champion';
+    const cardRef = useRef(null);
+    const [hovered, setHovered] = useState(false);
+    const [wished, setWished] = useState(false);
+    const [inCompare, setInCompare] = useState(false);
+    const mx = useMotionValue(0);
+    const my = useMotionValue(0);
+    const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [8, -8]), { stiffness: 250, damping: 20 });
+    const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-10, 10]), { stiffness: 250, damping: 20 });
+    const glareX = useTransform(mx, [-0.5, 0.5], ['0%', '100%']);
+
+    const handleMove = (event) => {
+        const element = cardRef.current;
+
+        if (!element) {
+            return;
+        }
+
+        const rect = element.getBoundingClientRect();
+        mx.set((event.clientX - rect.left) / rect.width - 0.5);
+        my.set((event.clientY - rect.top) / rect.height - 0.5);
+    };
+
+    const resetTilt = () => {
+        mx.set(0);
+        my.set(0);
+        setHovered(false);
+    };
+
+    const toggleWished = (event) => {
+        event.stopPropagation();
+        setWished((current) => !current);
+    };
+
+    const toggleCompare = (event) => {
+        event.stopPropagation();
+        setInCompare((current) => !current);
+    };
+
+    const previewChampion = (event) => {
+        event.stopPropagation();
+        onOpen(champion);
+    };
+
+    const handleMediaKeyDown = (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onOpen(champion);
+        }
+    };
 
     return (
-        <article className={`market-card rarity-${rarity}`}>
-            <button type='button' className='market-card-media' onClick={() => onOpen(champion)} aria-label={`${champion.name} details`}>
-                <img src={championLoadingImage(champion.id)} alt={champion.name} loading='lazy' />
-                <span className='market-card-price'>${champion.info.difficulty}</span>
-                <span className='market-card-rarity'>{rarity}</span>
-            </button>
-            <div className='market-card-body'>
-                <div>
-                    <h3>{champion.name}</h3>
-                    <p>{champion.title}</p>
-                </div>
-                <div className='market-card-roles'>
-                    {champion.tags.map((tag) => (
-                        <img key={tag} src={roleIcons[tag]} alt={tag} title={tag} />
-                    ))}
-                </div>
-                <div className='stat-row'>
-                    <span>ATK {champion.info.attack}</span>
-                    <span>DEF {champion.info.defense}</span>
-                    <span>MAG {champion.info.magic}</span>
-                </div>
-                <button type='button' className={owned ? 'sell-action' : 'buy-action'} onClick={() => onAction(champion)}>
-                    {owned ? 'Sell Card' : 'Buy Card'}
-                </button>
+        <motion.article
+            ref={cardRef}
+            className={`market-card rarity-${rarity}`}
+            onMouseMove={handleMove}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={resetTilt}
+            style={{
+                rotateX,
+                rotateY,
+                transformPerspective: 1000,
+                '--card-rarity-border': hovered ? config.color : 'var(--border)',
+                '--card-rarity-glow': hovered ? config.glow : 'rgba(0,0,0,0.6)',
+            }}
+            whileHover={{ y: -8, scale: 1.02 }}
+        >
+            <div className='market-card-media' onClick={() => onOpen(champion)} onKeyDown={handleMediaKeyDown} role='button' tabIndex='0' aria-label={`${champion.name} details`}>
+                <img src={championLoadingImage(champion.id)} alt={champion.name} loading='lazy' draggable='false' />
+                <span className='market-card-vignette' />
+                <span className='market-card-glow' style={{ background: `radial-gradient(70% 50% at 50% 100%, ${config.glow}, transparent 70%)` }} />
+                {isHolo ? <motion.span className='market-card-holo' aria-hidden style={{ backgroundPositionX: glareX }} animate={hovered ? { backgroundPosition: ['0% 0%', '200% 200%'] } : {}} transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }} /> : null}
+                <span className='market-card-top'>
+                    <span
+                        className='market-card-rarity'
+                        style={{ color: config.color, borderColor: config.border, backgroundColor: `color-mix(in oklch, ${config.color} 14%, transparent)` }}
+                    >
+                        {isHolo ? <Sparkles size={12} strokeWidth={2.2} aria-hidden='true' /> : null}
+                        {config.label}
+                    </span>
+                    {owned ? (
+                        <span className='market-card-owned'>
+                            <Check size={12} strokeWidth={3} aria-hidden='true' />
+                            Owned
+                        </span>
+                    ) : null}
+                </span>
+                <span className='market-card-quick-actions'>
+                    <button type='button' className='market-card-icon-action' onClick={previewChampion} aria-label={`Preview ${champion.name}`}>
+                        <Eye size={16} strokeWidth={2.2} />
+                    </button>
+                    <button type='button' className={`market-card-icon-action ${wished ? 'is-wished' : ''}`} onClick={toggleWished} aria-label='Wishlist'>
+                        <Heart size={16} strokeWidth={2.2} />
+                    </button>
+                    <button type='button' className={`market-card-icon-action ${inCompare ? 'is-compare' : ''}`} onClick={toggleCompare} aria-label='Compare'>
+                        <Plus size={16} strokeWidth={2.2} />
+                    </button>
+                </span>
             </div>
-        </article>
+            <div className='market-card-body'>
+                <div className='market-card-title-row'>
+                    <div>
+                        <h3>{champion.name}</h3>
+                        <p>{champion.title}</p>
+                    </div>
+                    <span className='market-card-role-badge'>{primaryRole}</span>
+                </div>
+                <div className='market-card-footer'>
+                    <div className='market-card-price'>
+                        <span aria-hidden='true'><i /></span>
+                        <strong>{champion.info.difficulty.toLocaleString()}</strong>
+                    </div>
+                    <motion.button type='button' whileTap={{ scale: 0.94 }} className={owned ? 'sell-action' : 'buy-action'} onClick={() => onAction(champion)} disabled={owned}>
+                        {owned ? <Check size={14} strokeWidth={2.8} /> : <ShoppingCart size={14} strokeWidth={2.4} />}
+                        {owned ? 'Owned' : 'Buy'}
+                    </motion.button>
+                </div>
+            </div>
+        </motion.article>
     );
 }
 
@@ -734,7 +827,6 @@ function App() {
                                         owned={owned}
                                         onAction={owned ? sellClick : buyClick}
                                         onOpen={openChampionModal}
-                                        roleIcons={roleIcons}
                                     />
                                 );
                             })}
