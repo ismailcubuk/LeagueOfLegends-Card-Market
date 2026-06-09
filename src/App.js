@@ -16,7 +16,7 @@ import {
     AiOutlineTrophy,
 } from 'react-icons/ai';
 import { BsClock, BsCollection, BsGrid3X3Gap, BsWallet2 } from 'react-icons/bs';
-import { ChevronLeft, ChevronRight, Flame, Heart, Play, ShoppingCart, Sparkles } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Flame, Heart, Play, ShoppingCart, SlidersHorizontal, Sparkles } from 'lucide-react';
 import CardContext from './components/component/CardContext';
 import Alert from './components/Body/Alert/Alert';
 import Pagination from './components/Body/Pagination/Pagination';
@@ -26,6 +26,7 @@ const championLoadingImage = (id) => `https://ddragon.leagueoflegends.com/cdn/im
 const championSplashImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_0.jpg`;
 
 const roles = ['Fighter', 'Tank', 'Mage', 'Assassin', 'Marksman', 'Support'];
+const sidebarRoles = ['Assassin', 'Mage', 'Fighter', 'Tank', 'Marksman', 'Support'];
 
 const heroTextParent = {
     hidden: {},
@@ -332,6 +333,7 @@ function App() {
     } = useContext(CardContext);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
     const [activeHeroIndex, setActiveHeroIndex] = useState(0);
+    const [activeRole, setActiveRole] = useState('Assassin');
 
     const roleActions = {
         Fighter: fighterClick,
@@ -407,23 +409,104 @@ function App() {
 
     const filters = (
         <aside className='filter-panel'>
-            <div className='panel-title'>
-                <BsGrid3X3Gap />
-                <span>Filters</span>
-            </div>
-            <div className='filter-group'>
-                <button type='button' onClick={allRoleCLick}>All Roles</button>
-                {roles.map((role) => (
-                    <button type='button' key={role} onClick={roleActions[role]}>
-                        <img src={roleIcons[role]} alt='' />
-                        {role}
-                    </button>
-                ))}
-            </div>
-            <div className='filter-group'>
-                <button type='button' onClick={filterUpMoneyClick}><AiOutlineArrowUp /> Price High</button>
-                <button type='button' onClick={unFilteredMoneyClick}>Default Order</button>
-                <button type='button' onClick={filterDownMoneyClick}><AiOutlineArrowDown /> Price Low</button>
+            <div className='filter-shell'>
+                <div className='filter-panel-title'>
+                    <div>
+                        <SlidersHorizontal size={16} strokeWidth={2.2} />
+                        <span>Filters</span>
+                    </div>
+                </div>
+
+                <div className='filter-panel-body'>
+                    <section className='filter-section'>
+                        <button type='button' className='filter-section-trigger'>
+                            <span>Role</span>
+                            <ChevronDown size={16} strokeWidth={2.2} />
+                        </button>
+                        <div className='filter-role-grid'>
+                            {sidebarRoles.map((role) => (
+                                <button
+                                    type='button'
+                                    key={role}
+                                    className={`filter-role-button ${activeRole === role ? 'active' : ''}`}
+                                    onClick={() => {
+                                        setActiveRole(role);
+                                        roleActions[role]();
+                                    }}
+                                >
+                                    <img src={roleIcons[role]} alt='' />
+                                    {role}
+                                </button>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section className='filter-section'>
+                        <button type='button' className='filter-section-trigger'>
+                            <span>Price Range</span>
+                            <ChevronDown size={16} strokeWidth={2.2} />
+                        </button>
+                        <div className='filter-price-range'>
+                            <div>
+                                <span>0</span>
+                                <strong>{money.toLocaleString()}</strong>
+                            </div>
+                            <input type='range' min='0' max='3500' step='50' defaultValue='3500' aria-label='Maximum price' />
+                        </div>
+                    </section>
+
+                    <section className='filter-section'>
+                        <button type='button' className='filter-section-trigger'>
+                            <span>Rarity</span>
+                            <ChevronDown size={16} strokeWidth={2.2} />
+                        </button>
+                        <div className='filter-rarity-list'>
+                            {Object.entries(rarityConfig).map(([key, rarity]) => (
+                                <button type='button' key={key} className='filter-rarity-button'>
+                                    <span className='filter-check-box' />
+                                    <span>
+                                        {['legendary', 'mythic'].includes(key) ? <Sparkles size={12} strokeWidth={2} style={{ color: rarity.color }} aria-hidden='true' /> : null}
+                                        {rarity.label}
+                                    </span>
+                                </button>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section className='filter-section'>
+                        <button type='button' className='filter-section-trigger'>
+                            <span>Collection</span>
+                            <ChevronDown size={16} strokeWidth={2.2} />
+                        </button>
+                        <div className='filter-collection-list'>
+                            <button
+                                type='button'
+                                className='active'
+                                onClick={() => {
+                                    setActiveRole('All');
+                                    allRoleCLick();
+                                }}
+                            >
+                                All Cards
+                                <Check size={16} strokeWidth={2.2} />
+                            </button>
+                            <button type='button'>Owned</button>
+                            <button type='button'>Not Owned</button>
+                        </div>
+                    </section>
+
+                    <section className='filter-section filter-section-last'>
+                        <button type='button' className='filter-section-trigger'>
+                            <span>Sort By</span>
+                            <ChevronDown size={16} strokeWidth={2.2} className='filter-chevron-collapsed' />
+                        </button>
+                        <div className='filter-sort-list'>
+                            <button type='button' onClick={filterUpMoneyClick}><AiOutlineArrowUp /> Price High</button>
+                            <button type='button' onClick={unFilteredMoneyClick}>Default Order</button>
+                            <button type='button' onClick={filterDownMoneyClick}><AiOutlineArrowDown /> Price Low</button>
+                        </div>
+                    </section>
+                </div>
             </div>
         </aside>
     );
