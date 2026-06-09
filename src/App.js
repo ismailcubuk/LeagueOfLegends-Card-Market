@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import {
     AiOutlineArrowDown,
@@ -15,6 +16,7 @@ import {
     AiOutlineTrophy,
 } from 'react-icons/ai';
 import { BsClock, BsCollection, BsGrid3X3Gap, BsWallet2 } from 'react-icons/bs';
+import { ChevronLeft, ChevronRight, Flame, Heart, Play, ShoppingCart, Sparkles } from 'lucide-react';
 import CardContext from './components/component/CardContext';
 import Alert from './components/Body/Alert/Alert';
 import Pagination from './components/Body/Pagination/Pagination';
@@ -24,6 +26,48 @@ const championLoadingImage = (id) => `https://ddragon.leagueoflegends.com/cdn/im
 const championSplashImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_0.jpg`;
 
 const roles = ['Fighter', 'Tank', 'Mage', 'Assassin', 'Marksman', 'Support'];
+
+const heroTextParent = {
+    hidden: {},
+    show: {
+        transition: {
+            staggerChildren: 0.08,
+            delayChildren: 0.15,
+        },
+    },
+    exit: {
+        transition: {
+            staggerChildren: 0.04,
+            staggerDirection: -1,
+        },
+    },
+};
+
+const heroTextItem = {
+    hidden: {
+        opacity: 0,
+        y: 18,
+        filter: 'blur(6px)',
+    },
+    show: {
+        opacity: 1,
+        y: 0,
+        filter: 'blur(0px)',
+        transition: {
+            duration: 0.55,
+            ease: [0.22, 1, 0.36, 1],
+        },
+    },
+    exit: {
+        opacity: 0,
+        y: -14,
+        filter: 'blur(4px)',
+        transition: {
+            duration: 0.25,
+            ease: 'easeIn',
+        },
+    },
+};
 
 function scoreChampion(champion) {
     return champion.info.attack + champion.info.defense + champion.info.magic + champion.info.difficulty;
@@ -85,13 +129,15 @@ function ChampionCard({ champion, owned = false, onAction, onOpen, roleIcons }) 
 }
 
 function HeroStat({ label, value, tone }) {
+    const scaledValue = Math.min(Math.max(value * 10, 0), 100);
+
     return (
         <div className='hero-stat'>
             <span>{label}</span>
             <div className='hero-stat-track'>
-                <i style={{ width: `${Math.max(value, 1) * 10}%` }} className={`tone-${tone}`} />
+                <i style={{ width: `${scaledValue}%` }} className={`tone-${tone}`} />
             </div>
-            <strong>{value}</strong>
+            <strong>{scaledValue}</strong>
         </div>
     );
 }
@@ -120,7 +166,7 @@ function CollectionPanel({ champions, ownedChampions }) {
                             <span>{pct}%</span>
                         </div>
                     </div>
-                    <div>
+                    <div className='collection-static-copy'>
                         <div className='collection-kicker'>
                             <BsCollection />
                             My Collection
@@ -166,6 +212,90 @@ function CollectionPanel({ champions, ownedChampions }) {
                         <span>Unlock your first champion to start collecting</span>
                     </div>
                 )}
+            </div>
+        </section>
+    );
+}
+
+const rarityConfig = {
+    common: { label: 'Common', color: 'var(--rarity-common)', border: 'rgba(170,180,200,0.5)', glow: 'rgba(170,180,200,0.35)' },
+    rare: { label: 'Rare', color: 'var(--rarity-rare)', border: 'rgba(90,160,255,0.6)', glow: 'rgba(90,160,255,0.35)' },
+    epic: { label: 'Epic', color: 'var(--rarity-epic)', border: 'rgba(190,110,255,0.6)', glow: 'rgba(190,110,255,0.36)' },
+    legendary: { label: 'Legendary', color: 'var(--rarity-legendary)', border: 'rgba(232,196,110,0.75)', glow: 'rgba(232,196,110,0.36)' },
+    mythic: { label: 'Mythic', color: 'var(--rarity-mythic)', border: 'rgba(255,110,120,0.7)', glow: 'rgba(255,110,120,0.36)' },
+};
+
+function RarityPill({ rarity }) {
+    const config = rarityConfig[rarity];
+
+    return (
+        <span
+            className='trending-rarity'
+            style={{ color: config.color, borderColor: config.border, backgroundColor: `color-mix(in oklch, ${config.color} 14%, transparent)` }}
+        >
+            <Sparkles size={12} strokeWidth={2} aria-hidden='true' />
+            {config.label}
+        </span>
+    );
+}
+
+function TrendingCarousel({ champions, openChampionModal }) {
+    const scrollerRef = useRef(null);
+    const trending = useMemo(() => (
+        [...champions].sort((a, b) => scoreChampion(b) - scoreChampion(a)).slice(0, 12)
+    ), [champions]);
+
+    const scrollByCards = (direction) => {
+        if (!scrollerRef.current) {
+            return;
+        }
+
+        scrollerRef.current.scrollBy({ left: direction * scrollerRef.current.clientWidth * 0.8, behavior: 'smooth' });
+    };
+
+    return (
+        <section className='trending-section'>
+            <div className='trending-kicker'>
+                <Flame size={16} strokeWidth={2.4} />
+                Trending Now
+            </div>
+            <div className='trending-carousel'>
+                <div className='trending-fade-left' />
+                <div className='trending-fade-right' />
+                <button type='button' className='trending-arrow trending-arrow-left' onClick={() => scrollByCards(-1)} aria-label='Scroll left'>
+                    <ChevronLeft size={20} />
+                </button>
+                <button type='button' className='trending-arrow trending-arrow-right' onClick={() => scrollByCards(1)} aria-label='Scroll right'>
+                    <ChevronRight size={20} />
+                </button>
+                <div className='trending-track' ref={scrollerRef}>
+                    {trending.map((champion) => {
+                        const rarity = rarityFor(champion);
+                        const config = rarityConfig[rarity];
+
+                        return (
+                            <button
+                                type='button'
+                                key={champion.id}
+                                className='trending-card'
+                                onClick={() => openChampionModal(champion)}
+                            >
+                                <img src={championSplashImage(champion.id)} alt={champion.name} draggable='false' loading='lazy' />
+                                <div className='trending-card-gradient' />
+                                <div className='trending-card-glow' style={{ background: `radial-gradient(60% 80% at 80% 50%, ${config.glow}, transparent 70%)` }} />
+                                <div className='trending-card-ring' style={{ boxShadow: `inset 0 0 30px ${config.glow}`, borderColor: config.border }} />
+                                <div className='trending-card-content'>
+                                    <RarityPill rarity={rarity} />
+                                    <div>
+                                        <p>{champion.name}</p>
+                                        <span>{champion.title}</span>
+                                        <strong>{champion.info.difficulty.toLocaleString()}</strong>
+                                    </div>
+                                </div>
+                            </button>
+                        );
+                    })}
+                </div>
             </div>
         </section>
     );
@@ -222,6 +352,7 @@ function App() {
 
     const selectedRoleNames = Array.from(new Set(filtered.flatMap((champion) => champion.tags)));
     const heroChampion = featured.length > 0 ? featured[activeHeroIndex % featured.length] : null;
+    const heroChampionOwned = heroChampion ? myCardsArr.some((champion) => champion.id === heroChampion.id) : false;
 
     const showPrevHero = () => {
         if (featured.length === 0) {
@@ -254,7 +385,7 @@ function App() {
 
         const interval = window.setInterval(() => {
             setActiveHeroIndex((index) => (index + 1) % featured.length);
-        }, 3000);
+        }, 5000);
 
         return () => window.clearInterval(interval);
     }, [featured.length]);
@@ -322,7 +453,18 @@ function App() {
             <main className='market-main'>
                 {heroChampion ? (
                     <section className={`hero-section rarity-${rarityFor(heroChampion)}`}>
-                        <img className='hero-bg' src={championSplashImage(heroChampion.id)} alt='' />
+                        <AnimatePresence mode='sync'>
+                            <motion.div
+                                key={heroChampion.id}
+                                className='hero-image-layer'
+                                initial={{ opacity: 0, scale: 1.06 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 1.02 }}
+                                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                            >
+                                <img className='hero-bg' src={championSplashImage(heroChampion.id)} alt={heroChampion.name} />
+                            </motion.div>
+                        </AnimatePresence>
                         <div className='hero-shade' />
                         <button type='button' className='hero-nav hero-nav-left' onClick={showPrevHero} aria-label='Previous featured champion'>
                             <AiOutlineLeft />
@@ -331,33 +473,47 @@ function App() {
                             <AiOutlineRight />
                         </button>
                         <div className='hero-content'>
-                            <div className='hero-meta'>
-                                <span className='hero-rarity'>{rarityFor(heroChampion)}</span>
-                                <span>Featured</span>
-                                <span>{heroChampion.tags[0]}</span>
-                            </div>
-                            <h1>{heroChampion.name}</h1>
-                            <h2>{heroChampion.title}</h2>
-                            <p>{heroChampion.blurb}</p>
-                            <div className='hero-stats'>
-                                <HeroStat label='Attack' value={heroChampion.info.attack} tone='attack' />
-                                <HeroStat label='Magic' value={heroChampion.info.magic} tone='magic' />
-                                <HeroStat label='Defense' value={heroChampion.info.defense} tone='defense' />
-                                <HeroStat label='Difficulty' value={heroChampion.info.difficulty} tone='difficulty' />
-                            </div>
-                            <div className='hero-actions'>
-                                <button type='button' className='hero-unlock' onClick={() => buyClick(heroChampion)}>
-                                    <AiOutlineShoppingCart />
-                                    Unlock / ${heroChampion.info.difficulty}
-                                </button>
-                                <button type='button' className='hero-preview' onMouseEnter={() => preloadChampionDetails(heroChampion.id)} onClick={() => openChampionModal(heroChampion)}>
-                                    <AiOutlinePlayCircle />
-                                    Preview
-                                </button>
-                                <button type='button' className='hero-like' onClick={() => openChampionModal(heroChampion)} aria-label={`Preview ${heroChampion.name}`}>
-                                    <AiOutlineHeart />
-                                </button>
-                            </div>
+                            <AnimatePresence mode='wait'>
+                                <motion.div
+                                    key={heroChampion.id}
+                                    variants={heroTextParent}
+                                    initial='hidden'
+                                    animate='show'
+                                    exit='exit'
+                                >
+                                    <motion.div variants={heroTextItem} className='hero-meta'>
+                                        <span className='hero-rarity'><AiOutlineStar />{rarityFor(heroChampion)}</span>
+                                        <span>Featured · {heroChampion.tags[0] || heroChampion.partype || 'Runeterra'}</span>
+                                    </motion.div>
+                                    <motion.h1 variants={heroTextItem}>{heroChampion.name}</motion.h1>
+                                    <motion.h2 variants={heroTextItem}>{heroChampion.title}</motion.h2>
+                                    <motion.p variants={heroTextItem}>{heroChampion.blurb}</motion.p>
+                                    <motion.div variants={heroTextItem} className='hero-stats'>
+                                        <HeroStat label='Attack' value={heroChampion.info.attack} tone='attack' />
+                                        <HeroStat label='Magic' value={heroChampion.info.magic} tone='magic' />
+                                        <HeroStat label='Defense' value={heroChampion.info.defense} tone='defense' />
+                                        <HeroStat label='Mobility' value={heroChampion.info.difficulty} tone='difficulty' />
+                                    </motion.div>
+                                    <motion.div variants={heroTextItem} className='hero-actions'>
+                                        <button
+                                            type='button'
+                                            className='hero-unlock'
+                                            disabled={heroChampionOwned}
+                                            onClick={() => buyClick(heroChampion)}
+                                        >
+                                            <ShoppingCart size={16} strokeWidth={2.4} />
+                                            {heroChampionOwned ? 'In Collection' : `Unlock · ${heroChampion.info.difficulty.toLocaleString()}`}
+                                        </button>
+                                        <button type='button' className='hero-preview' onMouseEnter={() => preloadChampionDetails(heroChampion.id)} onClick={() => openChampionModal(heroChampion)}>
+                                            <Play size={16} strokeWidth={2.4} />
+                                            Preview
+                                        </button>
+                                        <button type='button' className='hero-like' onClick={() => openChampionModal(heroChampion)} aria-label={`Preview ${heroChampion.name}`}>
+                                            <Heart size={20} strokeWidth={2.2} />
+                                        </button>
+                                    </motion.div>
+                                </motion.div>
+                            </AnimatePresence>
                         </div>
                         <div className='hero-dots'>
                             {featured.map((champion, index) => (
@@ -367,7 +523,9 @@ function App() {
                                     className={index === activeHeroIndex % featured.length ? 'active' : ''}
                                     onClick={() => setActiveHeroIndex(index)}
                                     aria-label={`Show ${champion.name}`}
-                                />
+                                >
+                                    {index === activeHeroIndex % featured.length ? <motion.span key={champion.id} initial={{ width: '0%' }} animate={{ width: '100%' }} transition={{ duration: 5, ease: 'linear' }} /> : null}
+                                </button>
                             ))}
                         </div>
                     </section>
@@ -375,21 +533,7 @@ function App() {
 
                 <CollectionPanel champions={filtered} ownedChampions={myCardsArr} />
 
-                <section className='trending-section'>
-                    <div className='section-heading'>
-                        <span>Trending</span>
-                        <h2>High demand champions</h2>
-                    </div>
-                    <div className='trending-track'>
-                        {trending.map((champion) => (
-                            <button type='button' key={champion.id} onMouseEnter={() => preloadChampionDetails(champion.id)} onClick={() => openChampionModal(champion)}>
-                                <img src={championSplashImage(champion.id)} alt={champion.name} loading='lazy' />
-                                <span>{champion.name}</span>
-                                <strong>${champion.info.difficulty}</strong>
-                            </button>
-                        ))}
-                    </div>
-                </section>
+                <TrendingCarousel champions={trending} openChampionModal={openChampionModal} />
 
                 <section className='shop-layout' id='marketplace'>
                     {filters}
