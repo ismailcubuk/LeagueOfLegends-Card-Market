@@ -396,7 +396,7 @@ function TrendingCarousel({ champions, openChampionModal }) {
     };
 
     return (
-        <section className='trending-section'>
+        <section className='trending-section' id='trending'>
             <div className='trending-kicker'>
                 <Flame size={16} strokeWidth={2.4} />
                 Trending Now
@@ -697,7 +697,15 @@ function App() {
             <nav className='topbar'>
                 <div className='brand'>
                     <img src={LOL_ICON_URL} alt='League of Legends' />
-                    <span>Nexus Card Market</span>
+                    <div className='brand-copy'>
+                        <span>NEXUS</span>
+                        <small>Champion Marketplace</small>
+                    </div>
+                </div>
+                <div className='topbar-links'>
+                    <a href='#collection'>Collection</a>
+                    <a href='#trending'>Trending</a>
+                    <a href='#marketplace'>Marketplace</a>
                 </div>
                 <label className='top-search'>
                     <AiOutlineSearch />
