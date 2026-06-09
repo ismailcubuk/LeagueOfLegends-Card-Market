@@ -315,6 +315,8 @@ function App() {
         handleChange,
         roleIcons,
         roleFilters,
+        rarityFilters,
+        handleRarityClick,
         allRoleCLick,
         fighterClick,
         tankClick,
@@ -469,9 +471,21 @@ function App() {
                         </button>
                         <div className='filter-rarity-list'>
                             {Object.entries(rarityConfig).map(([key, rarity]) => (
-                                <button type='button' key={key} className='filter-rarity-button'>
-                                    <span className='filter-check-box' />
-                                    <span>
+                                <button
+                                    type='button'
+                                    key={key}
+                                    className={`filter-rarity-button ${rarityFilters.includes(key) ? 'active' : ''}`}
+                                    onClick={() => handleRarityClick(key)}
+                                >
+                                    <span
+                                        className='filter-check-box'
+                                        style={rarityFilters.includes(key) ? {
+                                            '--filter-rarity-color': rarity.color,
+                                        } : undefined}
+                                    >
+                                        {rarityFilters.includes(key) ? <Check size={13} strokeWidth={3} aria-hidden='true' /> : null}
+                                    </span>
+                                    <span style={rarityFilters.includes(key) ? { color: rarity.color } : undefined}>
                                         {['legendary', 'mythic'].includes(key) ? <Sparkles size={12} strokeWidth={2} style={{ color: rarity.color }} aria-hidden='true' /> : null}
                                         {rarity.label}
                                     </span>

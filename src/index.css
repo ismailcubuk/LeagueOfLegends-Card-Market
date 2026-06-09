@@ -1295,9 +1295,10 @@ img {
   background: transparent;
   color: var(--foreground);
   font-size: 0.875rem;
+  font-weight: 700;
   padding: 4px;
   text-align: left;
-  transition: background 160ms ease;
+  transition: background 160ms ease, color 160ms ease;
 }
 
 .filter-rarity-button:hover {
@@ -1310,16 +1311,36 @@ img {
   height: 20px;
   flex: 0 0 auto;
   place-items: center;
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: 1px solid rgba(77, 95, 126, 0.58);
+  border-radius: 999px;
   background: transparent;
+  color: var(--filter-rarity-color);
+  transition: border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
+}
+
+.filter-rarity-button:hover .filter-check-box {
+  border-color: rgba(217, 183, 93, 0.45);
+}
+
+.filter-rarity-button.active .filter-check-box {
+  border-color: var(--filter-rarity-color);
+  background: color-mix(in srgb, var(--filter-rarity-color) 14%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--filter-rarity-color) 24%, transparent);
 }
 
 .filter-rarity-button > span:last-child {
   display: inline-flex;
   gap: 6px;
   align-items: center;
-  font-weight: 500;
+  color: var(--foreground);
+  font-weight: 700;
+  transition: color 160ms ease;
+}
+
+.filter-rarity-button > span:last-child svg {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
 }
 
 .filter-collection-list button,

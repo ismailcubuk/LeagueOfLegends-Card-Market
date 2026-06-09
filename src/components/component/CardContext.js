@@ -27,6 +27,32 @@ const roleIcons = {
     Support: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png",
 };
 
+const scoreChampion = (champion) => (
+    champion.info.attack + champion.info.defense + champion.info.magic + champion.info.difficulty
+);
+
+const rarityFor = (champion) => {
+    const score = scoreChampion(champion);
+
+    if (score >= 29) {
+        return "mythic";
+    }
+
+    if (score >= 25) {
+        return "legendary";
+    }
+
+    if (score >= 21) {
+        return "epic";
+    }
+
+    if (score >= 16) {
+        return "rare";
+    }
+
+    return "common";
+};
+
 const getStoredJson = (key, fallback) => {
     try {
         return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback));
@@ -71,6 +97,7 @@ export const CardContextprovider = ({ children }) => {
     });
     const [money, setMoney] = useState(initialMoney);
     const [roleFilters, setRoleFilters] = useState([]);
+    const [rarityFilters, setRarityFilters] = useState([]);
     const [priceFilter, setPriceFilter] = useState("default");
     const [maxPrice, setMaxPrice] = useState(10);
     const [search, setSearch] = useState("");
@@ -169,6 +196,15 @@ export const CardContextprovider = ({ children }) => {
         setCurrentPage(1);
     }, []);
 
+    const handleRarityClick = useCallback((rarity) => {
+        setRarityFilters((currentRarities) => (
+            currentRarities.includes(rarity)
+                ? currentRarities.filter((currentRarity) => currentRarity !== rarity)
+                : [...currentRarities, rarity]
+        ));
+        setCurrentPage(1);
+    }, []);
+
     const handleChange = useCallback((event) => {
         setSearch(event.target.value);
         setCurrentPage(1);
@@ -191,7 +227,11 @@ export const CardContextprovider = ({ children }) => {
             ? searched.filter((champion) => champion.tags.some((tag) => roleFilters.includes(tag)))
             : searched;
 
-        const priceFiltered = roleFiltered.filter((champion) => champion.info.difficulty <= maxPrice);
+        const rarityFiltered = rarityFilters.length > 0
+            ? roleFiltered.filter((champion) => rarityFilters.includes(rarityFor(champion)))
+            : roleFiltered;
+
+        const priceFiltered = rarityFiltered.filter((champion) => champion.info.difficulty <= maxPrice);
         const sorted = [...priceFiltered];
 
         if (priceFilter === "high") {
@@ -203,7 +243,7 @@ export const CardContextprovider = ({ children }) => {
         }
 
         return sorted;
-    }, [cards, maxPrice, priceFilter, roleFilters, search]);
+    }, [cards, maxPrice, priceFilter, rarityFilters, roleFilters, search]);
 
     const totalPage = Math.ceil(filteredChampions.length / CHAMPIONS_PER_PAGE);
     const pageNumbers = useMemo(() => (
@@ -400,6 +440,8 @@ export const CardContextprovider = ({ children }) => {
         clickedMarksman: activeStyle(roleFilters.includes("Marksman")),
         clickedSupport: activeStyle(roleFilters.includes("Support")),
         roleFilters,
+        rarityFilters,
+        handleRarityClick,
         search,
         clearSearch,
         handleChange,
