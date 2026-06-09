@@ -1651,7 +1651,7 @@ img {
 
 .market-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 20px;
   perspective: 1200px;
 }
@@ -2167,6 +2167,10 @@ img {
     grid-template-columns: 1fr;
   }
 
+  .market-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .hero-section {
     aspect-ratio: 16 / 8;
     min-height: auto;
@@ -2218,6 +2222,10 @@ img {
   .wallet-pill {
     min-height: 38px;
     padding: 0 12px;
+  }
+
+  .market-grid {
+    grid-template-columns: 1fr;
   }
 
   .mobile-menu-button {
