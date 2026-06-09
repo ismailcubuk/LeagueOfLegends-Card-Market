@@ -1867,6 +1867,11 @@ img {
   justify-content: space-between;
 }
 
+.market-card-title-row > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .market-card-body h3 {
   margin: 0;
   overflow: hidden;
@@ -1891,7 +1896,7 @@ img {
 
 .market-card-role-badge {
   flex: 0 0 auto;
-  max-width: 90px;
+  max-width: 112px;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 6px;
