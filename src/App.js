@@ -520,7 +520,6 @@ function App() {
         [...filtered].sort((a, b) => b.info.difficulty - a.info.difficulty || b.info.magic - a.info.magic).slice(0, 8)
     ), [filtered]);
 
-    const selectedRoleNames = Array.from(new Set(filtered.flatMap((champion) => champion.tags)));
     const heroChampion = featured.length > 0 ? featured[activeHeroIndex % featured.length] : null;
     const heroChampionOwned = heroChampion ? myCardsArr.some((champion) => champion.id === heroChampion.id) : false;
     const toggleFilterSection = (section) => {
@@ -844,17 +843,12 @@ function App() {
                     <div className='shop-content'>
                         <div className='section-heading shop-heading'>
                             <div>
-                                <span>Marketplace</span>
-                                <h2>Champion Vault</h2>
+                                <span><Sparkles size={17} strokeWidth={2.2} />Marketplace</span>
+                                <h2>Champion Store</h2>
                             </div>
                             <button type='button' className='mobile-filter-toggle' onClick={() => setMobileFiltersOpen(true)}>
                                 Filters
                             </button>
-                        </div>
-                        <div className='role-summary'>
-                            {selectedRoleNames.slice(0, 6).map((role) => (
-                                <span key={role}>{role}</span>
-                            ))}
                         </div>
                         <div className='market-grid'>
                             {displayedIChampions.map((champion) => {
