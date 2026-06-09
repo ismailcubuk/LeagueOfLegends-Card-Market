@@ -12,8 +12,9 @@ import {
     AiOutlineSearch,
     AiOutlineShoppingCart,
     AiOutlineStar,
+    AiOutlineTrophy,
 } from 'react-icons/ai';
-import { BsCollection, BsGrid3X3Gap, BsWallet2 } from 'react-icons/bs';
+import { BsClock, BsCollection, BsGrid3X3Gap, BsWallet2 } from 'react-icons/bs';
 import CardContext from './components/component/CardContext';
 import Alert from './components/Body/Alert/Alert';
 import Pagination from './components/Body/Pagination/Pagination';
@@ -95,6 +96,81 @@ function HeroStat({ label, value, tone }) {
     );
 }
 
+function CollectionPanel({ champions, ownedChampions }) {
+    const total = champions.length;
+    const ownedCount = ownedChampions.length;
+    const pct = total > 0 ? Math.round((ownedCount / total) * 100) : 0;
+    const legendaryCount = ownedChampions.filter((champion) => ['legendary', 'mythic'].includes(rarityFor(champion))).length;
+    const stats = [
+        { icon: BsCollection, label: 'Owned', value: `${ownedCount}/${total}` },
+        { icon: AiOutlineTrophy, label: 'Completion', value: `${pct}%` },
+        { icon: AiOutlineStar, label: 'Legendary+', value: String(legendaryCount) },
+    ];
+
+    return (
+        <section className='collection-panel' id='collection'>
+            <div className='collection-panel-top'>
+                <div className='collection-panel-heading'>
+                    <div className='collection-progress' style={{ '--collection-pct': pct }}>
+                        <svg viewBox='0 0 100 100'>
+                            <circle cx='50' cy='50' r='42' />
+                            <circle cx='50' cy='50' r='42' />
+                        </svg>
+                        <div>
+                            <span>{pct}%</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div className='collection-kicker'>
+                            <BsCollection />
+                            My Collection
+                        </div>
+                        <h2>{ownedCount} Champions Owned</h2>
+                        <p>{Math.max(total - ownedCount, 0)} more to complete the Roster</p>
+                    </div>
+                </div>
+
+                <div className='collection-stat-chips'>
+                    {stats.map((stat) => (
+                        <div key={stat.label}>
+                            <stat.icon />
+                            <p>{stat.value}</p>
+                            <span>{stat.label}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className='recently-acquired'>
+                <div className='recently-title'>
+                    <BsClock />
+                    Recently Acquired
+                </div>
+                {ownedChampions.length > 0 ? (
+                    <div className='recently-track'>
+                        {ownedChampions.map((champion) => (
+                            <article key={champion.id} className={`recent-card rarity-${rarityFor(champion)}`}>
+                                <img src={championLoadingImage(champion.id)} alt={champion.name} />
+                                <div>
+                                    <p>{champion.name}</p>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                ) : (
+                    <div className='vault-empty'>
+                        <div>
+                            <BsCollection />
+                        </div>
+                        <p>Your vault is empty</p>
+                        <span>Unlock your first champion to start collecting</span>
+                    </div>
+                )}
+            </div>
+        </section>
+    );
+}
+
 function App() {
     const {
         money,
@@ -144,7 +220,6 @@ function App() {
         [...filtered].sort((a, b) => b.info.difficulty - a.info.difficulty || b.info.magic - a.info.magic).slice(0, 8)
     ), [filtered]);
 
-    const totalOwnedValue = myCardsArr.reduce((sum, champion) => sum + champion.info.difficulty, 0);
     const selectedRoleNames = Array.from(new Set(filtered.flatMap((champion) => champion.tags)));
     const heroChampion = featured.length > 0 ? featured[activeHeroIndex % featured.length] : null;
 
@@ -298,29 +373,7 @@ function App() {
                     </section>
                 ) : null}
 
-                <section className='collection-strip' id='collection'>
-                    <div className='collection-card'>
-                        <BsCollection />
-                        <div>
-                            <span>Owned Cards</span>
-                            <strong>{myCardsArr.length}</strong>
-                        </div>
-                    </div>
-                    <div className='collection-card'>
-                        <AiOutlineStar />
-                        <div>
-                            <span>Collection Value</span>
-                            <strong>${totalOwnedValue}</strong>
-                        </div>
-                    </div>
-                    <div className='collection-card'>
-                        <AiOutlineShoppingCart />
-                        <div>
-                            <span>Market Cards</span>
-                            <strong>{filtered.length}</strong>
-                        </div>
-                    </div>
-                </section>
+                <CollectionPanel champions={filtered} ownedChampions={myCardsArr} />
 
                 <section className='trending-section'>
                     <div className='section-heading'>
