@@ -833,7 +833,6 @@ img {
   display: flex;
   gap: 8px;
   align-items: center;
-  margin-bottom: 16px;
   color: var(--gold-bright);
   font-size: 0.75rem;
   font-weight: 750;
@@ -925,6 +924,7 @@ img {
   scroll-snap-type: x mandatory;
   cursor: grab;
   padding-bottom: 12px;
+  padding-top: 12px;
   scrollbar-width: none;
 }
 
