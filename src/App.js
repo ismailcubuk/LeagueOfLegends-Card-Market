@@ -314,6 +314,7 @@ function App() {
         clearSearch,
         handleChange,
         roleIcons,
+        roleFilters,
         allRoleCLick,
         fighterClick,
         tankClick,
@@ -324,6 +325,8 @@ function App() {
         filterUpMoneyClick,
         filterDownMoneyClick,
         unFilteredMoneyClick,
+        maxPrice,
+        setMaxPrice,
         openChampionModal,
         closeChampionModal,
         preloadChampionDetails,
@@ -333,7 +336,6 @@ function App() {
     } = useContext(CardContext);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
     const [activeHeroIndex, setActiveHeroIndex] = useState(0);
-    const [activeRole, setActiveRole] = useState('Assassin');
 
     const roleActions = {
         Fighter: fighterClick,
@@ -428,11 +430,8 @@ function App() {
                                 <button
                                     type='button'
                                     key={role}
-                                    className={`filter-role-button ${activeRole === role ? 'active' : ''}`}
-                                    onClick={() => {
-                                        setActiveRole(role);
-                                        roleActions[role]();
-                                    }}
+                                    className={`filter-role-button ${roleFilters.includes(role) ? 'active' : ''}`}
+                                    onClick={roleActions[role]}
                                 >
                                     <img src={roleIcons[role]} alt='' />
                                     {role}
@@ -448,10 +447,18 @@ function App() {
                         </button>
                         <div className='filter-price-range'>
                             <div>
-                                <span>0</span>
-                                <strong>{money.toLocaleString()}</strong>
+                                <span>1</span>
+                                <strong>{maxPrice.toLocaleString()}</strong>
                             </div>
-                            <input type='range' min='0' max='3500' step='50' defaultValue='3500' aria-label='Maximum price' />
+                            <input
+                                type='range'
+                                min='1'
+                                max='10'
+                                step='1'
+                                value={maxPrice}
+                                onChange={(event) => setMaxPrice(event.target.value)}
+                                aria-label='Maximum price'
+                            />
                         </div>
                     </section>
 
@@ -482,10 +489,7 @@ function App() {
                             <button
                                 type='button'
                                 className='active'
-                                onClick={() => {
-                                    setActiveRole('All');
-                                    allRoleCLick();
-                                }}
+                                onClick={allRoleCLick}
                             >
                                 All Cards
                                 <Check size={16} strokeWidth={2.2} />

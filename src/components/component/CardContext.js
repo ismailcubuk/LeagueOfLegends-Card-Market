@@ -70,8 +70,9 @@ export const CardContextprovider = ({ children }) => {
         return savedCards.length > 0 ? savedCards : localChampions;
     });
     const [money, setMoney] = useState(initialMoney);
-    const [roleFilter, setRoleFilter] = useState("");
+    const [roleFilters, setRoleFilters] = useState([]);
     const [priceFilter, setPriceFilter] = useState("default");
+    const [maxPrice, setMaxPrice] = useState(10);
     const [search, setSearch] = useState("");
     const [isSearch, setIsSearch] = useState(false);
     const [filteredId, setFilteredId] = useState([]);
@@ -152,8 +153,19 @@ export const CardContextprovider = ({ children }) => {
     ), [carouselPage, heroPicsMap]);
 
     const handleRoleClick = useCallback((role) => {
-        setRoleFilter(role);
-        setCarouselPage(role ? rolePages[role] : 1);
+        if (!role) {
+            setRoleFilters([]);
+            setCarouselPage(1);
+            setCurrentPage(1);
+            return;
+        }
+
+        setRoleFilters((currentRoles) => (
+            currentRoles.includes(role)
+                ? currentRoles.filter((currentRole) => currentRole !== role)
+                : [...currentRoles, role]
+        ));
+        setCarouselPage(rolePages[role]);
         setCurrentPage(1);
     }, []);
 
@@ -175,11 +187,12 @@ export const CardContextprovider = ({ children }) => {
             champion.name.toLowerCase().includes(normalizedSearch)
         ));
 
-        const roleFiltered = roleFilter
-            ? searched.filter((champion) => champion.tags.some((tag) => tag === roleFilter))
+        const roleFiltered = roleFilters.length > 0
+            ? searched.filter((champion) => champion.tags.some((tag) => roleFilters.includes(tag)))
             : searched;
 
-        const sorted = [...roleFiltered];
+        const priceFiltered = roleFiltered.filter((champion) => champion.info.difficulty <= maxPrice);
+        const sorted = [...priceFiltered];
 
         if (priceFilter === "high") {
             sorted.sort((a, b) => b.info.difficulty - a.info.difficulty);
@@ -190,7 +203,7 @@ export const CardContextprovider = ({ children }) => {
         }
 
         return sorted;
-    }, [cards, priceFilter, roleFilter, search]);
+    }, [cards, maxPrice, priceFilter, roleFilters, search]);
 
     const totalPage = Math.ceil(filteredChampions.length / CHAMPIONS_PER_PAGE);
     const pageNumbers = useMemo(() => (
@@ -374,13 +387,19 @@ export const CardContextprovider = ({ children }) => {
         filterUpMoneyClick: () => setPriceFilter("high"),
         filterDownMoneyClick: () => setPriceFilter("low"),
         unFilteredMoneyClick: () => setPriceFilter("default"),
-        clickedAllRoles: activeStyle(roleFilter === ""),
-        clickedFighter: activeStyle(roleFilter === "Fighter"),
-        clickedTank: activeStyle(roleFilter === "Tank"),
-        clickedMage: activeStyle(roleFilter === "Mage"),
-        clickedAssassin: activeStyle(roleFilter === "Assassin"),
-        clickedMarksman: activeStyle(roleFilter === "Marksman"),
-        clickedSupport: activeStyle(roleFilter === "Support"),
+        maxPrice,
+        setMaxPrice: (value) => {
+            setMaxPrice(Number(value));
+            setCurrentPage(1);
+        },
+        clickedAllRoles: activeStyle(roleFilters.length === 0),
+        clickedFighter: activeStyle(roleFilters.includes("Fighter")),
+        clickedTank: activeStyle(roleFilters.includes("Tank")),
+        clickedMage: activeStyle(roleFilters.includes("Mage")),
+        clickedAssassin: activeStyle(roleFilters.includes("Assassin")),
+        clickedMarksman: activeStyle(roleFilters.includes("Marksman")),
+        clickedSupport: activeStyle(roleFilters.includes("Support")),
+        roleFilters,
         search,
         clearSearch,
         handleChange,
