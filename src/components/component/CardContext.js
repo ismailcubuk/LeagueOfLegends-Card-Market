@@ -27,26 +27,22 @@ const roleIcons = {
     Support: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png",
 };
 
-const scoreChampion = (champion) => (
-    champion.info.attack + champion.info.defense + champion.info.magic + champion.info.difficulty
-);
-
 const rarityFor = (champion) => {
-    const score = scoreChampion(champion);
+    const price = champion.info.difficulty;
 
-    if (score >= 29) {
+    if (price >= 9) {
         return "mythic";
     }
 
-    if (score >= 25) {
+    if (price >= 7) {
         return "legendary";
     }
 
-    if (score >= 21) {
+    if (price >= 5) {
         return "epic";
     }
 
-    if (score >= 16) {
+    if (price >= 3) {
         return "rare";
     }
 
