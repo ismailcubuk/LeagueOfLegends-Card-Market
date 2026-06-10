@@ -501,8 +501,8 @@ function App() {
         role: true,
         price: true,
         rarity: true,
-        collection: true,
-        sort: true,
+        collection: false,
+        sort: false,
     });
 
     const roleActions = {
