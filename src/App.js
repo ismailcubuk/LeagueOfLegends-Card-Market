@@ -10,7 +10,7 @@ import {
     AiOutlineTrophy,
 } from 'react-icons/ai';
 import { BsClock, BsCollection } from 'react-icons/bs';
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Droplet, Eye, Flame, Heart, Menu, Play, Plus, Search, Shield, ShoppingCart, Skull, SlidersHorizontal, Sparkles, Wand2 } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Droplet, Eye, Flame, Heart, Menu, Play, Plus, Search, Shield, ShoppingCart, Skull, SlidersHorizontal, Sparkles, Swords, Wand2, Zap } from 'lucide-react';
 import CardContext from './components/component/CardContext';
 import { BLUE_ESSENCE_ICON_URL, getChampionBlueEssence } from './components/component/championPrices';
 import Alert from './components/Body/Alert/Alert';
@@ -39,6 +39,10 @@ const previewStats = [
     { label: 'Difficulty', key: 'difficulty', tone: 'difficulty', icon: Sparkles },
 ];
 const HERO_AUTOPLAY_MS = 5000;
+const resourceIcons = {
+    energy: Zap,
+    fury: Swords,
+};
 
 function BlueEssenceIcon({ className = '' }) {
     return (
@@ -553,6 +557,7 @@ function App() {
     const heroChampion = featured.length > 0 ? featured[activeHeroIndex % featured.length] : null;
     const heroChampionOwned = heroChampion ? myCardsArr.some((champion) => champion.id === heroChampion.id) : false;
     const selectedChampionOwned = selectedChampion ? myCardsArr.some((champion) => champion.id === selectedChampion.id) : false;
+    const ResourceIcon = resourceIcons[selectedChampion?.partype?.toLowerCase()] || Droplet;
     const toggleFilterSection = (section) => {
         setOpenFilterSections((sections) => ({
             ...sections,
@@ -1068,7 +1073,7 @@ function App() {
                                                     </div>
                                                 ))}
                                                 <div className='champion-preview-meta'>
-                                                    <Droplet size={18} strokeWidth={2.4} aria-hidden='true' />
+                                                    <ResourceIcon size={18} strokeWidth={2.4} aria-hidden='true' />
                                                     <span>{selectedChampion.partype || 'No Resource'}</span>
                                                 </div>
                                             </div>
