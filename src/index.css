@@ -1280,18 +1280,28 @@ img {
   font-weight: 850;
 }
 
+.shop-section {
+  margin-top: 44px;
+}
+
 .shop-layout {
   display: grid;
   grid-template-columns: 270px minmax(0, 1fr);
   gap: 22px;
-  align-items: stretch;
-  margin-top: 44px;
+  align-items: start;
+}
+
+.shop-section > .pagination-border {
+  width: calc(100% - 292px);
+  margin-left: 292px;
 }
 
 .filter-panel {
   position: sticky;
   top: 86px;
-  align-self: stretch;
+  align-self: start;
+  height: fit-content;
+  max-height: calc(100vh - 104px);
   border: 0;
   background: transparent;
   box-shadow: none;
@@ -1299,7 +1309,7 @@ img {
 }
 
 .filter-shell {
-  max-height: calc(100% - 88px);
+  max-height: calc(100vh - 104px);
   overflow: hidden auto;
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -2195,6 +2205,11 @@ img {
 
   .shop-layout {
     grid-template-columns: 1fr;
+  }
+
+  .shop-section > .pagination-border {
+    width: 100%;
+    margin-left: 0;
   }
 
   .market-grid {

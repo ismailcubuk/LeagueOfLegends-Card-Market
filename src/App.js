@@ -852,38 +852,40 @@ function App() {
 
                 <TrendingCarousel champions={trending} openChampionModal={openChampionModal} />
 
-                <section className='shop-layout' id='marketplace'>
-                    {filters}
-                    <div className='shop-content'>
-                        <div className='section-heading shop-heading'>
-                            <div>
-                                <span><Sparkles size={17} strokeWidth={2.2} />Marketplace</span>
-                                <h2>Champion Store</h2>
+                <section className='shop-section' id='marketplace'>
+                    <div className='shop-layout'>
+                        {filters}
+                        <div className='shop-content'>
+                            <div className='section-heading shop-heading'>
+                                <div>
+                                    <span><Sparkles size={17} strokeWidth={2.2} />Marketplace</span>
+                                    <h2>Champion Store</h2>
+                                </div>
+                                <button type='button' className='mobile-filter-toggle' onClick={() => setMobileFiltersOpen(true)}>
+                                    Filters
+                                </button>
                             </div>
-                            <button type='button' className='mobile-filter-toggle' onClick={() => setMobileFiltersOpen(true)}>
-                                Filters
-                            </button>
-                        </div>
-                        <div className='market-grid'>
-                            {displayedIChampions.map((champion) => {
-                                const owned = myCardsArr.some((card) => card.id === champion.id);
+                            <div className='market-grid'>
+                                {displayedIChampions.map((champion) => {
+                                    const owned = myCardsArr.some((card) => card.id === champion.id);
 
-                                return (
-                                    <ChampionCard
-                                        key={champion.id}
-                                        champion={champion}
-                                        owned={owned}
-                                        onAction={owned ? sellClick : buyClick}
-                                        onOpen={openChampionModal}
-                                    />
-                                );
-                            })}
+                                    return (
+                                        <ChampionCard
+                                            key={champion.id}
+                                            champion={champion}
+                                            owned={owned}
+                                            onAction={owned ? sellClick : buyClick}
+                                            onOpen={openChampionModal}
+                                        />
+                                    );
+                                })}
+                            </div>
+                            {displayedIChampions.length === 0 ? (
+                                <div className='empty-market'>No champions match this search.</div>
+                            ) : null}
                         </div>
-                        {displayedIChampions.length === 0 ? (
-                            <div className='empty-market'>No champions match this search.</div>
-                        ) : null}
-                        {totalPage > 1 ? <Pagination /> : null}
                     </div>
+                    {totalPage > 1 ? <Pagination /> : null}
                 </section>
 
             </main>
