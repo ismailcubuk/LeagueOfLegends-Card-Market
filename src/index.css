@@ -950,7 +950,7 @@ img {
   display: flex;
   gap: 12px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding-block: 4px;
 }
 
 .recent-card {

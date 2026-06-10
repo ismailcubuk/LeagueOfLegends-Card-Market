@@ -22,9 +22,9 @@ const LOL_ICON_URL = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-
 
 const sidebarRoles = ['Assassin', 'Mage', 'Fighter', 'Tank', 'Marksman', 'Support'];
 const navLinks = [
-    { label: 'Store', href: '#marketplace' },
     { label: 'Collection', href: '#collection' },
     { label: 'Trends', href: '#trending' },
+    { label: 'Store', href: '#marketplace' },
 ];
 
 function BlueEssenceIcon({ className = '' }) {
@@ -497,6 +497,7 @@ function App() {
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
     const [activeHeroIndex, setActiveHeroIndex] = useState(0);
     const [activeLink, setActiveLink] = useState('Store');
+    const navClickLockRef = useRef(null);
     const [openFilterSections, setOpenFilterSections] = useState({
         role: true,
         price: true,
@@ -554,6 +555,23 @@ function App() {
         setActiveHeroIndex((index) => (index + 1) % featured.length);
     };
 
+    const handleNavClick = (event, link) => {
+        event.preventDefault();
+        window.clearTimeout(navClickLockRef.current);
+        navClickLockRef.current = window.setTimeout(() => {
+            navClickLockRef.current = null;
+        }, 700);
+        setActiveLink(link.label);
+
+        const section = document.querySelector(link.href);
+
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        window.history.replaceState(null, '', link.href);
+    };
+
     useEffect(() => {
         if (featured.length === 0) {
             return;
@@ -588,6 +606,33 @@ function App() {
         window.addEventListener('keydown', onKeyDown);
         return () => window.removeEventListener('keydown', onKeyDown);
     });
+
+    useEffect(() => {
+        const updateActiveSection = () => {
+            if (navClickLockRef.current) {
+                return;
+            }
+
+            const viewportAnchor = window.scrollY + window.innerHeight * 0.35;
+            const currentLink = [...navLinks].reverse().find((link) => {
+                const section = document.querySelector(link.href);
+                return section ? section.offsetTop <= viewportAnchor : false;
+            });
+
+            if (currentLink) {
+                setActiveLink(currentLink.label);
+            }
+        };
+
+        updateActiveSection();
+        window.addEventListener('scroll', updateActiveSection, { passive: true });
+        window.addEventListener('resize', updateActiveSection);
+
+        return () => {
+            window.removeEventListener('scroll', updateActiveSection);
+            window.removeEventListener('resize', updateActiveSection);
+        };
+    }, []);
 
     const filters = (
         <aside className='filter-panel'>
@@ -728,7 +773,7 @@ function App() {
                                 key={link.label}
                                 href={link.href}
                                 className={activeLink === link.label ? 'active' : ''}
-                                onClick={() => setActiveLink(link.label)}
+                                onClick={(event) => handleNavClick(event, link)}
                             >
                                 {link.label}
                                 {activeLink === link.label ? <motion.span layoutId='nav-underline' className='topbar-link-underline' /> : null}
