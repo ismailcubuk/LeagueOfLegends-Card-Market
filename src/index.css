@@ -75,7 +75,7 @@ img {
 .price-amount {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   line-height: 1;
   white-space: nowrap;
 }
@@ -1279,12 +1279,20 @@ img {
 }
 
 .trending-card-content strong {
-  display: block;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
   margin-top: 4px;
   color: var(--gold-bright);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   font-size: 0.875rem;
   font-weight: 850;
+}
+
+.trending-price .blue-essence-icon {
+  width: 1.05em;
+  height: 1.05em;
+  flex: 0 0 auto;
 }
 
 .shop-section {
@@ -1480,9 +1488,24 @@ img {
 }
 
 .filter-price-range strong {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
   color: var(--primary);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   font-weight: 700;
+}
+
+.filter-price-value {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.filter-price-value .blue-essence-icon {
+  width: 1.05em;
+  height: 1.05em;
+  flex: 0 0 auto;
 }
 
 .filter-price-range input {
@@ -1973,7 +1996,7 @@ img {
 .market-card-price {
   display: flex;
   min-width: 0;
-  gap: 7px;
+  gap: 9px;
   align-items: center;
 }
 
@@ -1983,16 +2006,12 @@ img {
   height: 20px;
   flex: 0 0 auto;
   place-items: center;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--primary), color-mix(in oklch, var(--primary) 78%, #a76b22));
 }
 
-.market-card-price i {
+.market-card-price .blue-essence-icon {
   display: block;
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: rgba(8, 11, 18, 0.78);
+  width: 18px;
+  height: 18px;
 }
 
 .market-card-price strong {

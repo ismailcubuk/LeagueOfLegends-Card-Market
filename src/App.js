@@ -443,8 +443,8 @@ function ChampionCard({ champion, owned = false, onAction, onOpen }) {
                 </div>
                 <div className='market-card-footer'>
                     <div className='market-card-price'>
-                        <span aria-hidden='true'><i /></span>
-                        <strong><PriceAmount value={blueEssence} /></strong>
+                        <span aria-hidden='true'><BlueEssenceIcon /></span>
+                        <strong>{blueEssence.toLocaleString()}</strong>
                     </div>
                     <motion.button type='button' whileTap={{ scale: 0.94 }} className={owned ? 'sell-action' : 'buy-action'} onClick={() => onAction(champion)} disabled={owned}>
                         {owned ? <Check size={14} strokeWidth={2.8} /> : <ShoppingCart size={14} strokeWidth={2.4} />}
@@ -646,7 +646,10 @@ function TrendingCarousel({ champions, openChampionModal }) {
                                     <div>
                                         <p>{champion.name}</p>
                                         <span>{champion.title}</span>
-                                        <strong><PriceAmount value={getChampionBlueEssence(champion)} /></strong>
+                                        <strong className='trending-price'>
+                                            <BlueEssenceIcon />
+                                            <span>{getChampionBlueEssence(champion).toLocaleString()}</span>
+                                        </strong>
                                     </div>
                                 </div>
                             </button>
@@ -918,8 +921,14 @@ function App() {
                     <FilterSection title='Price Range' isOpen={openFilterSections.price} onToggle={() => toggleFilterSection('price')}>
                         <div className='filter-price-range'>
                             <div>
-                                <span>450</span>
-                                <strong><PriceAmount value={maxPrice} /></strong>
+                                <span className='filter-price-value'>
+                                    <BlueEssenceIcon />
+                                    <span>450</span>
+                                </span>
+                                <strong className='filter-price-value'>
+                                    <span>{maxPrice.toLocaleString()}</span>
+                                    <BlueEssenceIcon />
+                                </strong>
                             </div>
                             <input
                                 type='range'
