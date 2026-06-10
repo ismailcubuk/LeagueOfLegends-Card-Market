@@ -2110,7 +2110,7 @@ img {
   position: relative;
   overflow: hidden;
   background: #05080d;
-  padding: 0;
+  padding: 0 !important;
 }
 
 .champion-preview-close {
