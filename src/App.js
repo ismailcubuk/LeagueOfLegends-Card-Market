@@ -38,6 +38,7 @@ const previewStats = [
     { label: 'Defense', key: 'defense', tone: 'defense', icon: Shield },
     { label: 'Difficulty', key: 'difficulty', tone: 'difficulty', icon: Sparkles },
 ];
+const HERO_AUTOPLAY_MS = 5000;
 
 function BlueEssenceIcon({ className = '' }) {
     return (
@@ -509,10 +510,14 @@ function App() {
     } = useContext(CardContext);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
     const [activeHeroIndex, setActiveHeroIndex] = useState(0);
+    const [heroPaused, setHeroPaused] = useState(false);
+    const [heroProgress, setHeroProgress] = useState(0);
     const [activeLink, setActiveLink] = useState('Store');
     const [selectedSkinNum, setSelectedSkinNum] = useState(0);
     const [activePreviewTab, setActivePreviewTab] = useState('overview');
     const navClickLockRef = useRef(null);
+    const heroProgressRef = useRef(0);
+    const heroLastTickRef = useRef(null);
     const [openFilterSections, setOpenFilterSections] = useState({
         role: true,
         price: true,
@@ -601,12 +606,43 @@ function App() {
             return undefined;
         }
 
-        const interval = window.setInterval(() => {
-            setActiveHeroIndex((index) => (index + 1) % featured.length);
-        }, 5000);
+        heroProgressRef.current = 0;
+        setHeroProgress(0);
+        heroLastTickRef.current = null;
+    }, [activeHeroIndex, featured.length]);
 
-        return () => window.clearInterval(interval);
-    }, [featured.length]);
+    useEffect(() => {
+        if (featured.length < 2 || heroPaused) {
+            heroLastTickRef.current = null;
+            return undefined;
+        }
+
+        let frameId;
+
+        const tick = (time) => {
+            if (heroLastTickRef.current === null) {
+                heroLastTickRef.current = time;
+            }
+
+            const delta = time - heroLastTickRef.current;
+            heroLastTickRef.current = time;
+
+            const nextProgress = Math.min(heroProgressRef.current + delta / HERO_AUTOPLAY_MS, 1);
+            heroProgressRef.current = nextProgress;
+            setHeroProgress(nextProgress);
+
+            if (nextProgress >= 1) {
+                setActiveHeroIndex((index) => (index + 1) % featured.length);
+                return;
+            }
+
+            frameId = window.requestAnimationFrame(tick);
+        };
+
+        frameId = window.requestAnimationFrame(tick);
+
+        return () => window.cancelAnimationFrame(frameId);
+    }, [activeHeroIndex, featured.length, heroPaused]);
 
     useEffect(() => {
         const onKeyDown = (event) => {
@@ -830,7 +866,11 @@ function App() {
 
             <main className='market-main'>
                 {heroChampion ? (
-                    <section className={`hero-section rarity-${rarityFor(heroChampion)}`}>
+                    <section
+                        className={`hero-section rarity-${rarityFor(heroChampion)}`}
+                        onMouseEnter={() => setHeroPaused(true)}
+                        onMouseLeave={() => setHeroPaused(false)}
+                    >
                         <AnimatePresence mode='sync'>
                             <motion.div
                                 key={heroChampion.id}
@@ -907,7 +947,7 @@ function App() {
                                     onClick={() => setActiveHeroIndex(index)}
                                     aria-label={`Show ${champion.name}`}
                                 >
-                                    {index === activeHeroIndex % featured.length ? <motion.span key={champion.id} initial={{ width: '0%' }} animate={{ width: '100%' }} transition={{ duration: 5, ease: 'linear' }} /> : null}
+                                    {index === activeHeroIndex % featured.length ? <span style={{ width: `${heroProgress * 100}%` }} /> : null}
                                 </button>
                             ))}
                         </div>
