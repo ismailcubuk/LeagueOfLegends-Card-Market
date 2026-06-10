@@ -1,5 +1,6 @@
 import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import LolData from "./Lol.json";
+import { getChampionBlueEssence, withBlueEssence } from "./championPrices";
 
 const CardContext = createContext();
 
@@ -28,21 +29,21 @@ const roleIcons = {
 };
 
 const rarityFor = (champion) => {
-    const price = champion.info.difficulty;
+    const price = getChampionBlueEssence(champion);
 
-    if (price >= 9) {
+    if (price >= 6300) {
         return "mythic";
     }
 
-    if (price >= 7) {
+    if (price >= 4800) {
         return "legendary";
     }
 
-    if (price >= 5) {
+    if (price >= 3150) {
         return "epic";
     }
 
-    if (price >= 3) {
+    if (price >= 1350) {
         return "rare";
     }
 
@@ -87,11 +88,11 @@ const uniqueById = (items) => (
 
 const localChampions = Object.values(LolData.data || {}).filter(
     (champion) => !EXCLUDED_CHAMPIONS.has(champion.id.toLowerCase())
-);
+).map(withBlueEssence);
 
 export const CardContextprovider = ({ children }) => {
-    const storedMoney = getStoredJson("money", 30);
-    const initialMoney = Array.isArray(storedMoney) ? Number(storedMoney[0] || 30) : Number(storedMoney || 30);
+    const storedMoney = getStoredJson("money", 15000);
+    const initialMoney = Array.isArray(storedMoney) ? Number(storedMoney[0] || 15000) : Number(storedMoney || 15000);
     const storedCards = getStoredJson("char", []);
 
     const [champions, setChampions] = useState(localChampions);
@@ -104,7 +105,7 @@ export const CardContextprovider = ({ children }) => {
     const [rarityFilters, setRarityFilters] = useState([]);
     const [collectionFilter, setCollectionFilter] = useState("all");
     const [sortFilter, setSortFilter] = useState("featured");
-    const [maxPrice, setMaxPrice] = useState(10);
+    const [maxPrice, setMaxPrice] = useState(6300);
     const [search, setSearch] = useState("");
     const [isSearch, setIsSearch] = useState(false);
     const [filteredId, setFilteredId] = useState([]);
@@ -254,15 +255,15 @@ export const CardContextprovider = ({ children }) => {
             ? roleFiltered.filter((champion) => rarityFilters.includes(rarityFor(champion)))
             : roleFiltered;
 
-        const priceFiltered = rarityFiltered.filter((champion) => champion.info.difficulty <= maxPrice);
+        const priceFiltered = rarityFiltered.filter((champion) => getChampionBlueEssence(champion) <= maxPrice);
         const sorted = [...priceFiltered];
 
         if (sortFilter === "price-high") {
-            sorted.sort((a, b) => b.info.difficulty - a.info.difficulty);
+            sorted.sort((a, b) => getChampionBlueEssence(b) - getChampionBlueEssence(a));
         }
 
         if (sortFilter === "price-low") {
-            sorted.sort((a, b) => a.info.difficulty - b.info.difficulty);
+            sorted.sort((a, b) => getChampionBlueEssence(a) - getChampionBlueEssence(b));
         }
 
         if (sortFilter === "alphabetical") {
@@ -272,7 +273,7 @@ export const CardContextprovider = ({ children }) => {
         if (sortFilter === "rarity") {
             sorted.sort((a, b) => (
                 rarityWeight[rarityFor(b)] - rarityWeight[rarityFor(a)] ||
-                b.info.difficulty - a.info.difficulty ||
+                getChampionBlueEssence(b) - getChampionBlueEssence(a) ||
                 a.name.localeCompare(b.name)
             ));
         }
@@ -296,7 +297,7 @@ export const CardContextprovider = ({ children }) => {
             prevCards.some((card) => card.id === req.id) ? prevCards : [req, ...prevCards]
         ));
         setMyCardsArr((prevCards) => prevCards.filter((card) => card.id !== req.id));
-        setMoney((currentMoney) => currentMoney + req.info.difficulty);
+        setMoney((currentMoney) => currentMoney + getChampionBlueEssence(req));
         pulseCardState(setRecentlySoldId, req.id);
     }, [pulseCardState]);
 
@@ -306,7 +307,7 @@ export const CardContextprovider = ({ children }) => {
             return;
         }
 
-        if (hero.info.difficulty > money) {
+        if (getChampionBlueEssence(hero) > money) {
             setAlertt(true);
             pulseCardState(setDeniedChampionId, hero.id);
             return;
@@ -319,7 +320,7 @@ export const CardContextprovider = ({ children }) => {
             prevIds.includes(hero.id) ? prevIds : [hero.id, ...prevIds]
         ));
         setCards((prevCards) => prevCards.filter((card) => card.id !== hero.id));
-        setMoney((currentMoney) => currentMoney - hero.info.difficulty);
+        setMoney((currentMoney) => currentMoney - getChampionBlueEssence(hero));
         setAlertt(false);
         pulseCardState(setRecentlyBoughtId, hero.id);
     }, [money, myCardsArr, pulseCardState]);
@@ -385,7 +386,7 @@ export const CardContextprovider = ({ children }) => {
         setSelectedChampion({
             id: champion.id,
             story: champion.blurb,
-            price: champion.info.difficulty,
+            price: getChampionBlueEssence(champion),
         });
     }, [loadChampionDetails]);
 

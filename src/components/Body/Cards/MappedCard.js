@@ -2,6 +2,7 @@ import './Cards.css';
 import React, { useContext } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import CardContext from '../../component/CardContext';
+import { BLUE_ESSENCE_ICON_URL, getChampionBlueEssence } from '../../component/championPrices';
 import attack from '../../../Images/Stats/attack.png';
 import defanse from '../../../Images/Stats/defanse.png';
 import magic from '../../../Images/Stats/magic.png';
@@ -11,7 +12,18 @@ import Pagination from '../Pagination/Pagination';
 const championLoadingImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${id}_0.jpg`;
 const championSplashImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_0.jpg`;
 
+function PriceAmount({ value }) {
+    return (
+        <span className='price-amount'>
+            <span>{value.toLocaleString()}</span>
+            <img className='blue-essence-icon' src={BLUE_ESSENCE_ICON_URL} alt='' aria-hidden='true' />
+        </span>
+    );
+}
+
 function ChampionCard({ champion, actionLabel, actionClass, onAction, onOpen, onPreview, roleIcons, statusClass = '' }) {
+    const blueEssence = getChampionBlueEssence(champion);
+
     return (
         <article
             className={`hero-border ${statusClass}`.trim()}
@@ -53,7 +65,7 @@ function ChampionCard({ champion, actionLabel, actionClass, onAction, onOpen, on
 
                     <div className='hero-image'>
                         <img src={championLoadingImage(champion.id)} loading='lazy' alt={champion.name} />
-                        <div className='hero-money'>${champion.info.difficulty}</div>
+                        <div className='hero-money'><PriceAmount value={blueEssence} /></div>
                         <div className='hero-tags'>
                             {champion.tags.map((tag) => (
                                 <img key={tag} src={roleIcons[tag]} width='40' height='40' alt={tag} />
@@ -173,7 +185,7 @@ function MappedCard() {
                                     </div>
                                 ))}
                             </div>
-                            <div className='modal-price'>${selectedChampion.price}</div>
+                            <div className='modal-price'><PriceAmount value={selectedChampion.price} /></div>
                             <div className='short-story'>{selectedChampion.story}</div>
                         </Modal.Body>
                     </Modal>

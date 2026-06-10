@@ -10,8 +10,9 @@ import {
     AiOutlineTrophy,
 } from 'react-icons/ai';
 import { BsClock, BsCollection } from 'react-icons/bs';
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Coins, Eye, Flame, Heart, Menu, Play, Plus, Search, ShoppingCart, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Eye, Flame, Heart, Menu, Play, Plus, Search, ShoppingCart, SlidersHorizontal, Sparkles } from 'lucide-react';
 import CardContext from './components/component/CardContext';
+import { BLUE_ESSENCE_ICON_URL, getChampionBlueEssence } from './components/component/championPrices';
 import Alert from './components/Body/Alert/Alert';
 import Pagination from './components/Body/Pagination/Pagination';
 
@@ -26,10 +27,17 @@ const navLinks = [
     { label: 'Trends', href: '#trending' },
 ];
 
-function GoldCoin({ className = '' }) {
+function BlueEssenceIcon({ className = '' }) {
     return (
-        <span className={`gold-coin ${className}`}>
-            <Coins size={16} strokeWidth={2.4} />
+        <img className={`blue-essence-icon ${className}`.trim()} src={BLUE_ESSENCE_ICON_URL} alt='' aria-hidden='true' />
+    );
+}
+
+function PriceAmount({ value, className = '' }) {
+    return (
+        <span className={`price-amount ${className}`.trim()}>
+            <span>{value.toLocaleString()}</span>
+            <BlueEssenceIcon />
         </span>
     );
 }
@@ -102,21 +110,21 @@ function scoreChampion(champion) {
 }
 
 function rarityFor(champion) {
-    const price = champion.info.difficulty;
+    const price = getChampionBlueEssence(champion);
 
-    if (price >= 9) {
+    if (price >= 6300) {
         return 'mythic';
     }
 
-    if (price >= 7) {
+    if (price >= 4800) {
         return 'legendary';
     }
 
-    if (price >= 5) {
+    if (price >= 3150) {
         return 'epic';
     }
 
-    if (price >= 3) {
+    if (price >= 1350) {
         return 'rare';
     }
 
@@ -128,6 +136,7 @@ function ChampionCard({ champion, owned = false, onAction, onOpen }) {
     const config = rarityConfig[rarity];
     const isHolo = rarity === 'legendary' || rarity === 'mythic';
     const primaryRole = champion.tags[0] || 'Champion';
+    const blueEssence = getChampionBlueEssence(champion);
     const cardRef = useRef(null);
     const [hovered, setHovered] = useState(false);
     const [wished, setWished] = useState(false);
@@ -237,7 +246,7 @@ function ChampionCard({ champion, owned = false, onAction, onOpen }) {
                 <div className='market-card-footer'>
                     <div className='market-card-price'>
                         <span aria-hidden='true'><i /></span>
-                        <strong>{champion.info.difficulty.toLocaleString()}</strong>
+                        <strong><PriceAmount value={blueEssence} /></strong>
                     </div>
                     <motion.button type='button' whileTap={{ scale: 0.94 }} className={owned ? 'sell-action' : 'buy-action'} onClick={() => onAction(champion)} disabled={owned}>
                         {owned ? <Check size={14} strokeWidth={2.8} /> : <ShoppingCart size={14} strokeWidth={2.4} />}
@@ -439,7 +448,7 @@ function TrendingCarousel({ champions, openChampionModal }) {
                                     <div>
                                         <p>{champion.name}</p>
                                         <span>{champion.title}</span>
-                                        <strong>{champion.info.difficulty.toLocaleString()}</strong>
+                                        <strong><PriceAmount value={getChampionBlueEssence(champion)} /></strong>
                                     </div>
                                 </div>
                             </button>
@@ -517,7 +526,7 @@ function App() {
     ), [filtered]);
 
     const trending = useMemo(() => (
-        [...filtered].sort((a, b) => b.info.difficulty - a.info.difficulty || b.info.magic - a.info.magic).slice(0, 8)
+        [...filtered].sort((a, b) => getChampionBlueEssence(b) - getChampionBlueEssence(a) || b.info.magic - a.info.magic).slice(0, 8)
     ), [filtered]);
 
     const heroChampion = featured.length > 0 ? featured[activeHeroIndex % featured.length] : null;
@@ -610,14 +619,14 @@ function App() {
                     <FilterSection title='Price Range' isOpen={openFilterSections.price} onToggle={() => toggleFilterSection('price')}>
                         <div className='filter-price-range'>
                             <div>
-                                <span>1</span>
-                                <strong>{maxPrice.toLocaleString()}</strong>
+                                <span>450</span>
+                                <strong><PriceAmount value={maxPrice} /></strong>
                             </div>
                             <input
                                 type='range'
-                                min='1'
-                                max='10'
-                                step='1'
+                                min='450'
+                                max='6300'
+                                step='450'
                                 value={maxPrice}
                                 onChange={(event) => setMaxPrice(event.target.value)}
                                 aria-label='Maximum price'
@@ -743,7 +752,7 @@ function App() {
                         transition={{ duration: 0.35 }}
                     >
                         <span className='wallet-coin'>
-                            <GoldCoin />
+                            <BlueEssenceIcon />
                         </span>
                         <span>{money.toLocaleString()}</span>
                     </motion.div>
@@ -805,7 +814,12 @@ function App() {
                                             onClick={() => buyClick(heroChampion)}
                                         >
                                             <ShoppingCart size={16} strokeWidth={2.4} />
-                                            {heroChampionOwned ? 'In Collection' : `Unlock · ${heroChampion.info.difficulty.toLocaleString()}`}
+                                            {heroChampionOwned ? 'In Collection' : (
+                                                <>
+                                                    <span>Unlock</span>
+                                                    <PriceAmount value={getChampionBlueEssence(heroChampion)} />
+                                                </>
+                                            )}
                                         </button>
                                         <button type='button' className='hero-preview' onMouseEnter={() => preloadChampionDetails(heroChampion.id)} onClick={() => openChampionModal(heroChampion)}>
                                             <Play size={16} strokeWidth={2.4} />
@@ -902,7 +916,7 @@ function App() {
                                 </div>
                             ))}
                         </div>
-                        <div className='modal-price'>${selectedChampion.price}</div>
+                        <div className='modal-price'><PriceAmount value={selectedChampion.price} /></div>
                         <div className='short-story'>{selectedChampion.story}</div>
                     </Modal.Body>
                 </Modal>
