@@ -40,6 +40,7 @@ const previewStats = [
 ];
 const HERO_AUTOPLAY_MS = 5000;
 const resourceIcons = {
+    courage: Shield,
     energy: Zap,
     fury: Swords,
 };
@@ -740,6 +741,15 @@ function App() {
     const ResourceIcon = resourceIcons[selectedChampion?.partype?.toLowerCase()] || Droplet;
     const selectedChampionOrigin = championOrigins[selectedChampion?.id] || 'Runeterra';
     const selectedChampionOriginImage = originImageUrls[selectedChampionOrigin];
+    const sameOriginChampions = useMemo(() => {
+        if (!selectedChampion) {
+            return [];
+        }
+
+        return filtered
+            .filter((champion) => (championOrigins[champion.id] || 'Runeterra') === selectedChampionOrigin)
+            .sort((a, b) => a.name.localeCompare(b.name));
+    }, [filtered, selectedChampion, selectedChampionOrigin]);
     const toggleFilterSection = (section) => {
         setOpenFilterSections((sections) => ({
             ...sections,
@@ -1266,11 +1276,30 @@ function App() {
                                                 ) : null}
                                             </div>
                                             {selectedChampionOriginImage ? (
-                                                <div className='champion-preview-origin-card'>
-                                                    <img src={selectedChampionOriginImage} alt={`${selectedChampionOrigin} region`} loading='lazy' />
-                                                    <span>
-                                                        {selectedChampionOrigin}
-                                                    </span>
+                                                <div className='champion-preview-origin-block'>
+                                                    <div className='champion-preview-origin-card'>
+                                                        <img src={selectedChampionOriginImage} alt={`${selectedChampionOrigin} region`} loading='lazy' />
+                                                        <span>
+                                                            {selectedChampionOrigin}
+                                                        </span>
+                                                    </div>
+                                                    {sameOriginChampions.length > 0 ? (
+                                                        <div className='same-origin-roster' aria-label={`${selectedChampionOrigin} champions`}>
+                                                            {sameOriginChampions.map((champion) => (
+                                                                <button
+                                                                    type='button'
+                                                                    key={champion.id}
+                                                                    className={champion.id === selectedChampion.id ? 'active' : ''}
+                                                                    onClick={() => openChampionModal(champion)}
+                                                                    onMouseEnter={() => preloadChampionDetails(champion.id)}
+                                                                    aria-label={`Preview ${champion.name}`}
+                                                                >
+                                                                    <img src={championLoadingImage(champion.id)} alt='' loading='lazy' />
+                                                                    <span>{champion.name}</span>
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    ) : null}
                                                 </div>
                                             ) : null}
 

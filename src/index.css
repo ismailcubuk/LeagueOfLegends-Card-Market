@@ -2386,6 +2386,69 @@ img {
   object-fit: contain;
 }
 
+.champion-preview-origin-block {
+  display: grid;
+  gap: 10px;
+}
+
+.same-origin-roster {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 78px;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 2px 8px;
+  scrollbar-color: rgba(218, 185, 94, 0.42) rgba(255, 255, 255, 0.06);
+}
+
+.same-origin-roster button {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  border: 1px solid rgba(218, 185, 94, 0.14);
+  border-radius: 8px;
+  background: rgba(10, 19, 32, 0.7);
+  padding: 6px;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.same-origin-roster button:hover,
+.same-origin-roster button:focus-visible,
+.same-origin-roster button.active {
+  border-color: rgba(240, 216, 137, 0.48);
+  background: rgba(218, 185, 94, 0.12);
+  color: var(--gold-bright);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.same-origin-roster button.active {
+  cursor: default;
+}
+
+.same-origin-roster img {
+  width: 100%;
+  aspect-ratio: 1 / 1.2;
+  border-radius: 6px;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.same-origin-roster span {
+  overflow: hidden;
+  min-width: 0;
+  color: inherit;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .champion-preview-stats {
   display: grid;
   gap: 16px;
