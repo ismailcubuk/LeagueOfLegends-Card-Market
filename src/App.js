@@ -207,11 +207,21 @@ const championOrigins = {
     Zoe: 'Targon',
     Zyra: 'Ixtal',
 };
-const originIconUrls = {
-    Demacia: `${process.env.PUBLIC_URL}/regions/demacia.png`,
-};
 const originImageUrls = {
+    'Bandle City': `${process.env.PUBLIC_URL}/regions/bandle_city.jpg`,
+    Bilgewater: `${process.env.PUBLIC_URL}/regions/bilgewater.jpg`,
     Demacia: `${process.env.PUBLIC_URL}/regions/demacia.jpg`,
+    Freljord: `${process.env.PUBLIC_URL}/regions/freljord.jpg`,
+    Icathia: `${process.env.PUBLIC_URL}/regions/icathia.jpg`,
+    Ionia: `${process.env.PUBLIC_URL}/regions/ionia.jpg`,
+    Ixtal: `${process.env.PUBLIC_URL}/regions/ixtal.jpg`,
+    Noxus: `${process.env.PUBLIC_URL}/regions/noxus.jpg`,
+    Piltover: `${process.env.PUBLIC_URL}/regions/piltover.jpg`,
+    'Shadow Isles': `${process.env.PUBLIC_URL}/regions/shadow_isles.jpg`,
+    Shurima: `${process.env.PUBLIC_URL}/regions/shurima.jpg`,
+    Targon: `${process.env.PUBLIC_URL}/regions/targon.jpg`,
+    Void: `${process.env.PUBLIC_URL}/regions/void.jpg`,
+    Zaun: `${process.env.PUBLIC_URL}/regions/zaun.jpg`,
 };
 
 function BlueEssenceIcon({ className = '' }) {
@@ -729,7 +739,6 @@ function App() {
     const selectedChampionOwned = selectedChampion ? myCardsArr.some((champion) => champion.id === selectedChampion.id) : false;
     const ResourceIcon = resourceIcons[selectedChampion?.partype?.toLowerCase()] || Droplet;
     const selectedChampionOrigin = championOrigins[selectedChampion?.id] || 'Runeterra';
-    const selectedChampionOriginIcon = originIconUrls[selectedChampionOrigin];
     const selectedChampionOriginImage = originImageUrls[selectedChampionOrigin];
     const toggleFilterSection = (section) => {
         setOpenFilterSections((sections) => ({
@@ -1260,9 +1269,6 @@ function App() {
                                                 <div className='champion-preview-origin-card'>
                                                     <img src={selectedChampionOriginImage} alt={`${selectedChampionOrigin} region`} loading='lazy' />
                                                     <span>
-                                                        {selectedChampionOriginIcon ? (
-                                                            <img src={selectedChampionOriginIcon} alt='' aria-hidden='true' />
-                                                        ) : null}
                                                         {selectedChampionOrigin}
                                                     </span>
                                                 </div>
