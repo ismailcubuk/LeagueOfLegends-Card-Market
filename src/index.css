@@ -969,12 +969,17 @@ img {
   border: 1px solid color-mix(in srgb, var(--rarity) 70%, transparent);
   border-radius: 10px;
   background: #101722;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
   transition: transform 160ms ease, border-color 160ms ease;
 }
 
-.recent-card:hover {
+.recent-card:hover,
+.recent-card:focus-visible {
   transform: translateY(-4px);
   border-color: var(--rarity);
+  outline: none;
 }
 
 .recent-card img {

@@ -470,7 +470,7 @@ function HeroStat({ label, value, tone }) {
     );
 }
 
-function CollectionPanel({ champions, ownedChampions }) {
+function CollectionPanel({ champions, ownedChampions, openChampionModal }) {
     const total = champions.length;
     const ownedCount = ownedChampions.length;
     const pct = total > 0 ? Math.round((ownedCount / total) * 100) : 0;
@@ -523,12 +523,18 @@ function CollectionPanel({ champions, ownedChampions }) {
                 {ownedChampions.length > 0 ? (
                     <div className='recently-track'>
                         {ownedChampions.map((champion) => (
-                            <article key={champion.id} className={`recent-card rarity-${rarityFor(champion)}`}>
+                            <button
+                                type='button'
+                                key={champion.id}
+                                className={`recent-card rarity-${rarityFor(champion)}`}
+                                onClick={() => openChampionModal(champion)}
+                                aria-label={`Preview ${champion.name}`}
+                            >
                                 <img src={championLoadingImage(champion.id)} alt={champion.name} />
                                 <div>
                                     <p>{champion.name}</p>
                                 </div>
-                            </article>
+                            </button>
                         ))}
                     </div>
                 ) : (
@@ -1204,7 +1210,7 @@ function App() {
                     </section>
                 ) : null}
 
-                <CollectionPanel champions={filtered} ownedChampions={myCardsArr} />
+                <CollectionPanel champions={filtered} ownedChampions={myCardsArr} openChampionModal={openChampionModal} />
 
                 <TrendingCarousel champions={trending} openChampionModal={openChampionModal} />
 
