@@ -2213,6 +2213,7 @@ img {
 
 .champion-preview-price {
   display: grid;
+  justify-items: center;
   gap: 5px;
   min-width: 122px;
   border: 1px solid rgba(218, 185, 94, 0.18);
@@ -2223,7 +2224,7 @@ img {
   font-size: 1rem;
   font-weight: 950;
   padding: 10px 12px;
-  text-align: right;
+  text-align: center;
   transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 

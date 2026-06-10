@@ -1073,10 +1073,9 @@ function App() {
                                                             <span>{skill.key}</span>
                                                         </div>
                                                         <div>
-                                                            <div className='preview-ability-heading'>
-                                                                <h4>{skill.name}</h4>
-                                                                {skill.key !== 'P' ? <span>{skill.cooldown}s / {skill.cost}</span> : null}
-                                                            </div>
+                                                    <div className='preview-ability-heading'>
+                                                        <h4>{skill.name}</h4>
+                                                    </div>
                                                             {skill.description ? <p>{skill.description}</p> : null}
                                                         </div>
                                                     </article>
