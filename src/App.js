@@ -17,7 +17,7 @@ import Alert from './components/Body/Alert/Alert';
 import Pagination from './components/Body/Pagination/Pagination';
 
 const championLoadingImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${id}_0.jpg`;
-const championSplashImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_0.jpg`;
+const championSplashImage = (id, skin = 0) => `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_${skin}.jpg`;
 const LOL_ICON_URL = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/lol_icon.png';
 
 const sidebarRoles = ['Assassin', 'Mage', 'Fighter', 'Tank', 'Marksman', 'Support'];
@@ -25,6 +25,12 @@ const navLinks = [
     { label: 'Collection', href: '#collection' },
     { label: 'Trends', href: '#trending' },
     { label: 'Store', href: '#marketplace' },
+];
+const previewTabs = [
+    { key: 'overview', label: 'Overview' },
+    { key: 'abilities', label: 'Abilities' },
+    { key: 'lore', label: 'Lore' },
+    { key: 'skins', label: 'Skins' },
 ];
 
 function BlueEssenceIcon({ className = '' }) {
@@ -491,12 +497,15 @@ function App() {
         closeChampionModal,
         preloadChampionDetails,
         selectedChampion,
+        selectedChampionDetails,
         selectedChampionSkills,
         totalPage,
     } = useContext(CardContext);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
     const [activeHeroIndex, setActiveHeroIndex] = useState(0);
     const [activeLink, setActiveLink] = useState('Store');
+    const [selectedSkinNum, setSelectedSkinNum] = useState(0);
+    const [activePreviewTab, setActivePreviewTab] = useState('overview');
     const navClickLockRef = useRef(null);
     const [openFilterSections, setOpenFilterSections] = useState({
         role: true,
@@ -532,6 +541,7 @@ function App() {
 
     const heroChampion = featured.length > 0 ? featured[activeHeroIndex % featured.length] : null;
     const heroChampionOwned = heroChampion ? myCardsArr.some((champion) => champion.id === heroChampion.id) : false;
+    const selectedChampionOwned = selectedChampion ? myCardsArr.some((champion) => champion.id === selectedChampion.id) : false;
     const toggleFilterSection = (section) => {
         setOpenFilterSections((sections) => ({
             ...sections,
@@ -633,6 +643,11 @@ function App() {
             window.removeEventListener('resize', updateActiveSection);
         };
     }, []);
+
+    useEffect(() => {
+        setSelectedSkinNum(0);
+        setActivePreviewTab('overview');
+    }, [selectedChampion?.id]);
 
     const filters = (
         <aside className='filter-panel'>
@@ -947,24 +962,157 @@ function App() {
             ) : null}
 
             {selectedChampion ? (
-                <Modal show onHide={closeChampionModal} size='xl' centered>
-                    <div className='modal-title'>{selectedChampion.id}</div>
+                <Modal show onHide={closeChampionModal} size='xl' centered dialogClassName='champion-preview-dialog' contentClassName='champion-preview-content'>
                     <Modal.Body className='modal-body'>
-                        <img loading='lazy' src={championSplashImage(selectedChampion.id)} width='100%' height='100%' alt={selectedChampion.id} />
-                        <div className='champion-skills'>
-                            {selectedChampionSkills.length > 0 ? selectedChampionSkills.map((skill) => (
-                                <div className='skill-press' key={skill.key}>
-                                    <img src={skill.src} alt={skill.name} />
-                                    <div className='skill-button'>{skill.key}</div>
+                        <button type='button' className='champion-preview-close' onClick={closeChampionModal} aria-label='Close preview'>
+                            <AiOutlineClose />
+                        </button>
+                        <div className={`champion-preview rarity-${rarityFor(selectedChampion)}`}>
+                            <div className='champion-preview-art'>
+                                <img loading='lazy' src={championSplashImage(selectedChampion.id, selectedSkinNum)} alt={selectedChampion.name} />
+                                <div className='champion-preview-art-shade' />
+                                <div className='champion-preview-frame' />
+                                <div className='champion-preview-title'>
+                                    <span>{selectedChampion.tags?.join(' / ') || selectedChampion.partype || 'Champion'}</span>
+                                    <h2>{selectedChampion.name}</h2>
+                                    <p>{selectedChampion.title}</p>
                                 </div>
-                            )) : ['P', 'Q', 'W', 'E', 'R'].map((skill) => (
-                                <div className='skill-press skill-loading' key={skill}>
-                                    <div className='skill-button'>{skill}</div>
+                            </div>
+
+                            <aside className='champion-preview-panel'>
+                                <div className='champion-preview-header'>
+                                    <div>
+                                        <span className='champion-preview-kicker'>Champion Preview</span>
+                                        <h3>{selectedChampion.name}</h3>
+                                    </div>
+                                    <button
+                                        type='button'
+                                        className={`champion-preview-price ${selectedChampionOwned ? 'is-owned' : ''}`}
+                                        onClick={() => buyClick(selectedChampion)}
+                                        disabled={selectedChampionOwned}
+                                    >
+                                        <span>{selectedChampionOwned ? 'In Collection' : 'Unlock Cost'}</span>
+                                        <PriceAmount value={selectedChampion.price} />
+                                    </button>
                                 </div>
-                            ))}
+
+                                <div className='champion-preview-tabs' role='tablist' aria-label='Champion preview sections'>
+                                    {previewTabs.map((tab) => (
+                                        <button
+                                            type='button'
+                                            key={tab.key}
+                                            className={activePreviewTab === tab.key ? 'active' : ''}
+                                            onClick={() => setActivePreviewTab(tab.key)}
+                                            role='tab'
+                                            aria-selected={activePreviewTab === tab.key}
+                                        >
+                                            {tab.label}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <div className='champion-preview-tab-panel'>
+                                    {activePreviewTab === 'overview' ? (
+                                        <>
+                                            <div className='champion-preview-meta-grid'>
+                                                {(selectedChampion.tags || []).map((tag) => (
+                                                    <div className='champion-preview-meta' key={tag}>
+                                                        {roleIcons[tag] ? <img src={roleIcons[tag]} alt='' /> : null}
+                                                        <span>{tag}</span>
+                                                    </div>
+                                                ))}
+                                                <div className='champion-preview-meta'>
+                                                    <span>{selectedChampion.partype || 'No Resource'}</span>
+                                                </div>
+                                            </div>
+
+                                            <div className='champion-preview-stats'>
+                                                {[
+                                                    { label: 'Attack', value: selectedChampion.info?.attack || 0, tone: 'attack' },
+                                                    { label: 'Magic', value: selectedChampion.info?.magic || 0, tone: 'magic' },
+                                                    { label: 'Defense', value: selectedChampion.info?.defense || 0, tone: 'defense' },
+                                                    { label: 'Difficulty', value: selectedChampion.info?.difficulty || 0, tone: 'difficulty' },
+                                                ].map((stat) => (
+                                                    <div className='preview-stat-row' key={stat.label}>
+                                                        <span>{stat.label}</span>
+                                                        <div>
+                                                            <i className={`tone-${stat.tone}`} style={{ width: `${Math.min(Math.max(stat.value * 10, 0), 100)}%` }} />
+                                                        </div>
+                                                        <strong>{stat.value}</strong>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            <section className='preview-section'>
+                                                <div className='preview-section-title'>Story Brief</div>
+                                                <p className='preview-lore'>{selectedChampion.story}</p>
+                                            </section>
+                                        </>
+                                    ) : null}
+
+                                    {activePreviewTab === 'abilities' ? (
+                                        <section className='preview-section preview-section-flush'>
+                                            <div className='preview-section-title'>Abilities</div>
+                                            <div className='preview-abilities'>
+                                                {selectedChampionSkills.length > 0 ? selectedChampionSkills.map((skill) => (
+                                                    <article className='preview-ability' key={skill.key}>
+                                                        <div className='preview-ability-icon'>
+                                                            <img src={skill.src} alt={skill.name} />
+                                                            <span>{skill.key}</span>
+                                                        </div>
+                                                        <div>
+                                                            <div className='preview-ability-heading'>
+                                                                <h4>{skill.name}</h4>
+                                                                {skill.key !== 'P' ? <span>{skill.cooldown}s / {skill.cost}</span> : null}
+                                                            </div>
+                                                            {skill.description ? <p>{skill.description}</p> : null}
+                                                        </div>
+                                                    </article>
+                                                )) : ['P', 'Q', 'W', 'E', 'R'].map((skill) => (
+                                                    <div className='preview-ability preview-ability-loading' key={skill}>
+                                                        <div className='preview-ability-icon'>
+                                                            <span>{skill}</span>
+                                                        </div>
+                                                        <div>
+                                                            <h4>Loading</h4>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </section>
+                                    ) : null}
+
+                                    {activePreviewTab === 'lore' ? (
+                                        <section className='preview-section preview-section-flush'>
+                                            <div className='preview-section-title'>Lore</div>
+                                            <p className='preview-lore preview-lore-full'>{selectedChampionDetails?.lore || selectedChampion.story}</p>
+                                        </section>
+                                    ) : null}
+
+                                    {activePreviewTab === 'skins' ? (
+                                        <section className='preview-section preview-section-flush'>
+                                            <div className='preview-section-head'>
+                                                <div className='preview-section-title'>Skins</div>
+                                                <span>{selectedChampionDetails?.skins?.length || 1} looks</span>
+                                            </div>
+                                            <div className='preview-skins preview-skins-grid'>
+                                                {(selectedChampionDetails?.skins || [{ num: 0, name: selectedChampion.name }]).map((skin) => (
+                                                    <button
+                                                        type='button'
+                                                        key={skin.id || skin.num}
+                                                        className={`preview-skin ${selectedSkinNum === skin.num ? 'active' : ''}`}
+                                                        onClick={() => setSelectedSkinNum(skin.num)}
+                                                    >
+                                                        <img src={championSplashImage(selectedChampion.id, skin.num)} alt={skin.name} loading='lazy' />
+                                                        <span>{skin.name}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </section>
+                                    ) : null}
+                                </div>
+                            </aside>
                         </div>
-                        <div className='modal-price'><PriceAmount value={selectedChampion.price} /></div>
-                        <div className='short-story'>{selectedChampion.story}</div>
                     </Modal.Body>
                 </Modal>
             ) : null}

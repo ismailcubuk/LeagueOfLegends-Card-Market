@@ -9,6 +9,7 @@ const CHAMPIONS_PER_PAGE = 16;
 const EXCLUDED_CHAMPIONS = new Set(["akshan", "rell", "vex", "seraphine"]);
 const passiveImage = (fileName) => `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/passive/${fileName}`;
 const spellImage = (fileName) => `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/spell/${fileName}`;
+const stripHtml = (value = "") => value.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
 
 const rolePages = {
     Fighter: 1,
@@ -358,12 +359,22 @@ export const CardContextprovider = ({ children }) => {
                     [championId]: {
                         passive: {
                             name: champion.passive.name,
+                            description: stripHtml(champion.passive.description),
                             src: passiveImage(champion.passive.image.full),
                         },
                         spells: champion.spells.map((spell) => ({
                             id: spell.id,
                             name: spell.name,
+                            description: stripHtml(spell.description),
+                            cooldown: spell.cooldownBurn,
+                            cost: spell.costBurn,
                             src: spellImage(spell.image.full),
+                        })),
+                        lore: champion.lore,
+                        skins: champion.skins.slice(0, 6).map((skin) => ({
+                            id: skin.id,
+                            num: skin.num,
+                            name: skin.name === "default" ? champion.name : skin.name,
                         })),
                     },
                 }));
@@ -385,6 +396,11 @@ export const CardContextprovider = ({ children }) => {
         loadChampionDetails(champion.id);
         setSelectedChampion({
             id: champion.id,
+            name: champion.name,
+            title: champion.title,
+            tags: champion.tags,
+            info: champion.info,
+            partype: champion.partype,
             story: champion.blurb,
             price: getChampionBlueEssence(champion),
         });
@@ -410,6 +426,9 @@ export const CardContextprovider = ({ children }) => {
         ...selectedChampionDetails.spells.map((spell, index) => ({
             key: ["Q", "W", "E", "R"][index],
             name: spell.name,
+            description: spell.description,
+            cooldown: spell.cooldown,
+            cost: spell.cost,
             src: spell.src,
         })),
     ] : [];
@@ -440,6 +459,7 @@ export const CardContextprovider = ({ children }) => {
         closeChampionModal,
         preloadChampionDetails: loadChampionDetails,
         selectedChampion,
+        selectedChampionDetails,
         selectedChampionSkills,
         dotPageNextClick: () => setCarouselPage((page) => Math.min(page + 1, heroPicsMap.length)),
         dotPagePrevClick: () => setCarouselPage((page) => Math.max(page - 1, 1)),
