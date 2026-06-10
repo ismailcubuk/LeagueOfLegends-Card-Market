@@ -598,9 +598,49 @@ function FilterSection({ title, isOpen, onToggle, last = false, children }) {
 
 function TrendingCarousel({ champions, openChampionModal }) {
     const scrollerRef = useRef(null);
+    const [scrollEdges, setScrollEdges] = useState({ left: false, right: false });
     const trending = useMemo(() => (
         [...champions].sort((a, b) => scoreChampion(b) - scoreChampion(a)).slice(0, 12)
     ), [champions]);
+
+    const updateScrollEdges = () => {
+        const scroller = scrollerRef.current;
+
+        if (!scroller) {
+            setScrollEdges({ left: false, right: false });
+            return;
+        }
+
+        const maxScrollLeft = scroller.scrollWidth - scroller.clientWidth;
+        const nextEdges = {
+            left: scroller.scrollLeft > 1,
+            right: scroller.scrollLeft < maxScrollLeft - 1,
+        };
+
+        setScrollEdges((currentEdges) => (
+            currentEdges.left === nextEdges.left && currentEdges.right === nextEdges.right
+                ? currentEdges
+                : nextEdges
+        ));
+    };
+
+    useEffect(() => {
+        const scroller = scrollerRef.current;
+
+        updateScrollEdges();
+
+        if (!scroller) {
+            return undefined;
+        }
+
+        scroller.addEventListener('scroll', updateScrollEdges, { passive: true });
+        window.addEventListener('resize', updateScrollEdges);
+
+        return () => {
+            scroller.removeEventListener('scroll', updateScrollEdges);
+            window.removeEventListener('resize', updateScrollEdges);
+        };
+    }, [trending.length]);
 
     const scrollByCards = (direction) => {
         if (!scrollerRef.current) {
@@ -619,12 +659,16 @@ function TrendingCarousel({ champions, openChampionModal }) {
             <div className='trending-carousel'>
                 <div className='trending-fade-left' />
                 <div className='trending-fade-right' />
-                <button type='button' className='trending-arrow trending-arrow-left' onClick={() => scrollByCards(-1)} aria-label='Scroll left'>
-                    <ChevronLeft size={20} />
-                </button>
-                <button type='button' className='trending-arrow trending-arrow-right' onClick={() => scrollByCards(1)} aria-label='Scroll right'>
-                    <ChevronRight size={20} />
-                </button>
+                {scrollEdges.left ? (
+                    <button type='button' className='trending-arrow trending-arrow-left' onClick={() => scrollByCards(-1)} aria-label='Scroll left'>
+                        <ChevronLeft size={20} />
+                    </button>
+                ) : null}
+                {scrollEdges.right ? (
+                    <button type='button' className='trending-arrow trending-arrow-right' onClick={() => scrollByCards(1)} aria-label='Scroll right'>
+                        <ChevronRight size={20} />
+                    </button>
+                ) : null}
                 <div className='trending-track' ref={scrollerRef}>
                     {trending.map((champion) => {
                         const rarity = rarityFor(champion);
