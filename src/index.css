@@ -2336,6 +2336,56 @@ img {
   white-space: nowrap;
 }
 
+.champion-preview-origin-card {
+  position: relative;
+  overflow: hidden;
+  height: 118px;
+  margin-top: 12px;
+  border: 1px solid rgba(218, 185, 94, 0.22);
+  border-radius: 8px;
+  background: #101722;
+}
+
+.champion-preview-origin-card > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(1.08) contrast(1.04);
+}
+
+.champion-preview-origin-card::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(5, 8, 13, 0.84), rgba(5, 8, 13, 0.2) 58%, rgba(5, 8, 13, 0.74)),
+    linear-gradient(0deg, rgba(5, 8, 13, 0.86), transparent 62%);
+  content: "";
+}
+
+.champion-preview-origin-card span {
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  left: 16px;
+  z-index: 1;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--gold-bright);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.champion-preview-origin-card span img {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
 .champion-preview-stats {
   display: grid;
   gap: 16px;

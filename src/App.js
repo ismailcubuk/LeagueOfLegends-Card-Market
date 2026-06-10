@@ -10,7 +10,7 @@ import {
     AiOutlineTrophy,
 } from 'react-icons/ai';
 import { BsClock, BsCollection } from 'react-icons/bs';
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Droplet, Eye, Flame, Heart, Menu, Play, Plus, Search, Shield, ShoppingCart, Skull, SlidersHorizontal, Sparkles, Swords, Wand2, Zap } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Droplet, Eye, Flame, Heart, MapPin, Menu, Play, Plus, Search, Shield, ShoppingCart, Skull, SlidersHorizontal, Sparkles, Swords, Wand2, Zap } from 'lucide-react';
 import CardContext from './components/component/CardContext';
 import { BLUE_ESSENCE_ICON_URL, getChampionBlueEssence } from './components/component/championPrices';
 import Alert from './components/Body/Alert/Alert';
@@ -42,6 +42,176 @@ const HERO_AUTOPLAY_MS = 5000;
 const resourceIcons = {
     energy: Zap,
     fury: Swords,
+};
+const championOrigins = {
+    Aatrox: 'Shurima',
+    Ahri: 'Ionia',
+    Akali: 'Ionia',
+    Akshan: 'Shurima',
+    Alistar: 'Noxus',
+    Amumu: 'Shurima',
+    Anivia: 'Freljord',
+    Annie: 'Noxus',
+    Aphelios: 'Targon',
+    Ashe: 'Freljord',
+    AurelionSol: 'Targon',
+    Azir: 'Shurima',
+    Bard: 'Runeterra',
+    Belveth: 'Void',
+    Blitzcrank: 'Zaun',
+    Brand: 'Freljord',
+    Braum: 'Freljord',
+    Caitlyn: 'Piltover',
+    Camille: 'Piltover',
+    Cassiopeia: 'Noxus',
+    Chogath: 'Void',
+    Corki: 'Bandle City',
+    Darius: 'Noxus',
+    Diana: 'Targon',
+    Draven: 'Noxus',
+    DrMundo: 'Zaun',
+    Ekko: 'Zaun',
+    Elise: 'Noxus',
+    Evelynn: 'Runeterra',
+    Ezreal: 'Piltover',
+    Fiddlesticks: 'Runeterra',
+    Fiora: 'Demacia',
+    Fizz: 'Bilgewater',
+    Galio: 'Demacia',
+    Gangplank: 'Bilgewater',
+    Garen: 'Demacia',
+    Gnar: 'Freljord',
+    Gragas: 'Freljord',
+    Graves: 'Bilgewater',
+    Gwen: 'Shadow Isles',
+    Hecarim: 'Shadow Isles',
+    Heimerdinger: 'Piltover',
+    Illaoi: 'Bilgewater',
+    Irelia: 'Ionia',
+    Ivern: 'Ionia',
+    Janna: 'Zaun',
+    JarvanIV: 'Demacia',
+    Jax: 'Icathia',
+    Jayce: 'Piltover',
+    Jhin: 'Ionia',
+    Jinx: 'Zaun',
+    Kaisa: 'Void',
+    Kalista: 'Shadow Isles',
+    Karma: 'Ionia',
+    Karthus: 'Shadow Isles',
+    Kassadin: 'Shurima',
+    Katarina: 'Noxus',
+    Kayle: 'Demacia',
+    Kayn: 'Ionia',
+    Kennen: 'Ionia',
+    Khazix: 'Void',
+    Kindred: 'Runeterra',
+    Kled: 'Noxus',
+    KogMaw: 'Void',
+    KSante: 'Shurima',
+    Leblanc: 'Noxus',
+    LeeSin: 'Ionia',
+    Leona: 'Targon',
+    Lillia: 'Ionia',
+    Lissandra: 'Freljord',
+    Lucian: 'Demacia',
+    Lulu: 'Bandle City',
+    Lux: 'Demacia',
+    Malphite: 'Ixtal',
+    Malzahar: 'Void',
+    Maokai: 'Shadow Isles',
+    MasterYi: 'Ionia',
+    MissFortune: 'Bilgewater',
+    MonkeyKing: 'Ionia',
+    Mordekaiser: 'Noxus',
+    Morgana: 'Demacia',
+    Nami: 'Runeterra',
+    Nasus: 'Shurima',
+    Nautilus: 'Bilgewater',
+    Neeko: 'Ixtal',
+    Nidalee: 'Ixtal',
+    Nilah: 'Bilgewater',
+    Nocturne: 'Runeterra',
+    Nunu: 'Freljord',
+    Olaf: 'Freljord',
+    Orianna: 'Piltover',
+    Ornn: 'Freljord',
+    Pantheon: 'Targon',
+    Poppy: 'Demacia',
+    Pyke: 'Bilgewater',
+    Qiyana: 'Ixtal',
+    Quinn: 'Demacia',
+    Rakan: 'Ionia',
+    Rammus: 'Shurima',
+    RekSai: 'Void',
+    Rell: 'Noxus',
+    Renata: 'Zaun',
+    Renekton: 'Shurima',
+    Rengar: 'Ixtal',
+    Riven: 'Noxus',
+    Rumble: 'Bandle City',
+    Ryze: 'Runeterra',
+    Samira: 'Noxus',
+    Sejuani: 'Freljord',
+    Senna: 'Demacia',
+    Seraphine: 'Piltover',
+    Sett: 'Ionia',
+    Shaco: 'Runeterra',
+    Shen: 'Ionia',
+    Shyvana: 'Demacia',
+    Singed: 'Zaun',
+    Sion: 'Noxus',
+    Sivir: 'Shurima',
+    Skarner: 'Shurima',
+    Sona: 'Demacia',
+    Soraka: 'Targon',
+    Swain: 'Noxus',
+    Sylas: 'Demacia',
+    Syndra: 'Ionia',
+    TahmKench: 'Runeterra',
+    Taliyah: 'Shurima',
+    Talon: 'Noxus',
+    Taric: 'Targon',
+    Teemo: 'Bandle City',
+    Thresh: 'Shadow Isles',
+    Tristana: 'Bandle City',
+    Trundle: 'Freljord',
+    Tryndamere: 'Freljord',
+    TwistedFate: 'Bilgewater',
+    Twitch: 'Zaun',
+    Udyr: 'Freljord',
+    Urgot: 'Zaun',
+    Varus: 'Ionia',
+    Vayne: 'Demacia',
+    Veigar: 'Bandle City',
+    Velkoz: 'Void',
+    Vex: 'Shadow Isles',
+    Vi: 'Piltover',
+    Viego: 'Shadow Isles',
+    Viktor: 'Zaun',
+    Vladimir: 'Noxus',
+    Volibear: 'Freljord',
+    Warwick: 'Zaun',
+    Xayah: 'Ionia',
+    Xerath: 'Shurima',
+    XinZhao: 'Demacia',
+    Yasuo: 'Ionia',
+    Yone: 'Ionia',
+    Yorick: 'Shadow Isles',
+    Yuumi: 'Bandle City',
+    Zac: 'Zaun',
+    Zed: 'Ionia',
+    Zeri: 'Zaun',
+    Ziggs: 'Zaun',
+    Zilean: 'Icathia',
+    Zoe: 'Targon',
+    Zyra: 'Ixtal',
+};
+const originIconUrls = {
+    Demacia: `${process.env.PUBLIC_URL}/regions/demacia.png`,
+};
+const originImageUrls = {
+    Demacia: `${process.env.PUBLIC_URL}/regions/demacia.jpg`,
 };
 
 function BlueEssenceIcon({ className = '' }) {
@@ -558,6 +728,9 @@ function App() {
     const heroChampionOwned = heroChampion ? myCardsArr.some((champion) => champion.id === heroChampion.id) : false;
     const selectedChampionOwned = selectedChampion ? myCardsArr.some((champion) => champion.id === selectedChampion.id) : false;
     const ResourceIcon = resourceIcons[selectedChampion?.partype?.toLowerCase()] || Droplet;
+    const selectedChampionOrigin = championOrigins[selectedChampion?.id] || 'Runeterra';
+    const selectedChampionOriginIcon = originIconUrls[selectedChampionOrigin];
+    const selectedChampionOriginImage = originImageUrls[selectedChampionOrigin];
     const toggleFilterSection = (section) => {
         setOpenFilterSections((sections) => ({
             ...sections,
@@ -1076,7 +1249,24 @@ function App() {
                                                     <ResourceIcon size={18} strokeWidth={2.4} aria-hidden='true' />
                                                     <span>{selectedChampion.partype || 'No Resource'}</span>
                                                 </div>
+                                                {!selectedChampionOriginImage ? (
+                                                    <div className='champion-preview-meta'>
+                                                        <MapPin size={18} strokeWidth={2.4} aria-hidden='true' />
+                                                        <span>{selectedChampionOrigin}</span>
+                                                    </div>
+                                                ) : null}
                                             </div>
+                                            {selectedChampionOriginImage ? (
+                                                <div className='champion-preview-origin-card'>
+                                                    <img src={selectedChampionOriginImage} alt={`${selectedChampionOrigin} region`} loading='lazy' />
+                                                    <span>
+                                                        {selectedChampionOriginIcon ? (
+                                                            <img src={selectedChampionOriginIcon} alt='' aria-hidden='true' />
+                                                        ) : null}
+                                                        {selectedChampionOrigin}
+                                                    </span>
+                                                </div>
+                                            ) : null}
 
                                             <div className='champion-preview-stats'>
                                                 {previewStats.map((stat) => {
