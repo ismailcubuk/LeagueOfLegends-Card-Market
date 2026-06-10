@@ -1,21 +1,39 @@
 import './Alert.css';
-import React, { useContext } from 'react'
-import CardContext from '../../component/CardContext'
-import Modal from 'react-bootstrap/Modal';
-function Alert() {
-    const { alertt, setAlertt } = useContext(CardContext)
-    const handleClose = () => setAlertt(false);
-    return (
-        <div>
-            <Modal show={alertt} onHide={handleClose}>
-                <Modal.Header className='alert-moodle-header' closeButton>
-                    <h2>ALERT !</h2>
-                </Modal.Header>
-                <Modal.Body className='alert-moodle-body'>INSUFFICIENT BALANCE !</Modal.Body>
-            </Modal>
+import React, { useContext, useEffect } from 'react';
+import CardContext from '../../component/CardContext';
 
+const TOAST_DURATION = 4000;
+
+function Alert() {
+    const { alertt, setAlertt } = useContext(CardContext);
+
+    useEffect(() => {
+        if (!alertt) {
+            return undefined;
+        }
+
+        const timeout = window.setTimeout(() => setAlertt(false), TOAST_DURATION);
+
+        return () => window.clearTimeout(timeout);
+    }, [alertt, setAlertt]);
+
+    if (!alertt) {
+        return null;
+    }
+
+    return (
+        <div className='balance-toast' role='status' aria-live='polite'>
+            <div className='balance-toast-icon' aria-hidden='true'>!</div>
+            <div className='balance-toast-copy'>
+                <strong>Insufficient balance</strong>
+                <span>Earn more Blue Essence before unlocking this champion.</span>
+            </div>
+            <button type='button' className='balance-toast-close' onClick={() => setAlertt(false)} aria-label='Close notification'>
+                ×
+            </button>
+            <span className='balance-toast-progress' style={{ animationDuration: `${TOAST_DURATION}ms` }} />
         </div>
-    )
+    );
 }
 
-export default Alert
+export default Alert;
