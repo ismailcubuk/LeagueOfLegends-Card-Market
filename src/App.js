@@ -10,7 +10,7 @@ import {
     AiOutlineTrophy,
 } from 'react-icons/ai';
 import { BsClock, BsCollection } from 'react-icons/bs';
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Eye, Flame, Heart, Menu, Play, Plus, Search, ShoppingCart, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Droplet, Eye, Flame, Heart, Menu, Play, Plus, Search, Shield, ShoppingCart, Skull, SlidersHorizontal, Sparkles, Wand2 } from 'lucide-react';
 import CardContext from './components/component/CardContext';
 import { BLUE_ESSENCE_ICON_URL, getChampionBlueEssence } from './components/component/championPrices';
 import Alert from './components/Body/Alert/Alert';
@@ -31,6 +31,12 @@ const previewTabs = [
     { key: 'abilities', label: 'Abilities' },
     { key: 'lore', label: 'Lore' },
     { key: 'skins', label: 'Skins' },
+];
+const previewStats = [
+    { label: 'Attack', key: 'attack', tone: 'attack', icon: Skull },
+    { label: 'Magic', key: 'magic', tone: 'magic', icon: Wand2 },
+    { label: 'Defense', key: 'defense', tone: 'defense', icon: Shield },
+    { label: 'Difficulty', key: 'difficulty', tone: 'difficulty', icon: Sparkles },
 ];
 
 function BlueEssenceIcon({ className = '' }) {
@@ -1022,25 +1028,31 @@ function App() {
                                                     </div>
                                                 ))}
                                                 <div className='champion-preview-meta'>
+                                                    <Droplet size={18} strokeWidth={2.4} aria-hidden='true' />
                                                     <span>{selectedChampion.partype || 'No Resource'}</span>
                                                 </div>
                                             </div>
 
                                             <div className='champion-preview-stats'>
-                                                {[
-                                                    { label: 'Attack', value: selectedChampion.info?.attack || 0, tone: 'attack' },
-                                                    { label: 'Magic', value: selectedChampion.info?.magic || 0, tone: 'magic' },
-                                                    { label: 'Defense', value: selectedChampion.info?.defense || 0, tone: 'defense' },
-                                                    { label: 'Difficulty', value: selectedChampion.info?.difficulty || 0, tone: 'difficulty' },
-                                                ].map((stat) => (
-                                                    <div className='preview-stat-row' key={stat.label}>
-                                                        <span>{stat.label}</span>
-                                                        <div>
-                                                            <i className={`tone-${stat.tone}`} style={{ width: `${Math.min(Math.max(stat.value * 10, 0), 100)}%` }} />
+                                                {previewStats.map((stat) => {
+                                                    const value = selectedChampion.info?.[stat.key] || 0;
+                                                    const StatIcon = stat.icon;
+
+                                                    return (
+                                                    <div className={`preview-stat-row stat-${stat.tone}`} key={stat.label}>
+                                                        <div className='preview-stat-heading'>
+                                                            <span>
+                                                                <StatIcon size={15} strokeWidth={2.3} aria-hidden='true' />
+                                                                {stat.label}
+                                                            </span>
+                                                            <strong><b>{value}</b>/10</strong>
                                                         </div>
-                                                        <strong>{stat.value}</strong>
+                                                        <div className='preview-stat-track'>
+                                                            <i className={`tone-${stat.tone}`} style={{ width: `${Math.min(Math.max(value * 10, 0), 100)}%` }} />
+                                                        </div>
                                                     </div>
-                                                ))}
+                                                    );
+                                                })}
                                             </div>
 
                                             <section className='preview-section'>
