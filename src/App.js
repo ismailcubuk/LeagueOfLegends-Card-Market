@@ -1054,11 +1054,6 @@ function App() {
                                                     );
                                                 })}
                                             </div>
-
-                                            <section className='preview-section'>
-                                                <div className='preview-section-title'>Story Brief</div>
-                                                <p className='preview-lore'>{selectedChampion.story}</p>
-                                            </section>
                                         </>
                                     ) : null}
 
