@@ -2158,9 +2158,50 @@ img {
   object-position: 75% center;
 }
 
+.champion-preview-owned-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(70% 55% at 72% 28%, color-mix(in srgb, var(--rarity) 36%, transparent), transparent 70%),
+    linear-gradient(115deg,
+      transparent 22%,
+      color-mix(in oklch, var(--rarity) 22%, transparent) 42%,
+      color-mix(in oklch, white 18%, transparent) 50%,
+      transparent 70%);
+  background-size: 100% 100%, 220% 220%;
+  mix-blend-mode: screen;
+  animation: owned-preview-shimmer 3.8s ease-in-out infinite;
+}
+
+.champion-preview.is-owned-preview .champion-preview-art img {
+  filter: brightness(1.08);
+}
+
+.champion-preview.is-owned-preview .champion-preview-owned-glow {
+  opacity: 1;
+}
+
+@keyframes owned-preview-shimmer {
+  0% {
+    background-position: center, 160% 50%;
+  }
+
+  50% {
+    background-position: center, 35% 50%;
+  }
+
+  100% {
+    background-position: center, 160% 50%;
+  }
+}
+
 .champion-preview-art-shade {
   position: absolute;
   inset: 0;
+  z-index: 2;
   background:
     linear-gradient(90deg, transparent 0%, rgba(5, 8, 13, 0.2) 58%, #05080d 100%),
     linear-gradient(0deg, #05080d 0%, rgba(5, 8, 13, 0.12) 42%, transparent 100%);
@@ -2169,6 +2210,7 @@ img {
 .champion-preview-frame {
   position: absolute;
   inset: 18px;
+  z-index: 3;
   border: 1px solid rgba(218, 185, 94, 0.2);
   border-radius: 16px;
   pointer-events: none;
@@ -2180,6 +2222,7 @@ img {
   right: 38px;
   bottom: 36px;
   left: 38px;
+  z-index: 4;
 }
 
 .champion-preview-title span,

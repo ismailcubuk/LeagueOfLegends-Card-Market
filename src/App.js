@@ -1269,9 +1269,10 @@ function App() {
                         <button type='button' className='champion-preview-close' onClick={closeChampionModal} aria-label='Close preview'>
                             <AiOutlineClose />
                         </button>
-                        <div className={`champion-preview rarity-${rarityFor(selectedChampion)}`}>
+                        <div className={`champion-preview rarity-${rarityFor(selectedChampion)} ${selectedChampionOwned ? 'is-owned-preview' : ''}`}>
                             <div className='champion-preview-art'>
                                 <img loading='lazy' src={championSplashImage(selectedChampion.id, selectedSkinNum)} alt={selectedChampion.name} />
+                                <div className='champion-preview-owned-glow' />
                                 <div className='champion-preview-art-shade' />
                                 <div className='champion-preview-frame' />
                                 <div className='champion-preview-title'>
