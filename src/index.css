@@ -1173,7 +1173,7 @@ img {
   transform: translateY(-6px);
 }
 
-.trending-card img {
+.trending-card > img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1185,7 +1185,7 @@ img {
   user-select: none;
 }
 
-.trending-card:hover img {
+.trending-card:hover > img {
   transform: scale(1.1);
   filter: brightness(1.1);
 }
@@ -1265,7 +1265,7 @@ img {
   text-transform: uppercase;
 }
 
-.trending-card-content span {
+.trending-card-content div > span {
   display: block;
   color: var(--muted);
   font-size: 0.75rem;
