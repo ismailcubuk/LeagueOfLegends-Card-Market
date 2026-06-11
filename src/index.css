@@ -1555,6 +1555,12 @@ img {
   transition: transform 160ms ease, border-color 160ms ease;
 }
 
+.recent-card.is-pack-landing-placeholder {
+  visibility: hidden;
+  animation: none;
+  pointer-events: none;
+}
+
 .recent-card:hover,
 .recent-card:focus-visible {
   transform: translateY(-4px);
@@ -4328,7 +4334,7 @@ img {
 }
 
 .phase-flying .pack-winner-card {
-  animation: packWinnerToCollection 860ms cubic-bezier(0.2, 0.82, 0.24, 1) forwards;
+  animation: packWinnerToCollection 1120ms cubic-bezier(0.18, 0.86, 0.22, 1) forwards;
 }
 
 .phase-won .pack-roulette-window,
@@ -4555,16 +4561,22 @@ img {
     transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
   }
 
-  64% {
-    opacity: 0.94;
-    filter: brightness(1.12);
-    transform: translate3d(calc(var(--pack-flight-x) * 0.72), calc(var(--pack-flight-y) * 0.68 - 34px), 0) scale(0.55) rotate(-6deg);
+  45% {
+    opacity: 1;
+    filter: brightness(1.08);
+    transform: translate3d(calc(var(--pack-flight-x) * 0.42), calc(var(--pack-flight-y) * 0.34 - 42px), 0) scale(0.82) rotate(-3deg);
+  }
+
+  78% {
+    opacity: 1;
+    filter: brightness(1.04);
+    transform: translate3d(calc(var(--pack-flight-x) * 0.84), calc(var(--pack-flight-y) * 0.8 - 14px), 0) scale(0.48) rotate(-1deg);
   }
 
   100% {
-    opacity: 0;
-    filter: brightness(0.92);
-    transform: translate3d(var(--pack-flight-x), var(--pack-flight-y), 0) scale(0.16) rotate(-10deg);
+    opacity: 1;
+    filter: brightness(1);
+    transform: translate3d(var(--pack-flight-x), var(--pack-flight-y), 0) scale(0.34) rotate(0deg);
   }
 }
 

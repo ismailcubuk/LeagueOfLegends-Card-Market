@@ -629,7 +629,7 @@ function HeroStat({ label, value, tone }) {
     );
 }
 
-function CollectionPanel({ champions, ownedChampions, recentlyBoughtId, openChampionModal }) {
+function CollectionPanel({ champions, ownedChampions, recentlyBoughtId, settlingChampionId, openChampionModal }) {
     const total = champions.length;
     const ownedCount = ownedChampions.length;
     const pct = total > 0 ? Math.round((ownedCount / total) * 100) : 0;
@@ -685,7 +685,7 @@ function CollectionPanel({ champions, ownedChampions, recentlyBoughtId, openCham
                             <button
                                 type='button'
                                 key={champion.id}
-                                className={`recent-card rarity-${rarityFor(champion)} ${recentlyBoughtId === champion.id ? 'is-new-vault-card' : ''}`}
+                                className={`recent-card rarity-${rarityFor(champion)} ${recentlyBoughtId === champion.id ? 'is-new-vault-card' : ''} ${settlingChampionId === champion.id ? 'is-pack-landing-placeholder' : ''}`}
                                 onClick={() => openChampionModal(champion)}
                                 aria-label={`Preview ${champion.name}`}
                             >
@@ -1185,29 +1185,49 @@ function App() {
         }, 6050);
 
         window.setTimeout(() => {
-            const targetRect = collectionTargetRef.current?.getBoundingClientRect();
-            const endX = targetRect ? targetRect.left + Math.min(targetRect.width * 0.18, 120) - window.innerWidth / 2 : 0;
-            const endY = targetRect ? targetRect.top + targetRect.height / 2 - window.innerHeight / 2 : 0;
+            grantPackChampion(champion, PACK_OPEN_COST);
+            window.requestAnimationFrame(() => {
+                window.requestAnimationFrame(() => {
+                    const collectionRoot = collectionTargetRef.current;
+                    const targetCard = collectionRoot?.querySelector(`.recently-track .recent-card[aria-label="Preview ${champion.name}"]`);
+                    const firstRecentCard = collectionRoot?.querySelector('.recently-track .recent-card');
+                    const recentlyTrack = collectionRoot?.querySelector('.recently-track');
+                    const emptyVault = collectionRoot?.querySelector('.vault-empty');
+                    const fallbackTarget = collectionRoot?.querySelector('.collection-panel-heading') || collectionRoot;
+                    const targetRect = targetCard?.getBoundingClientRect()
+                        || firstRecentCard?.getBoundingClientRect()
+                        || recentlyTrack?.getBoundingClientRect()
+                        || emptyVault?.getBoundingClientRect()
+                        || fallbackTarget?.getBoundingClientRect();
+                    const targetCenterX = targetRect
+                        ? targetRect.left + (targetCard || firstRecentCard ? targetRect.width / 2 : Math.min(44, targetRect.width / 2))
+                        : window.innerWidth / 2;
+                    const targetCenterY = targetRect
+                        ? targetRect.top + (targetCard || firstRecentCard ? targetRect.height / 2 : Math.min(62, targetRect.height / 2))
+                        : window.innerHeight / 2;
+                    const endX = targetCenterX - window.innerWidth / 2;
+                    const endY = targetCenterY - window.innerHeight / 2;
 
-            setPackReward((currentReward) => (
-                currentReward?.id === rewardId
-                    ? {
-                        ...currentReward,
-                        phase: 'flying',
-                        '--pack-flight-x': `${endX}px`,
-                        '--pack-flight-y': `${endY}px`,
-                    }
-                    : currentReward
-            ));
+                    setPackReward((currentReward) => (
+                        currentReward?.id === rewardId
+                            ? {
+                                ...currentReward,
+                                phase: 'flying',
+                                '--pack-flight-x': `${endX}px`,
+                                '--pack-flight-y': `${endY}px`,
+                            }
+                            : currentReward
+                    ));
+                });
+            });
         }, 6900);
 
         window.setTimeout(() => {
-            grantPackChampion(champion, PACK_OPEN_COST);
             setPackReward((currentReward) => (
                 currentReward?.id === rewardId ? null : currentReward
             ));
             setPackOpening(false);
-        }, 7900);
+        }, 8150);
     };
 
     const handleDailyRewardClaim = () => {
@@ -1918,7 +1938,13 @@ function App() {
                 ) : null}
 
                 <div ref={collectionTargetRef}>
-                    <CollectionPanel champions={filtered} ownedChampions={myCardsArr} recentlyBoughtId={recentlyBoughtId} openChampionModal={openChampionModal} />
+                    <CollectionPanel
+                        champions={filtered}
+                        ownedChampions={myCardsArr}
+                        recentlyBoughtId={recentlyBoughtId}
+                        settlingChampionId={packReward?.phase === 'flying' ? packReward.champion.id : ''}
+                        openChampionModal={openChampionModal}
+                    />
                 </div>
 
                 <TrendingCarousel champions={trending} openChampionModal={openChampionModal} />
