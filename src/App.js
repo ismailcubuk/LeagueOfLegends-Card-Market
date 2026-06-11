@@ -716,6 +716,31 @@ const rarityConfig = {
     legendary: { label: 'Legendary', color: 'var(--rarity-legendary)', border: 'rgba(232,196,110,0.75)', glow: 'rgba(232,196,110,0.36)' },
     mythic: { label: 'Mythic', color: 'var(--rarity-mythic)', border: 'rgba(255,110,120,0.7)', glow: 'rgba(255,110,120,0.36)' },
 };
+const PACK_OPEN_COST = 1350;
+const PACK_RARITY_CHANCES = [
+    { rarity: 'common', chance: 40 },
+    { rarity: 'rare', chance: 30 },
+    { rarity: 'epic', chance: 18 },
+    { rarity: 'legendary', chance: 9 },
+    { rarity: 'mythic', chance: 3 },
+];
+
+function pickPackChampion(champions) {
+    const pools = PACK_RARITY_CHANCES.reduce((groups, item) => ({
+        ...groups,
+        [item.rarity]: champions.filter((champion) => rarityFor(champion) === item.rarity),
+    }), {});
+    const activeChances = PACK_RARITY_CHANCES.filter((item) => pools[item.rarity].length > 0);
+    const totalChance = activeChances.reduce((total, item) => total + item.chance, 0);
+    let roll = Math.random() * totalChance;
+    const selectedChance = activeChances.find((item) => {
+        roll -= item.chance;
+        return roll <= 0;
+    }) || activeChances[activeChances.length - 1];
+    const selectedPool = pools[selectedChance.rarity];
+
+    return selectedPool[Math.floor(Math.random() * selectedPool.length)];
+}
 
 function RarityPill({ rarity }) {
     const config = rarityConfig[rarity];
@@ -869,12 +894,14 @@ function TrendingCarousel({ champions, openChampionModal }) {
     );
 }
 
-function PackOpeningSection({ champions, ownedChampions, onOpenPack, isOpening }) {
+function PackOpeningSection({ champions, ownedChampions, onOpenPack, isOpening, money }) {
     const availableCount = champions.filter((champion) => !ownedChampions.some((owned) => owned.id === champion.id)).length;
+    const canAfford = money >= PACK_OPEN_COST;
+    const disabled = isOpening || champions.length === 0 || !canAfford;
 
     return (
         <section className='pack-opening-section' aria-labelledby='pack-opening-title'>
-            <button type='button' className={`pack-opening-card ${isOpening ? 'is-opening' : ''}`} onClick={onOpenPack} disabled={isOpening || champions.length === 0}>
+            <button type='button' className={`pack-opening-card ${isOpening ? 'is-opening' : ''} ${!canAfford ? 'is-locked' : ''}`} onClick={onOpenPack} disabled={disabled}>
                 <span className='pack-opening-aura' aria-hidden='true' />
                 <span className='pack-opening-seal'>
                     <Gift size={34} strokeWidth={2.2} />
@@ -882,11 +909,25 @@ function PackOpeningSection({ champions, ownedChampions, onOpenPack, isOpening }
                 <span className='pack-opening-copy'>
                     <span className='pack-opening-kicker'>Champion Pack</span>
                     <strong id='pack-opening-title'>Open a Mystery Pack</strong>
-                    <span>{availableCount > 0 ? `${availableCount} champions waiting` : 'Duplicate protection active'}</span>
+                    <span className='pack-opening-status'>{availableCount > 0 ? `${availableCount} champions waiting` : 'Duplicate protection active'}</span>
+                    <span className='pack-opening-odds' aria-label='Pack drop chances'>
+                        {PACK_RARITY_CHANCES.map((item) => (
+                            <span key={item.rarity} style={{ '--odds-color': rarityConfig[item.rarity].color }}>
+                                {rarityConfig[item.rarity].label} {item.chance}%
+                            </span>
+                        ))}
+                    </span>
                 </span>
                 <span className='pack-opening-action'>
-                    {isOpening ? 'Opening' : 'Open Pack'}
-                    <Sparkles size={16} strokeWidth={2.4} />
+                    {isOpening ? <span className='pack-action-label'>Opening</span> : null}
+                    {!isOpening ? (
+                        <span className='pack-action-price'>
+                            <span className='wallet-coin'>
+                                <BlueEssenceIcon />
+                            </span>
+                            <span>{PACK_OPEN_COST.toLocaleString('tr-TR')}</span>
+                        </span>
+                    ) : null}
                 </span>
             </button>
         </section>
@@ -941,6 +982,7 @@ function App() {
         selectedChampionSkills,
         recentlyBoughtId,
         grantPackChampion,
+        setAlertt,
         totalPage,
     } = useContext(CardContext);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -1050,10 +1092,15 @@ function App() {
             return;
         }
 
+        if (money < PACK_OPEN_COST) {
+            setAlertt(true);
+            return;
+        }
+
         const ownedIds = new Set(myCardsArr.map((champion) => champion.id));
         const availableChampions = filtered.filter((champion) => !ownedIds.has(champion.id));
         const packPool = availableChampions.length > 0 ? availableChampions : filtered;
-        const champion = packPool[Math.floor(Math.random() * packPool.length)];
+        const champion = pickPackChampion(packPool);
         const rewardId = `pack-reward-${champion.id}-${Date.now()}`;
 
         setPackOpening(true);
@@ -1087,7 +1134,7 @@ function App() {
         }, 2000);
 
         window.setTimeout(() => {
-            grantPackChampion(champion);
+            grantPackChampion(champion, PACK_OPEN_COST);
             setPackReward((currentReward) => (
                 currentReward?.id === rewardId ? null : currentReward
             ));
@@ -1759,7 +1806,7 @@ function App() {
 
                 <TrendingCarousel champions={trending} openChampionModal={openChampionModal} />
 
-                <PackOpeningSection champions={filtered} ownedChampions={myCardsArr} onOpenPack={handlePackOpen} isOpening={packOpening} />
+                <PackOpeningSection champions={filtered} ownedChampions={myCardsArr} onOpenPack={handlePackOpen} isOpening={packOpening} money={money} />
 
                 <section className='shop-section' id='marketplace'>
                     <div className='shop-layout'>

@@ -3870,8 +3870,12 @@ img {
 }
 
 .pack-opening-card:disabled {
-  cursor: wait;
+  cursor: not-allowed;
   opacity: 0.9;
+}
+
+.pack-opening-card.is-opening:disabled {
+  cursor: wait;
 }
 
 .pack-opening-aura {
@@ -3932,28 +3936,82 @@ img {
   text-transform: uppercase;
 }
 
-.pack-opening-copy > span:last-child {
+.pack-opening-status {
   color: var(--muted);
   font-size: 0.9rem;
   font-weight: 750;
 }
 
+.pack-opening-odds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.pack-opening-odds span {
+  border: 1px solid color-mix(in srgb, var(--odds-color) 52%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--odds-color) 16%, rgba(5, 8, 13, 0.86));
+  color: var(--odds-color);
+  font-size: 0.72rem;
+  font-weight: 950;
+  line-height: 1;
+  padding: 6px 8px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .pack-opening-action {
   display: inline-flex;
   min-height: 46px;
+  min-width: 120px;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  border: 1px solid rgba(240, 216, 137, 0.42);
+  gap: 3px;
+  border: 1px solid rgba(218, 185, 94, 0.34);
   border-radius: 999px;
-  background: linear-gradient(135deg, var(--gold), #6fcfff);
-  color: #07101b;
-  font-size: 0.8rem;
-  font-weight: 950;
-  letter-spacing: 0.08em;
-  padding: 0 18px;
+  background: linear-gradient(135deg, rgba(218, 185, 94, 0.18), rgba(218, 185, 94, 0.08));
+  color: var(--gold-bright);
+  font-weight: 900;
+  box-shadow:
+    0 0 28px rgba(217, 183, 93, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  padding: 0 15px 0 9px;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+.pack-action-label {
+  color: var(--text);
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  line-height: 1;
+}
+
+.pack-action-price {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gold-bright);
+  font-size: 0.98rem;
+  font-weight: 950;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.pack-action-price .wallet-coin {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+}
+
+.pack-action-price .wallet-coin .blue-essence-icon {
+  width: 22px;
+  height: 22px;
 }
 
 .pack-reward-overlay {

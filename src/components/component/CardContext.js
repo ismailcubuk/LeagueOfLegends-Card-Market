@@ -587,9 +587,13 @@ export const CardContextprovider = ({ children }) => {
         pulseCardState(setRecentlyBoughtId, hero.id);
     }, [money, myCardsArr, pulseCardState]);
 
-    const grantPackChampion = useCallback((champion) => {
+    const grantPackChampion = useCallback((champion, cost = 0) => {
         if (!champion) {
             return;
+        }
+
+        if (cost > 0) {
+            setMoney((currentMoney) => Math.max(currentMoney - cost, 0));
         }
 
         setMyCardsArr((prevCards) => (
