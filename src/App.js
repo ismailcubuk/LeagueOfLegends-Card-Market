@@ -329,7 +329,7 @@ function rarityFor(champion) {
     return 'common';
 }
 
-function ChampionCard({ champion, owned = false, justBought = false, onAction, onOpen }) {
+function ChampionCard({ champion, owned = false, inCart = false, justBought = false, onAction, onOpen }) {
     const rarity = rarityFor(champion);
     const config = rarityConfig[rarity];
     const isHolo = rarity === 'legendary' || rarity === 'mythic';
@@ -455,13 +455,71 @@ function ChampionCard({ champion, owned = false, justBought = false, onAction, o
                         <span aria-hidden='true'><BlueEssenceIcon /></span>
                         <strong>{blueEssence.toLocaleString()}</strong>
                     </div>
-                    <motion.button type='button' whileTap={{ scale: 0.94 }} className={owned ? 'sell-action' : 'buy-action'} onClick={() => onAction(champion)} disabled={owned}>
-                        {owned ? <Check size={14} strokeWidth={2.8} /> : <ShoppingCart size={14} strokeWidth={2.4} />}
-                        {owned ? 'Owned' : 'Buy'}
+                    <motion.button type='button' whileTap={{ scale: 0.94 }} className={owned ? 'sell-action' : `buy-action ${inCart ? 'is-in-cart' : ''}`} onClick={() => onAction(champion)} disabled={owned}>
+                        {owned || inCart ? <Check size={14} strokeWidth={2.8} /> : <ShoppingCart size={14} strokeWidth={2.4} />}
+                        {owned ? 'Owned' : inCart ? 'Added' : 'Cart'}
                     </motion.button>
                 </div>
             </div>
         </motion.article>
+    );
+}
+
+function CartPanel({ cartItems, cartTotal, cartMissingBalance, money, removeFromCart, clearCart, checkoutCart }) {
+    const hasItems = cartItems.length > 0;
+
+    return (
+        <aside className='cart-panel' aria-labelledby='cart-panel-title'>
+            <div className='cart-panel-heading'>
+                <div>
+                    <span><ShoppingCart size={16} strokeWidth={2.4} />Cart</span>
+                    <h3 id='cart-panel-title'>{cartItems.length} Cards</h3>
+                </div>
+                {hasItems ? (
+                    <button type='button' className='cart-clear' onClick={clearCart}>
+                        Clear
+                    </button>
+                ) : null}
+            </div>
+
+            {hasItems ? (
+                <div className='cart-list'>
+                    {cartItems.map((champion) => (
+                        <div className='cart-item' key={champion.id}>
+                            <img src={championLoadingImage(champion.id)} alt='' loading='lazy' />
+                            <div>
+                                <strong>{champion.name}</strong>
+                                <PriceAmount value={getChampionBlueEssence(champion)} />
+                            </div>
+                            <button type='button' onClick={() => removeFromCart(champion.id)} aria-label={`Remove ${champion.name} from cart`}>
+                                <AiOutlineClose />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                <div className='cart-empty'>
+                    <ShoppingCart size={22} strokeWidth={2.2} />
+                    <span>No cards selected</span>
+                </div>
+            )}
+
+            <div className='cart-totals'>
+                <div>
+                    <span>Total Blue Essence</span>
+                    <PriceAmount value={cartTotal} />
+                </div>
+                <div>
+                    <span>After Purchase</span>
+                    <PriceAmount value={Math.max(money - cartTotal, 0)} />
+                </div>
+            </div>
+
+            <button type='button' className='cart-checkout' onClick={checkoutCart} disabled={!hasItems || cartMissingBalance > 0}>
+                <Check size={16} strokeWidth={2.6} />
+                Buy All
+            </button>
+        </aside>
     );
 }
 
@@ -726,8 +784,14 @@ function App() {
         filtered,
         displayedIChampions,
         myCardsArr,
-        buyClick,
         sellClick,
+        cartItems,
+        cartTotal,
+        cartMissingBalance,
+        addToCart,
+        removeFromCart,
+        clearCart,
+        checkoutCart,
         search,
         clearSearch,
         handleChange,
@@ -765,9 +829,11 @@ function App() {
     const [heroPaused, setHeroPaused] = useState(false);
     const [heroProgress, setHeroProgress] = useState(0);
     const [activeLink, setActiveLink] = useState('Store');
+    const [cartOpen, setCartOpen] = useState(false);
     const [selectedSkinNum, setSelectedSkinNum] = useState(0);
     const [activePreviewTab, setActivePreviewTab] = useState('overview');
     const navClickLockRef = useRef(null);
+    const cartDropdownRef = useRef(null);
     const heroProgressRef = useRef(0);
     const heroLastTickRef = useRef(null);
     const [openFilterSections, setOpenFilterSections] = useState({
@@ -805,7 +871,9 @@ function App() {
 
     const heroChampion = featured.length > 0 ? featured[activeHeroIndex % featured.length] : null;
     const heroChampionOwned = heroChampion ? myCardsArr.some((champion) => champion.id === heroChampion.id) : false;
+    const heroChampionInCart = heroChampion ? cartItems.some((champion) => champion.id === heroChampion.id) : false;
     const selectedChampionOwned = selectedChampion ? myCardsArr.some((champion) => champion.id === selectedChampion.id) : false;
+    const selectedChampionInCart = selectedChampion ? cartItems.some((champion) => champion.id === selectedChampion.id) : false;
     const ResourceIcon = resourceIcons[selectedChampion?.partype?.toLowerCase()] || Droplet;
     const selectedChampionOrigin = championOrigins[selectedChampion?.id] || 'Runeterra';
     const selectedChampionOriginImage = originImageUrls[selectedChampionOrigin];
@@ -955,6 +1023,32 @@ function App() {
         setSelectedSkinNum(0);
         setActivePreviewTab('overview');
     }, [selectedChampion?.id]);
+
+    useEffect(() => {
+        if (!cartOpen) {
+            return undefined;
+        }
+
+        const handlePointerDown = (event) => {
+            if (!cartDropdownRef.current?.contains(event.target)) {
+                setCartOpen(false);
+            }
+        };
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                setCartOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handlePointerDown);
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('mousedown', handlePointerDown);
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [cartOpen]);
 
     const filters = (
         <aside className='filter-panel'>
@@ -1157,6 +1251,40 @@ function App() {
                         </span>
                         <span>{money.toLocaleString()}</span>
                     </motion.div>
+                    <div className='cart-dropdown-shell' ref={cartDropdownRef}>
+                        <button
+                            type='button'
+                            className={`cart-pill ${cartOpen ? 'is-open' : ''}`}
+                            onClick={() => setCartOpen((open) => !open)}
+                            aria-label={`${cartItems.length} cards in cart`}
+                            aria-expanded={cartOpen}
+                            aria-haspopup='dialog'
+                        >
+                            <ShoppingCart size={17} strokeWidth={2.4} />
+                            <span>{cartItems.length}</span>
+                        </button>
+                        <AnimatePresence>
+                            {cartOpen ? (
+                                <motion.div
+                                    className='cart-dropdown'
+                                    initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                                    exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                                    transition={{ duration: 0.16, ease: 'easeOut' }}
+                                >
+                                    <CartPanel
+                                        cartItems={cartItems}
+                                        cartTotal={cartTotal}
+                                        cartMissingBalance={cartMissingBalance}
+                                        money={money}
+                                        removeFromCart={removeFromCart}
+                                        clearCart={clearCart}
+                                        checkoutCart={checkoutCart}
+                                    />
+                                </motion.div>
+                            ) : null}
+                        </AnimatePresence>
+                    </div>
                     <button type='button' className='icon-button mobile-menu-button' onClick={() => setMobileFiltersOpen(true)} aria-label='Menu'>
                         <Menu size={20} strokeWidth={2.2} />
                     </button>
@@ -1215,13 +1343,13 @@ function App() {
                                         <button
                                             type='button'
                                             className='hero-unlock'
-                                            disabled={heroChampionOwned}
-                                            onClick={() => buyClick(heroChampion)}
+                                            disabled={heroChampionOwned || heroChampionInCart}
+                                            onClick={() => addToCart(heroChampion)}
                                         >
-                                            <ShoppingCart size={16} strokeWidth={2.4} />
-                                            {heroChampionOwned ? 'In Collection' : (
+                                            {heroChampionOwned || heroChampionInCart ? <Check size={16} strokeWidth={2.6} /> : <ShoppingCart size={16} strokeWidth={2.4} />}
+                                            {heroChampionOwned ? 'In Collection' : heroChampionInCart ? 'In Cart' : (
                                                 <>
-                                                    <span>Unlock</span>
+                                                    <span>Add to Cart</span>
                                                     <PriceAmount value={getChampionBlueEssence(heroChampion)} />
                                                 </>
                                             )}
@@ -1273,14 +1401,16 @@ function App() {
                             <div className='market-grid'>
                                 {displayedIChampions.map((champion) => {
                                     const owned = myCardsArr.some((card) => card.id === champion.id);
+                                    const inCart = cartItems.some((card) => card.id === champion.id);
 
                                     return (
                                         <ChampionCard
                                             key={champion.id}
                                             champion={champion}
                                             owned={owned}
+                                            inCart={inCart}
                                             justBought={recentlyBoughtId === champion.id}
-                                            onAction={owned ? sellClick : buyClick}
+                                            onAction={owned ? sellClick : inCart ? () => removeFromCart(champion.id) : addToCart}
                                             onOpen={openChampionModal}
                                         />
                                     );
@@ -1335,10 +1465,10 @@ function App() {
                                     <button
                                         type='button'
                                         className={`champion-preview-price ${selectedChampionOwned ? 'is-owned' : ''}`}
-                                        onClick={() => buyClick(selectedChampion)}
-                                        disabled={selectedChampionOwned}
+                                        onClick={() => addToCart(selectedChampion)}
+                                        disabled={selectedChampionOwned || selectedChampionInCart}
                                     >
-                                        <span>{selectedChampionOwned ? 'In Collection' : 'Unlock Cost'}</span>
+                                        <span>{selectedChampionOwned ? 'In Collection' : selectedChampionInCart ? 'In Cart' : 'Add to Cart'}</span>
                                         <PriceAmount value={selectedChampion.price} />
                                     </button>
                                 </div>

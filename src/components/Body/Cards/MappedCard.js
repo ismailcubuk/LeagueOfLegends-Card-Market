@@ -85,7 +85,13 @@ function MappedCard() {
     const {
         displayedIChampions,
         myCardsArr,
-        buyClick,
+        addToCart,
+        cartItems,
+        cartTotal,
+        cartMissingBalance,
+        checkoutCart,
+        clearCart,
+        removeFromCart,
         sellClick,
         handleChange,
         isSearch,
@@ -137,24 +143,47 @@ function MappedCard() {
                     <div className='cards-header'>
                         <h1 className='shop-cards-header' id='shop-title'>Shop</h1>
                     </div>
+                    <div className='legacy-cart-panel'>
+                        <div className='legacy-cart-summary'>
+                            <strong>Cart: {cartItems.length} cards</strong>
+                            <span>Total: <PriceAmount value={cartTotal} /></span>
+                        </div>
+                        <div className='legacy-cart-actions'>
+                            <button type='button' onClick={checkoutCart} disabled={cartItems.length === 0 || cartMissingBalance > 0}>Buy All</button>
+                            <button type='button' onClick={clearCart} disabled={cartItems.length === 0}>Clear</button>
+                        </div>
+                        {cartItems.length > 0 ? (
+                            <div className='legacy-cart-items'>
+                                {cartItems.map((champion) => (
+                                    <button type='button' key={champion.id} onClick={() => removeFromCart(champion.id)}>
+                                        {champion.name}
+                                    </button>
+                                ))}
+                            </div>
+                        ) : null}
+                    </div>
                     <div className='mapped-card'>
                         {displayedIChampions.length > 0 ? (
-                            displayedIChampions.map((champion) => (
-                                <ChampionCard
-                                    key={champion.id}
-                                    champion={champion}
-                                    actionLabel='Buy'
-                                    actionClass='buy-button'
-                                    onAction={buyClick}
-                                    onOpen={() => openChampionModal(champion)}
-                                    onPreview={preloadChampionDetails}
-                                    roleIcons={roleIcons}
-                                    statusClass={[
-                                        recentlySoldId === champion.id ? 'is-new-card' : '',
-                                        deniedChampionId === champion.id ? 'is-denied-card' : '',
-                                    ].filter(Boolean).join(' ')}
-                                />
-                            ))
+                            displayedIChampions.map((champion) => {
+                                const inCart = cartItems.some((item) => item.id === champion.id);
+
+                                return (
+                                    <ChampionCard
+                                        key={champion.id}
+                                        champion={champion}
+                                        actionLabel={inCart ? 'Added' : 'Cart'}
+                                        actionClass={`buy-button ${inCart ? 'is-in-cart' : ''}`}
+                                        onAction={inCart ? () => removeFromCart(champion.id) : addToCart}
+                                        onOpen={() => openChampionModal(champion)}
+                                        onPreview={preloadChampionDetails}
+                                        roleIcons={roleIcons}
+                                        statusClass={[
+                                            recentlySoldId === champion.id ? 'is-new-card' : '',
+                                            deniedChampionId === champion.id ? 'is-denied-card' : '',
+                                        ].filter(Boolean).join(' ')}
+                                    />
+                                );
+                            })
                         ) : (
                             <div className='empty-state'>No champions match the current filters.</div>
                         )}

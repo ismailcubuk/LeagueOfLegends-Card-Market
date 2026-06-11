@@ -295,6 +295,7 @@ export const CardContextprovider = ({ children }) => {
     const [isSearch, setIsSearch] = useState(false);
     const [filteredId, setFilteredId] = useState([]);
     const [myCardsArr, setMyCardsArr] = useState(uniqueById(getStoredJson("myCardsArr", [])));
+    const [cartItems, setCartItems] = useState(uniqueById(getStoredJson("cartItems", [])));
     const [alertt, setAlertt] = useState(false);
     const [carouselPage, setCarouselPage] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
@@ -317,6 +318,10 @@ export const CardContextprovider = ({ children }) => {
     useEffect(() => {
         localStorage.setItem("myCardsArr", JSON.stringify(myCardsArr));
     }, [myCardsArr]);
+
+    useEffect(() => {
+        localStorage.setItem("cartItems", JSON.stringify(cartItems));
+    }, [cartItems]);
 
     useEffect(() => {
         localStorage.setItem("char", JSON.stringify(cards));
@@ -496,11 +501,38 @@ export const CardContextprovider = ({ children }) => {
         return filteredChampions.slice(startIndex, startIndex + CHAMPIONS_PER_PAGE);
     }, [currentPage, filteredChampions]);
 
+    const cartTotal = useMemo(() => (
+        cartItems.reduce((total, champion) => total + getChampionBlueEssence(champion), 0)
+    ), [cartItems]);
+    const cartMissingBalance = Math.max(cartTotal - money, 0);
+
+    const addToCart = useCallback((champion) => {
+        if (!champion || myCardsArr.some((card) => card.id === champion.id)) {
+            return;
+        }
+
+        const sourceChampion = [...champions, ...cards, ...filtered, champion].find((item) => item.id === champion.id) || champion;
+
+        setCartItems((currentItems) => (
+            currentItems.some((item) => item.id === champion.id) ? currentItems : [sourceChampion, ...currentItems]
+        ));
+        setAlertt(false);
+    }, [cards, champions, filtered, myCardsArr]);
+
+    const removeFromCart = useCallback((championId) => {
+        setCartItems((currentItems) => currentItems.filter((champion) => champion.id !== championId));
+    }, []);
+
+    const clearCart = useCallback(() => {
+        setCartItems([]);
+    }, []);
+
     const sellClick = useCallback((req) => {
         setCards((prevCards) => (
             prevCards.some((card) => card.id === req.id) ? prevCards : [req, ...prevCards]
         ));
         setMyCardsArr((prevCards) => prevCards.filter((card) => card.id !== req.id));
+        setCartItems((prevItems) => prevItems.filter((card) => card.id !== req.id));
         setMoney((currentMoney) => currentMoney + getChampionBlueEssence(req));
         pulseCardState(setRecentlySoldId, req.id);
     }, [pulseCardState]);
@@ -528,6 +560,35 @@ export const CardContextprovider = ({ children }) => {
         setAlertt(false);
         pulseCardState(setRecentlyBoughtId, hero.id);
     }, [money, myCardsArr, pulseCardState]);
+
+    const checkoutCart = useCallback(() => {
+        const availableItems = uniqueById(cartItems).filter(
+            (champion) => !myCardsArr.some((card) => card.id === champion.id)
+        );
+        const total = availableItems.reduce((sum, champion) => sum + getChampionBlueEssence(champion), 0);
+
+        if (availableItems.length === 0) {
+            setCartItems([]);
+            return;
+        }
+
+        if (total > money) {
+            setAlertt(true);
+            pulseCardState(setDeniedChampionId, availableItems[0].id);
+            return;
+        }
+
+        const purchasedIds = new Set(availableItems.map((champion) => champion.id));
+        setMyCardsArr((prevCards) => uniqueById([...availableItems, ...prevCards]));
+        setFilteredId((prevIds) => availableItems.reduce((ids, champion) => (
+            ids.includes(champion.id) ? ids : [champion.id, ...ids]
+        ), prevIds));
+        setCards((prevCards) => prevCards.filter((card) => !purchasedIds.has(card.id)));
+        setMoney((currentMoney) => currentMoney - total);
+        setCartItems([]);
+        setAlertt(false);
+        pulseCardState(setRecentlyBoughtId, availableItems[0].id);
+    }, [cartItems, money, myCardsArr, pulseCardState]);
 
     const loadChampionDetails = useCallback((championId) => {
         if (!championId || championDetails[championId]) {
@@ -654,6 +715,13 @@ export const CardContextprovider = ({ children }) => {
         recentlyBoughtId,
         recentlySoldId,
         deniedChampionId,
+        cartItems,
+        cartTotal,
+        cartMissingBalance,
+        addToCart,
+        removeFromCart,
+        clearCart,
+        checkoutCart,
         sellClick,
         myCardsArr,
         filteredId,
