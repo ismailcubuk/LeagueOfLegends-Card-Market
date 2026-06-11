@@ -3914,6 +3914,15 @@ img {
     0 0 36px rgba(95, 168, 255, 0.18);
 }
 
+.pack-opening-seal img {
+  width: 92%;
+  height: 92%;
+  object-fit: contain;
+  filter:
+    drop-shadow(0 8px 14px rgba(0, 0, 0, 0.34))
+    drop-shadow(0 0 16px rgba(77, 205, 255, 0.24));
+}
+
 .pack-opening-copy {
   display: grid;
   min-width: 0;

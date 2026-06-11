@@ -19,6 +19,7 @@ import Pagination from './components/Body/Pagination/Pagination';
 const championLoadingImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${id}_0.jpg`;
 const championSplashImage = (id, skin = 0) => `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_${skin}.jpg`;
 const LOL_ICON_URL = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/lol_icon.png';
+const HEXTECH_CHEST_ICON_URL = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-loot/global/default/assets/loot_item_icons/chest.png';
 
 const sidebarRoles = ['Assassin', 'Mage', 'Fighter', 'Tank', 'Marksman', 'Support'];
 const navLinks = [
@@ -904,7 +905,7 @@ function PackOpeningSection({ champions, ownedChampions, onOpenPack, isOpening, 
             <button type='button' className={`pack-opening-card ${isOpening ? 'is-opening' : ''} ${!canAfford ? 'is-locked' : ''}`} onClick={onOpenPack} disabled={disabled}>
                 <span className='pack-opening-aura' aria-hidden='true' />
                 <span className='pack-opening-seal'>
-                    <Gift size={34} strokeWidth={2.2} />
+                    <img src={HEXTECH_CHEST_ICON_URL} alt='' aria-hidden='true' />
                 </span>
                 <span className='pack-opening-copy'>
                     <span className='pack-opening-kicker'>Champion Pack</span>
