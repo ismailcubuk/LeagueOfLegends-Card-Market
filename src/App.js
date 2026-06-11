@@ -743,6 +743,31 @@ function pickPackChampion(champions) {
     return selectedPool[Math.floor(Math.random() * selectedPool.length)];
 }
 
+function uniqueChampionsById(champions) {
+    return Array.from(new Map(champions.filter(Boolean).map((champion) => [champion.id, champion])).values());
+}
+
+function buildPackRouletteItems(packPool, champion) {
+    const uniquePool = uniqueChampionsById([champion, ...packPool]);
+    const shuffledPool = [...uniquePool].sort(() => Math.random() - 0.5);
+    const winnerIndex = Math.min(10, Math.max(2, shuffledPool.length - 1));
+    const withoutWinner = shuffledPool.filter((item) => item.id !== champion.id);
+    const rouletteChampions = [
+        ...withoutWinner.slice(0, winnerIndex),
+        champion,
+        ...withoutWinner.slice(winnerIndex),
+    ];
+
+    return {
+        items: rouletteChampions.map((rouletteChampion, index) => ({
+            key: `${rouletteChampion.id}-${index}`,
+            champion: rouletteChampion,
+            isWinner: rouletteChampion.id === champion.id,
+        })),
+        winnerIndex,
+    };
+}
+
 function RarityPill({ rarity }) {
     const config = rarityConfig[rarity];
 
@@ -996,6 +1021,7 @@ function App() {
     const [cartFlight, setCartFlight] = useState(null);
     const [collectionFlights, setCollectionFlights] = useState([]);
     const [dailyEssenceFlights, setDailyEssenceFlights] = useState([]);
+    const [packEssenceFlights, setPackEssenceFlights] = useState([]);
     const [packReward, setPackReward] = useState(null);
     const [packOpening, setPackOpening] = useState(false);
     const [walletCatching, setWalletCatching] = useState(false);
@@ -1088,7 +1114,7 @@ function App() {
         window.setTimeout(() => setCollectionFlights([]), 1300);
     };
 
-    const handlePackOpen = () => {
+    const handlePackOpen = (event) => {
         if (packOpening || filtered.length === 0) {
             return;
         }
@@ -1103,24 +1129,54 @@ function App() {
         const packPool = availableChampions.length > 0 ? availableChampions : filtered;
         const champion = pickPackChampion(packPool);
         const rewardId = `pack-reward-${champion.id}-${Date.now()}`;
+        const roulette = buildPackRouletteItems(packPool, champion);
+        const triggerRect = event.currentTarget?.getBoundingClientRect();
+
+        if (triggerRect) {
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const flights = Array.from({ length: 9 }, (_, index) => {
+                const startX = triggerRect.right - 56 + (index % 3) * 8;
+                const startY = triggerRect.top + triggerRect.height / 2 - 8 + (Math.floor(index / 3) - 1) * 7;
+
+                return {
+                    id: `pack-essence-${Date.now()}-${index}`,
+                    left: `${startX}px`,
+                    top: `${startY}px`,
+                    '--essence-x': `${centerX - startX}px`,
+                    '--essence-y': `${centerY - startY}px`,
+                    '--essence-delay': `${index * 45}ms`,
+                };
+            });
+
+            setPackEssenceFlights(flights);
+            window.setTimeout(() => setPackEssenceFlights([]), 920);
+        }
 
         setPackOpening(true);
         setPackReward({
             id: rewardId,
             champion,
-            phase: 'reveal',
-            '--pack-flight-x': '0px',
-            '--pack-flight-y': '0px',
+            items: roulette.items,
+            winnerIndex: roulette.winnerIndex,
+            phase: 'rolling',
         });
 
         window.setTimeout(() => {
+            setPackReward((currentReward) => (
+                currentReward?.id === rewardId
+                    ? {
+                        ...currentReward,
+                        phase: 'won',
+                    }
+                    : currentReward
+            ));
+        }, 4580);
+
+        window.setTimeout(() => {
             const targetRect = collectionTargetRef.current?.getBoundingClientRect();
-            const startWidth = Math.min(window.innerWidth * 0.56, 250);
-            const startHeight = startWidth * 1.36;
-            const startX = window.innerWidth / 2 - startWidth / 2;
-            const startY = window.innerHeight / 2 - startHeight / 2;
-            const endX = targetRect ? targetRect.left + Math.min(targetRect.width * 0.18, 120) - startX - startWidth / 2 : 0;
-            const endY = targetRect ? targetRect.top + targetRect.height / 2 - startY - startHeight / 2 : 0;
+            const endX = targetRect ? targetRect.left + Math.min(targetRect.width * 0.18, 120) - window.innerWidth / 2 : 0;
+            const endY = targetRect ? targetRect.top + targetRect.height / 2 - window.innerHeight / 2 : 0;
 
             setPackReward((currentReward) => (
                 currentReward?.id === rewardId
@@ -1132,7 +1188,7 @@ function App() {
                     }
                     : currentReward
             ));
-        }, 2000);
+        }, 5350);
 
         window.setTimeout(() => {
             grantPackChampion(champion, PACK_OPEN_COST);
@@ -1140,7 +1196,7 @@ function App() {
                 currentReward?.id === rewardId ? null : currentReward
             ));
             setPackOpening(false);
-        }, 2920);
+        }, 6350);
     };
 
     const handleDailyRewardClaim = () => {
@@ -1590,25 +1646,74 @@ function App() {
                     aria-hidden='true'
                 />
             ))}
+            {packEssenceFlights.map((flight) => (
+                <span
+                    key={flight.id}
+                    className='pack-essence-flight'
+                    style={{
+                        left: flight.left,
+                        top: flight.top,
+                        '--essence-x': flight['--essence-x'],
+                        '--essence-y': flight['--essence-y'],
+                        '--essence-delay': flight['--essence-delay'],
+                    }}
+                    aria-hidden='true'
+                >
+                    <BlueEssenceIcon />
+                </span>
+            ))}
             {packReward ? (
                 <div className='pack-reward-overlay' aria-live='polite'>
                     <span className='pack-reward-backdrop' />
-                    <span
-                        key={packReward.id}
-                        className={`pack-reward-card rarity-${rarityFor(packReward.champion)} ${packReward.phase === 'flying' ? 'is-flying' : ''}`}
-                        style={{
-                            '--pack-flight-x': packReward['--pack-flight-x'],
-                            '--pack-flight-y': packReward['--pack-flight-y'],
-                        }}
-                    >
-                        <img src={championLoadingImage(packReward.champion.id)} alt={packReward.champion.name} />
-                        <span className='pack-reward-shine' />
-                        <span className='pack-reward-content'>
-                            <RarityPill rarity={rarityFor(packReward.champion)} />
-                            <strong>{packReward.champion.name}</strong>
-                            <span>{packReward.champion.title}</span>
-                        </span>
-                    </span>
+                    <div className={`pack-case-stage phase-${packReward.phase}`}>
+                        <div className='pack-case-header'>
+                            <span className='pack-case-chest'>
+                                <img src={HEXTECH_CHEST_ICON_URL} alt='' aria-hidden='true' />
+                            </span>
+                            <div>
+                                <span>Hextech Chest</span>
+                                <strong>{packReward.phase === 'won' ? 'Kazanan kart' : packReward.phase === 'flying' ? 'Koleksiyona ekleniyor' : 'Kasa açılıyor'}</strong>
+                            </div>
+                        </div>
+
+                        <div className='pack-roulette-window'>
+                            <span className='pack-roulette-marker' aria-hidden='true' />
+                            <div
+                                className='pack-roulette-track'
+                                style={{ '--winner-offset': `${packReward.winnerIndex * 144 + 66}px` }}
+                            >
+                                {packReward.items.map((item) => {
+                                    const rarity = rarityFor(item.champion);
+
+                                    return (
+                                        <article className={`pack-roulette-card rarity-${rarity} ${item.isWinner ? 'is-winner' : ''}`} key={item.key}>
+                                            <img src={championLoadingImage(item.champion.id)} alt='' />
+                                            <span className='pack-roulette-card-shade' />
+                                            <span className='pack-roulette-card-name'>{item.champion.name}</span>
+                                        </article>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className='pack-winner-panel'>
+                            <article
+                                className={`pack-winner-card rarity-${rarityFor(packReward.champion)}`}
+                                style={{
+                                    '--pack-flight-x': packReward['--pack-flight-x'] || '0px',
+                                    '--pack-flight-y': packReward['--pack-flight-y'] || '0px',
+                                }}
+                            >
+                                <img src={championLoadingImage(packReward.champion.id)} alt={packReward.champion.name} />
+                                <span className='pack-reward-shine' />
+                                <span className='pack-reward-content'>
+                                    <RarityPill rarity={rarityFor(packReward.champion)} />
+                                    <strong>{packReward.champion.name}</strong>
+                                    <span>{packReward.champion.title}</span>
+                                </span>
+                            </article>
+                        </div>
+                    </div>
                 </div>
             ) : null}
             <header className='topbar'>
