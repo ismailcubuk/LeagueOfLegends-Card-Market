@@ -4208,6 +4208,17 @@ img {
   animation: packRouletteRoll 5000ms cubic-bezier(0.08, 0.92, 0.14, 1) forwards;
 }
 
+.pack-case-stage.phase-flying {
+  overflow: visible;
+}
+
+.pack-case-stage.phase-flying::before,
+.pack-case-stage.phase-flying .pack-case-header,
+.pack-case-stage.phase-flying .pack-roulette-window {
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
 .phase-won .pack-roulette-track,
 .phase-flying .pack-roulette-track {
   transform: translateX(calc(-1 * var(--winner-offset)));
@@ -4311,6 +4322,7 @@ img {
 }
 
 .phase-flying .pack-winner-panel {
+  z-index: 30;
   opacity: 1;
   transform: translateY(0) scale(1);
 }
