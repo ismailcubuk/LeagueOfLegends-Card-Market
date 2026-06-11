@@ -955,9 +955,10 @@ img {
 
 .recently-track {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
-  overflow-x: auto;
-  padding-block: 4px;
+  overflow: visible;
+  padding: 4px 12px;
 }
 
 .recent-card {
@@ -2799,6 +2800,204 @@ img {
 
 .preview-skins-grid .preview-skin {
   width: auto;
+}
+
+.market-card.is-purchase-animating {
+  animation: purchaseCardLift 720ms cubic-bezier(0.16, 1, 0.3, 1);
+  border-color: rgba(77, 205, 255, 0.78);
+  box-shadow:
+    0 0 0 1px rgba(77, 205, 255, 0.42),
+    0 0 34px rgba(77, 205, 255, 0.26),
+    0 18px 54px rgba(0, 0, 0, 0.32);
+}
+
+.market-card.is-purchase-animating .market-card-media::after {
+  position: absolute;
+  inset: -35%;
+  z-index: 5;
+  background:
+    linear-gradient(115deg, transparent 34%, rgba(255, 255, 255, 0.86) 48%, rgba(77, 205, 255, 0.5) 54%, transparent 68%),
+    radial-gradient(circle at 50% 50%, rgba(77, 205, 255, 0.38), transparent 54%);
+  content: "";
+  pointer-events: none;
+  transform: translateX(-58%) rotate(10deg);
+  animation: purchaseShine 700ms ease-out forwards;
+  mix-blend-mode: screen;
+}
+
+.purchase-burst {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.purchase-burst span {
+  position: absolute;
+  bottom: 18%;
+  left: 50%;
+  width: 12px;
+  height: 16px;
+  border-radius: 999px 999px 999px 3px;
+  background:
+    radial-gradient(circle at 40% 28%, rgba(255, 255, 255, 0.95), rgba(130, 232, 255, 0.86) 34%, rgba(25, 121, 207, 0.84) 100%);
+  box-shadow: 0 0 14px rgba(77, 205, 255, 0.75);
+  opacity: 0;
+  transform: translate(-50%, 0) rotate(45deg) scale(0.45);
+  animation: essenceDrop 760ms ease-out forwards;
+}
+
+.purchase-burst span:nth-child(1) {
+  --drop-x: -54px;
+  --drop-y: -90px;
+  animation-delay: 20ms;
+}
+
+.purchase-burst span:nth-child(2) {
+  --drop-x: -22px;
+  --drop-y: -116px;
+  animation-delay: 80ms;
+}
+
+.purchase-burst span:nth-child(3) {
+  --drop-x: 18px;
+  --drop-y: -102px;
+  animation-delay: 35ms;
+}
+
+.purchase-burst span:nth-child(4) {
+  --drop-x: 48px;
+  --drop-y: -78px;
+  animation-delay: 115ms;
+}
+
+.purchase-burst span:nth-child(5) {
+  --drop-x: 0;
+  --drop-y: -138px;
+  animation-delay: 150ms;
+}
+
+.recent-card.is-new-vault-card {
+  animation: vaultSlideIn 760ms cubic-bezier(0.18, 1, 0.28, 1), vaultPulse 900ms ease-out 80ms;
+  border-color: rgba(77, 205, 255, 0.9);
+  box-shadow:
+    0 0 0 1px rgba(77, 205, 255, 0.42),
+    0 0 26px rgba(77, 205, 255, 0.38);
+}
+
+.recent-card.is-new-vault-card::after {
+  position: absolute;
+  inset: -24%;
+  background:
+    linear-gradient(120deg, transparent 28%, rgba(255, 255, 255, 0.72) 48%, rgba(77, 205, 255, 0.38) 58%, transparent 74%);
+  content: "";
+  pointer-events: none;
+  transform: translateX(-70%) rotate(8deg);
+  animation: vaultShimmer 780ms ease-out forwards;
+  mix-blend-mode: screen;
+}
+
+@keyframes purchaseCardLift {
+  0% {
+    filter: brightness(1);
+    transform: translateY(0) scale(1);
+  }
+
+  38% {
+    filter: brightness(1.22);
+    transform: translateY(-12px) scale(1.035);
+  }
+
+  100% {
+    filter: brightness(1);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes purchaseShine {
+  0% {
+    opacity: 0;
+    transform: translateX(-58%) rotate(10deg);
+  }
+
+  28% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(58%) rotate(10deg);
+  }
+}
+
+@keyframes essenceDrop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 0) rotate(45deg) scale(0.35);
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  78% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--drop-x)), var(--drop-y)) rotate(45deg) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--drop-x) * 1.06), calc(var(--drop-y) - 16px)) rotate(45deg) scale(0.64);
+  }
+}
+
+@keyframes vaultSlideIn {
+  0% {
+    opacity: 0.35;
+    transform: translateX(44px) translateY(-10px) scale(0.82);
+  }
+
+  68% {
+    opacity: 1;
+    transform: translateX(-3px) translateY(0) scale(1.04);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
+  }
+}
+
+@keyframes vaultPulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(77, 205, 255, 0.42),
+      0 0 26px rgba(77, 205, 255, 0.38);
+  }
+
+  45% {
+    box-shadow:
+      0 0 0 3px rgba(77, 205, 255, 0.3),
+      0 0 42px rgba(77, 205, 255, 0.56);
+  }
+}
+
+@keyframes vaultShimmer {
+  0% {
+    opacity: 0;
+    transform: translateX(-70%) rotate(8deg);
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(70%) rotate(8deg);
+  }
 }
 
 ::-webkit-scrollbar {

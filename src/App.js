@@ -329,7 +329,7 @@ function rarityFor(champion) {
     return 'common';
 }
 
-function ChampionCard({ champion, owned = false, onAction, onOpen }) {
+function ChampionCard({ champion, owned = false, justBought = false, onAction, onOpen }) {
     const rarity = rarityFor(champion);
     const config = rarityConfig[rarity];
     const isHolo = rarity === 'legendary' || rarity === 'mythic';
@@ -388,7 +388,7 @@ function ChampionCard({ champion, owned = false, onAction, onOpen }) {
     return (
         <motion.article
             ref={cardRef}
-            className={`market-card rarity-${rarity}`}
+            className={`market-card rarity-${rarity} ${justBought ? 'is-purchase-animating' : ''}`}
             onMouseMove={handleMove}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={resetTilt}
@@ -405,6 +405,15 @@ function ChampionCard({ champion, owned = false, onAction, onOpen }) {
                 <img src={championLoadingImage(champion.id)} alt={champion.name} loading='lazy' draggable='false' />
                 <span className='market-card-vignette' />
                 <span className='market-card-glow' style={{ background: `radial-gradient(70% 50% at 50% 100%, ${config.glow}, transparent 70%)` }} />
+                {justBought ? (
+                    <span className='purchase-burst' aria-hidden='true'>
+                        <span />
+                        <span />
+                        <span />
+                        <span />
+                        <span />
+                    </span>
+                ) : null}
                 {isHolo ? <motion.span className='market-card-holo' aria-hidden style={{ backgroundPositionX: glareX }} animate={hovered ? { backgroundPosition: ['0% 0%', '200% 200%'] } : {}} transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }} /> : null}
                 <span className='market-card-top'>
                     <span
@@ -470,7 +479,7 @@ function HeroStat({ label, value, tone }) {
     );
 }
 
-function CollectionPanel({ champions, ownedChampions, openChampionModal }) {
+function CollectionPanel({ champions, ownedChampions, recentlyBoughtId, openChampionModal }) {
     const total = champions.length;
     const ownedCount = ownedChampions.length;
     const pct = total > 0 ? Math.round((ownedCount / total) * 100) : 0;
@@ -526,7 +535,7 @@ function CollectionPanel({ champions, ownedChampions, openChampionModal }) {
                             <button
                                 type='button'
                                 key={champion.id}
-                                className={`recent-card rarity-${rarityFor(champion)}`}
+                                className={`recent-card rarity-${rarityFor(champion)} ${recentlyBoughtId === champion.id ? 'is-new-vault-card' : ''}`}
                                 onClick={() => openChampionModal(champion)}
                                 aria-label={`Preview ${champion.name}`}
                             >
@@ -744,6 +753,7 @@ function App() {
         selectedChampion,
         selectedChampionDetails,
         selectedChampionSkills,
+        recentlyBoughtId,
         totalPage,
     } = useContext(CardContext);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -1210,7 +1220,7 @@ function App() {
                     </section>
                 ) : null}
 
-                <CollectionPanel champions={filtered} ownedChampions={myCardsArr} openChampionModal={openChampionModal} />
+                <CollectionPanel champions={filtered} ownedChampions={myCardsArr} recentlyBoughtId={recentlyBoughtId} openChampionModal={openChampionModal} />
 
                 <TrendingCarousel champions={trending} openChampionModal={openChampionModal} />
 
@@ -1236,6 +1246,7 @@ function App() {
                                             key={champion.id}
                                             champion={champion}
                                             owned={owned}
+                                            justBought={recentlyBoughtId === champion.id}
                                             onAction={owned ? sellClick : buyClick}
                                             onOpen={openChampionModal}
                                         />

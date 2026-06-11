@@ -92,8 +92,8 @@ const localChampions = Object.values(LolData.data || {}).filter(
 ).map(withBlueEssence);
 
 export const CardContextprovider = ({ children }) => {
-    const storedMoney = getStoredJson("money", 15000);
-    const initialMoney = Array.isArray(storedMoney) ? Number(storedMoney[0] || 15000) : Number(storedMoney || 15000);
+    const storedMoney = getStoredJson("money", 30000);
+    const initialMoney = Array.isArray(storedMoney) ? Number(storedMoney[0] || 30000) : Number(storedMoney || 30000);
     const storedCards = getStoredJson("char", []);
 
     const [champions, setChampions] = useState(localChampions);
