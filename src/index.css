@@ -4043,7 +4043,7 @@ img {
 
 .pack-essence-flight {
   position: fixed;
-  z-index: 230;
+  z-index: 211;
   display: grid;
   width: 28px;
   height: 28px;
@@ -4205,7 +4205,7 @@ img {
 }
 
 .phase-rolling .pack-roulette-track {
-  animation: packRouletteRoll 3950ms cubic-bezier(0.08, 0.92, 0.14, 1) forwards;
+  animation: packRouletteRoll 5000ms cubic-bezier(0.08, 0.92, 0.14, 1) forwards;
 }
 
 .phase-won .pack-roulette-track,

@@ -750,7 +750,7 @@ function uniqueChampionsById(champions) {
 function buildPackRouletteItems(packPool, champion) {
     const uniquePool = uniqueChampionsById([champion, ...packPool]);
     const shuffledPool = [...uniquePool].sort(() => Math.random() - 0.5);
-    const winnerIndex = Math.min(10, Math.max(2, shuffledPool.length - 1));
+    const winnerIndex = Math.min(36, Math.max(2, shuffledPool.length - 1));
     const withoutWinner = shuffledPool.filter((item) => item.id !== champion.id);
     const rouletteChampions = [
         ...withoutWinner.slice(0, winnerIndex),
@@ -1159,8 +1159,19 @@ function App() {
             champion,
             items: roulette.items,
             winnerIndex: roulette.winnerIndex,
-            phase: 'rolling',
+            phase: 'ready',
         });
+
+        window.setTimeout(() => {
+            setPackReward((currentReward) => (
+                currentReward?.id === rewardId
+                    ? {
+                        ...currentReward,
+                        phase: 'rolling',
+                    }
+                    : currentReward
+            ));
+        }, 920);
 
         window.setTimeout(() => {
             setPackReward((currentReward) => (
@@ -1171,7 +1182,7 @@ function App() {
                     }
                     : currentReward
             ));
-        }, 4580);
+        }, 6050);
 
         window.setTimeout(() => {
             const targetRect = collectionTargetRef.current?.getBoundingClientRect();
@@ -1188,7 +1199,7 @@ function App() {
                     }
                     : currentReward
             ));
-        }, 5350);
+        }, 6900);
 
         window.setTimeout(() => {
             grantPackChampion(champion, PACK_OPEN_COST);
@@ -1196,7 +1207,7 @@ function App() {
                 currentReward?.id === rewardId ? null : currentReward
             ));
             setPackOpening(false);
-        }, 6350);
+        }, 7900);
     };
 
     const handleDailyRewardClaim = () => {
