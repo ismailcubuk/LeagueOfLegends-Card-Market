@@ -929,6 +929,7 @@ function App() {
     const [collectionFlights, setCollectionFlights] = useState([]);
     const [dailyEssenceFlights, setDailyEssenceFlights] = useState([]);
     const [walletCatching, setWalletCatching] = useState(false);
+    const [displayMoney, setDisplayMoney] = useState(money);
     const [selectedSkinNum, setSelectedSkinNum] = useState(0);
     const [activePreviewTab, setActivePreviewTab] = useState('overview');
     const navClickLockRef = useRef(null);
@@ -938,6 +939,8 @@ function App() {
     const dailyRewardButtonRef = useRef(null);
     const collectionTargetRef = useRef(null);
     const previousCartCountRef = useRef(cartItems.length);
+    const displayMoneyRef = useRef(money);
+    const moneyAnimationRef = useRef(null);
     const heroProgressRef = useRef(0);
     const heroLastTickRef = useRef(null);
     const [openFilterSections, setOpenFilterSections] = useState({
@@ -1193,6 +1196,42 @@ function App() {
 
         previousCartCountRef.current = cartItems.length;
     }, [cartItems.length]);
+
+    useEffect(() => {
+        window.cancelAnimationFrame(moneyAnimationRef.current);
+
+        const startValue = displayMoneyRef.current;
+        const endValue = money;
+
+        if (startValue === endValue) {
+            setDisplayMoney(endValue);
+            return undefined;
+        }
+
+        const duration = 850;
+        const startTime = performance.now();
+
+        const animateMoney = (time) => {
+            const progress = Math.min((time - startTime) / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            const nextValue = Math.round(startValue + (endValue - startValue) * eased);
+
+            displayMoneyRef.current = nextValue;
+            setDisplayMoney(nextValue);
+
+            if (progress < 1) {
+                moneyAnimationRef.current = window.requestAnimationFrame(animateMoney);
+                return;
+            }
+
+            displayMoneyRef.current = endValue;
+            setDisplayMoney(endValue);
+        };
+
+        moneyAnimationRef.current = window.requestAnimationFrame(animateMoney);
+
+        return () => window.cancelAnimationFrame(moneyAnimationRef.current);
+    }, [money]);
 
     useEffect(() => {
         if (!cartOpen) {
@@ -1470,7 +1509,7 @@ function App() {
                         <span className='wallet-coin'>
                             <BlueEssenceIcon />
                         </span>
-                        <span>{money.toLocaleString()}</span>
+                        <span>{displayMoney.toLocaleString()}</span>
                     </motion.div>
                     <button
                         ref={dailyRewardButtonRef}
