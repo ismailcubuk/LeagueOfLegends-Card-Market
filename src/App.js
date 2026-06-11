@@ -733,6 +733,10 @@ function App() {
         handleChange,
         roleIcons,
         roleFilters,
+        regionOptions,
+        regionFilters,
+        clearRegionFilters,
+        handleRegionClick,
         rarityFilters,
         handleRarityClick,
         collectionFilter,
@@ -768,6 +772,7 @@ function App() {
     const heroLastTickRef = useRef(null);
     const [openFilterSections, setOpenFilterSections] = useState({
         role: true,
+        region: true,
         price: true,
         rarity: true,
         collection: false,
@@ -973,6 +978,34 @@ function App() {
                                 >
                                     <img src={roleIcons[role]} alt='' />
                                     {role}
+                                </button>
+                            ))}
+                        </div>
+                    </FilterSection>
+
+                    <FilterSection title='Region' isOpen={openFilterSections.region} onToggle={() => toggleFilterSection('region')}>
+                        <div className='filter-region-grid'>
+                            <button
+                                type='button'
+                                className={`filter-region-button ${regionFilters.length === 0 ? 'active' : ''}`}
+                                onClick={clearRegionFilters}
+                            >
+                                <span className='filter-region-icon filter-region-icon-empty'>
+                                    <MapPin size={16} strokeWidth={2.2} />
+                                </span>
+                                <span>All Regions</span>
+                            </button>
+                            {regionOptions.map((region) => (
+                                <button
+                                    type='button'
+                                    key={region.id}
+                                    className={`filter-region-button ${regionFilters.includes(region.id) ? 'active' : ''}`}
+                                    onClick={() => handleRegionClick(region.id)}
+                                >
+                                    <span className='filter-region-icon'>
+                                        <img src={region.image} alt='' />
+                                    </span>
+                                    <span>{region.label}</span>
                                 </button>
                             ))}
                         </div>

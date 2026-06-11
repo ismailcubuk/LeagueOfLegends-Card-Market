@@ -29,6 +29,189 @@ const roleIcons = {
     Support: "https://raw.communitydragon.org/7.20/plugins/rcp-fe-lol-champion-details/global/default/role-icon-support.png",
 };
 
+const regionOptions = [
+    { id: "Bandle City", label: "Bandle City", image: `${process.env.PUBLIC_URL}/regions/icons/bandle_city.png` },
+    { id: "Bilgewater", label: "Bilgewater", image: `${process.env.PUBLIC_URL}/regions/icons/bilgewater.png` },
+    { id: "Demacia", label: "Demacia", image: `${process.env.PUBLIC_URL}/regions/icons/demacia.png` },
+    { id: "Freljord", label: "Freljord", image: `${process.env.PUBLIC_URL}/regions/icons/freljord.png` },
+    { id: "Icathia", label: "Icathia", image: `${process.env.PUBLIC_URL}/regions/icons/void.png` },
+    { id: "Ionia", label: "Ionia", image: `${process.env.PUBLIC_URL}/regions/icons/ionia.png` },
+    { id: "Ixtal", label: "Ixtal", image: `${process.env.PUBLIC_URL}/regions/icons/ixtal.png` },
+    { id: "Noxus", label: "Noxus", image: `${process.env.PUBLIC_URL}/regions/icons/noxus.png` },
+    { id: "Piltover", label: "Piltover", image: `${process.env.PUBLIC_URL}/regions/icons/piltover.png` },
+    { id: "Shadow Isles", label: "Shadow Isles", image: `${process.env.PUBLIC_URL}/regions/icons/shadow_isles.png` },
+    { id: "Shurima", label: "Shurima", image: `${process.env.PUBLIC_URL}/regions/icons/shurima.png` },
+    { id: "Targon", label: "Targon", image: `${process.env.PUBLIC_URL}/regions/icons/targon.png` },
+    { id: "The Void", label: "The Void", image: `${process.env.PUBLIC_URL}/regions/icons/void.png` },
+    { id: "Zaun", label: "Zaun", image: `${process.env.PUBLIC_URL}/regions/icons/zaun.png` },
+];
+
+const championRegions = {
+    Aatrox: ["Shurima"],
+    Ahri: ["Ionia"],
+    Akali: ["Ionia"],
+    Alistar: ["Noxus"],
+    Amumu: ["Shurima"],
+    Anivia: ["Freljord"],
+    Annie: ["Noxus"],
+    Aphelios: ["Targon"],
+    Ashe: ["Freljord"],
+    AurelionSol: ["Targon"],
+    Azir: ["Shurima"],
+    Bard: ["Targon"],
+    Belveth: ["The Void"],
+    Blitzcrank: ["Zaun"],
+    Brand: ["Freljord"],
+    Braum: ["Freljord"],
+    Caitlyn: ["Piltover"],
+    Camille: ["Piltover"],
+    Cassiopeia: ["Noxus", "Shurima"],
+    Chogath: ["The Void"],
+    Corki: ["Bandle City", "Piltover"],
+    Darius: ["Noxus"],
+    Diana: ["Targon"],
+    Draven: ["Noxus"],
+    DrMundo: ["Zaun"],
+    Ekko: ["Zaun"],
+    Elise: ["Noxus", "Shadow Isles"],
+    Evelynn: ["Runeterra"],
+    Ezreal: ["Piltover"],
+    Fiddlesticks: ["Runeterra"],
+    Fiora: ["Demacia"],
+    Fizz: ["Bilgewater"],
+    Galio: ["Demacia"],
+    Gangplank: ["Bilgewater"],
+    Garen: ["Demacia"],
+    Gnar: ["Freljord", "Bandle City"],
+    Gragas: ["Freljord"],
+    Graves: ["Bilgewater"],
+    Gwen: ["Shadow Isles"],
+    Hecarim: ["Shadow Isles"],
+    Heimerdinger: ["Bandle City", "Piltover"],
+    Illaoi: ["Bilgewater"],
+    Irelia: ["Ionia"],
+    Ivern: ["Ionia"],
+    Janna: ["Zaun"],
+    JarvanIV: ["Demacia"],
+    Jax: ["Icathia"],
+    Jayce: ["Piltover"],
+    Jhin: ["Ionia"],
+    Jinx: ["Zaun"],
+    Kaisa: ["Shurima", "The Void"],
+    Kalista: ["Shadow Isles"],
+    Karma: ["Ionia"],
+    Karthus: ["Shadow Isles"],
+    Kassadin: ["Shurima", "The Void"],
+    Katarina: ["Noxus"],
+    Kayle: ["Demacia", "Targon"],
+    Kayn: ["Ionia", "Noxus"],
+    Kennen: ["Bandle City", "Ionia"],
+    Khazix: ["The Void"],
+    Kindred: ["Runeterra"],
+    Kled: ["Noxus"],
+    KogMaw: ["The Void"],
+    KSante: ["Shurima"],
+    Leblanc: ["Noxus"],
+    LeeSin: ["Ionia"],
+    Leona: ["Targon"],
+    Lillia: ["Ionia"],
+    Lissandra: ["Freljord"],
+    Lucian: ["Demacia", "Shadow Isles"],
+    Lulu: ["Bandle City"],
+    Lux: ["Demacia"],
+    Malphite: ["Ixtal"],
+    Malzahar: ["Shurima", "The Void"],
+    Maokai: ["Shadow Isles"],
+    MasterYi: ["Ionia"],
+    MissFortune: ["Bilgewater"],
+    MonkeyKing: ["Ionia"],
+    Mordekaiser: ["Noxus"],
+    Morgana: ["Demacia", "Targon"],
+    Nami: ["Targon"],
+    Nasus: ["Shurima"],
+    Nautilus: ["Bilgewater"],
+    Neeko: ["Ixtal"],
+    Nidalee: ["Ixtal"],
+    Nilah: ["Bilgewater"],
+    Nocturne: ["Runeterra"],
+    Nunu: ["Freljord"],
+    Olaf: ["Freljord"],
+    Orianna: ["Piltover", "Zaun"],
+    Ornn: ["Freljord"],
+    Pantheon: ["Targon"],
+    Poppy: ["Demacia"],
+    Pyke: ["Bilgewater"],
+    Qiyana: ["Ixtal"],
+    Quinn: ["Demacia"],
+    Rakan: ["Ionia"],
+    Rammus: ["Shurima"],
+    RekSai: ["The Void", "Shurima"],
+    Rell: ["Noxus"],
+    Renata: ["Zaun"],
+    Renekton: ["Shurima"],
+    Rengar: ["Ixtal"],
+    Riven: ["Noxus", "Ionia"],
+    Rumble: ["Bandle City"],
+    Ryze: ["Runeterra"],
+    Samira: ["Noxus", "Shurima"],
+    Sejuani: ["Freljord"],
+    Senna: ["Demacia", "Shadow Isles"],
+    Seraphine: ["Piltover", "Zaun"],
+    Sett: ["Ionia"],
+    Shaco: ["Runeterra"],
+    Shen: ["Ionia"],
+    Shyvana: ["Demacia"],
+    Singed: ["Zaun"],
+    Sion: ["Noxus"],
+    Sivir: ["Shurima"],
+    Skarner: ["Shurima"],
+    Sona: ["Demacia", "Ionia"],
+    Soraka: ["Targon"],
+    Swain: ["Noxus"],
+    Sylas: ["Demacia", "Freljord"],
+    Syndra: ["Ionia"],
+    TahmKench: ["Bilgewater"],
+    Taliyah: ["Shurima"],
+    Talon: ["Noxus"],
+    Taric: ["Targon", "Demacia"],
+    Teemo: ["Bandle City"],
+    Thresh: ["Shadow Isles"],
+    Tristana: ["Bandle City"],
+    Trundle: ["Freljord"],
+    Tryndamere: ["Freljord"],
+    TwistedFate: ["Bilgewater"],
+    Twitch: ["Zaun"],
+    Udyr: ["Freljord", "Ionia"],
+    Urgot: ["Zaun", "Noxus"],
+    Varus: ["Ionia", "Shurima"],
+    Vayne: ["Demacia"],
+    Veigar: ["Bandle City"],
+    Velkoz: ["The Void"],
+    Vex: ["Bandle City", "Shadow Isles"],
+    Vi: ["Piltover", "Zaun"],
+    Viego: ["Shadow Isles"],
+    Viktor: ["Zaun"],
+    Vladimir: ["Noxus"],
+    Volibear: ["Freljord"],
+    Warwick: ["Zaun"],
+    Xayah: ["Ionia"],
+    Xerath: ["Shurima"],
+    XinZhao: ["Demacia"],
+    Yasuo: ["Ionia"],
+    Yone: ["Ionia"],
+    Yorick: ["Shadow Isles"],
+    Yuumi: ["Bandle City"],
+    Zac: ["Zaun"],
+    Zed: ["Ionia"],
+    Zeri: ["Zaun"],
+    Ziggs: ["Bandle City", "Zaun"],
+    Zilean: ["Icathia"],
+    Zoe: ["Targon"],
+    Zyra: ["Ixtal"],
+};
+
+const getChampionRegions = (champion) => championRegions[champion.id] || [];
+
 const rarityFor = (champion) => {
     const price = getChampionBlueEssence(champion);
 
@@ -103,6 +286,7 @@ export const CardContextprovider = ({ children }) => {
     });
     const [money, setMoney] = useState(initialMoney);
     const [roleFilters, setRoleFilters] = useState([]);
+    const [regionFilters, setRegionFilters] = useState([]);
     const [rarityFilters, setRarityFilters] = useState([]);
     const [collectionFilter, setCollectionFilter] = useState("all");
     const [sortFilter, setSortFilter] = useState("featured");
@@ -212,6 +396,21 @@ export const CardContextprovider = ({ children }) => {
         setCurrentPage(1);
     }, []);
 
+    const handleRegionClick = useCallback((region) => {
+        if (!region) {
+            setRegionFilters([]);
+            setCurrentPage(1);
+            return;
+        }
+
+        setRegionFilters((currentRegions) => (
+            currentRegions.includes(region)
+                ? currentRegions.filter((currentRegion) => currentRegion !== region)
+                : [...currentRegions, region]
+        ));
+        setCurrentPage(1);
+    }, []);
+
     const handleChange = useCallback((event) => {
         setSearch(event.target.value);
         setCurrentPage(1);
@@ -252,9 +451,13 @@ export const CardContextprovider = ({ children }) => {
             ? searched.filter((champion) => champion.tags.some((tag) => roleFilters.includes(tag)))
             : searched;
 
-        const rarityFiltered = rarityFilters.length > 0
-            ? roleFiltered.filter((champion) => rarityFilters.includes(rarityFor(champion)))
+        const regionFiltered = regionFilters.length > 0
+            ? roleFiltered.filter((champion) => getChampionRegions(champion).some((region) => regionFilters.includes(region)))
             : roleFiltered;
+
+        const rarityFiltered = rarityFilters.length > 0
+            ? regionFiltered.filter((champion) => rarityFilters.includes(rarityFor(champion)))
+            : regionFiltered;
 
         const priceFiltered = rarityFiltered.filter((champion) => getChampionBlueEssence(champion) <= maxPrice);
         const sorted = [...priceFiltered];
@@ -280,7 +483,7 @@ export const CardContextprovider = ({ children }) => {
         }
 
         return sorted;
-    }, [cards, collectionFilter, maxPrice, myCardsArr, rarityFilters, roleFilters, search, sortFilter]);
+    }, [cards, collectionFilter, maxPrice, myCardsArr, rarityFilters, regionFilters, roleFilters, search, sortFilter]);
 
     const totalPage = Math.ceil(filteredChampions.length / CHAMPIONS_PER_PAGE);
     const pageNumbers = useMemo(() => (
@@ -492,6 +695,12 @@ export const CardContextprovider = ({ children }) => {
         clickedMarksman: activeStyle(roleFilters.includes("Marksman")),
         clickedSupport: activeStyle(roleFilters.includes("Support")),
         roleFilters,
+        regionOptions,
+        regionFilters,
+        getChampionRegions,
+        getRegionStyle: (region) => activeStyle(region ? regionFilters.includes(region) : regionFilters.length === 0),
+        clearRegionFilters: () => handleRegionClick(""),
+        handleRegionClick,
         rarityFilters,
         handleRarityClick,
         collectionFilter,
