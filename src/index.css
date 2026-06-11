@@ -4049,7 +4049,7 @@ img {
 
 .pack-essence-flight {
   position: fixed;
-  z-index: 211;
+  z-index: 210;
   display: grid;
   width: 28px;
   height: 28px;
@@ -4074,7 +4074,7 @@ img {
   position: fixed;
   top: 50%;
   left: 50%;
-  z-index: 212;
+  z-index: 240;
   display: grid;
   width: min(920px, calc(100vw - 28px));
   gap: 20px;
