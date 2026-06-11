@@ -10,7 +10,7 @@ import {
     AiOutlineTrophy,
 } from 'react-icons/ai';
 import { BsClock, BsCollection } from 'react-icons/bs';
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Droplet, Eye, Flame, Heart, MapPin, Menu, Play, Plus, Search, Shield, ShoppingCart, Skull, SlidersHorizontal, Sparkles, Swords, Wand2, Zap } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Droplet, Eye, Flame, Gift, Heart, MapPin, Menu, Play, Plus, Search, Shield, ShoppingCart, Skull, SlidersHorizontal, Sparkles, Swords, Wand2, Zap } from 'lucide-react';
 import CardContext from './components/component/CardContext';
 import { BLUE_ESSENCE_ICON_URL, getChampionBlueEssence } from './components/component/championPrices';
 import Alert from './components/Body/Alert/Alert';
@@ -879,6 +879,9 @@ function App() {
         cartItems,
         cartTotal,
         cartMissingBalance,
+        dailyRewardAmount,
+        dailyRewardAvailable,
+        claimDailyReward,
         addToCart,
         removeFromCart,
         clearCart,
@@ -924,11 +927,15 @@ function App() {
     const [cartCatching, setCartCatching] = useState(false);
     const [cartFlight, setCartFlight] = useState(null);
     const [collectionFlights, setCollectionFlights] = useState([]);
+    const [dailyEssenceFlights, setDailyEssenceFlights] = useState([]);
+    const [walletCatching, setWalletCatching] = useState(false);
     const [selectedSkinNum, setSelectedSkinNum] = useState(0);
     const [activePreviewTab, setActivePreviewTab] = useState('overview');
     const navClickLockRef = useRef(null);
     const cartDropdownRef = useRef(null);
     const cartButtonRef = useRef(null);
+    const walletRef = useRef(null);
+    const dailyRewardButtonRef = useRef(null);
     const collectionTargetRef = useRef(null);
     const previousCartCountRef = useRef(cartItems.length);
     const heroProgressRef = useRef(0);
@@ -1006,6 +1013,43 @@ function App() {
 
         setCollectionFlights(flights);
         window.setTimeout(() => setCollectionFlights([]), 1300);
+    };
+
+    const handleDailyRewardClaim = () => {
+        const rewardRect = dailyRewardButtonRef.current?.getBoundingClientRect();
+        const walletRect = walletRef.current?.getBoundingClientRect();
+        const claimedAmount = claimDailyReward();
+
+        if (!claimedAmount) {
+            return;
+        }
+
+        if (rewardRect && walletRect) {
+            const flights = Array.from({ length: 7 }, (_, index) => {
+                const startX = rewardRect.left + rewardRect.width / 2 - 5 + (index - 3) * 5;
+                const startY = rewardRect.top + rewardRect.height / 2 - 6;
+                const endX = walletRect.left + 28 + (index % 3) * 5 - startX;
+                const endY = walletRect.top + walletRect.height / 2 - startY;
+
+                return {
+                    id: `daily-essence-${Date.now()}-${index}`,
+                    left: `${startX}px`,
+                    top: `${startY}px`,
+                    '--essence-x': `${endX}px`,
+                    '--essence-y': `${endY}px`,
+                    '--essence-arc': `${42 + (index % 4) * 12}px`,
+                    '--essence-delay': `${index * 55}ms`,
+                };
+            });
+
+            setDailyEssenceFlights(flights);
+            window.setTimeout(() => setDailyEssenceFlights([]), 1150);
+            window.setTimeout(() => {
+                setWalletCatching(true);
+                window.setTimeout(() => setWalletCatching(false), 620);
+            }, 760);
+        }
+
     };
 
     const showPrevHero = () => {
@@ -1367,6 +1411,21 @@ function App() {
                     <img src={championLoadingImage(flight.championId)} alt='' />
                 </span>
             ))}
+            {dailyEssenceFlights.map((flight) => (
+                <span
+                    key={flight.id}
+                    className='daily-essence-flight'
+                    style={{
+                        left: flight.left,
+                        top: flight.top,
+                        '--essence-x': flight['--essence-x'],
+                        '--essence-y': flight['--essence-y'],
+                        '--essence-arc': flight['--essence-arc'],
+                        '--essence-delay': flight['--essence-delay'],
+                    }}
+                    aria-hidden='true'
+                />
+            ))}
             <header className='topbar'>
                 <div className='topbar-inner'>
                     <a href='#marketplace' className='brand' aria-label='Nexus home'>
@@ -1401,8 +1460,9 @@ function App() {
                         ) : <kbd>/</kbd>}
                     </label>
                     <motion.div
+                        ref={walletRef}
                         key={money}
-                        className='wallet-pill'
+                        className={`wallet-pill ${walletCatching ? 'is-catching' : ''}`}
                         initial={{ scale: 1 }}
                         animate={{ scale: [1, 1.06, 1] }}
                         transition={{ duration: 0.35 }}
@@ -1412,6 +1472,17 @@ function App() {
                         </span>
                         <span>{money.toLocaleString()}</span>
                     </motion.div>
+                    <button
+                        ref={dailyRewardButtonRef}
+                        type='button'
+                        className={`daily-reward-button ${dailyRewardAvailable ? 'is-available' : 'is-claimed'}`}
+                        onClick={handleDailyRewardClaim}
+                        disabled={!dailyRewardAvailable}
+                    >
+                        {dailyRewardAvailable ? <Gift size={16} strokeWidth={2.4} /> : <Check size={16} strokeWidth={2.6} />}
+                        <span>{dailyRewardAvailable ? 'Claim' : 'Claimed'}</span>
+                        {dailyRewardAvailable ? <PriceAmount value={dailyRewardAmount} /> : null}
+                    </button>
                     <div className='cart-dropdown-shell' ref={cartDropdownRef}>
                         <button
                             ref={cartButtonRef}

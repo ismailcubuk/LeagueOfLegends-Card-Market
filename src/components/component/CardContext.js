@@ -6,6 +6,7 @@ const CardContext = createContext();
 
 const DDRAGON_VERSION = "13.1.1";
 const CHAMPIONS_PER_PAGE = 16;
+const DAILY_REWARD_AMOUNT = 450;
 const EXCLUDED_CHAMPIONS = new Set(["akshan", "rell", "vex", "seraphine"]);
 const passiveImage = (fileName) => `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/passive/${fileName}`;
 const spellImage = (fileName) => `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/spell/${fileName}`;
@@ -270,6 +271,15 @@ const uniqueById = (items) => (
     Array.from(new Map((items || []).filter(Boolean).map((item) => [item.id, item])).values())
 );
 
+const getTodayKey = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+};
+
 const localChampions = Object.values(LolData.data || {}).filter(
     (champion) => !EXCLUDED_CHAMPIONS.has(champion.id.toLowerCase())
 ).map(withBlueEssence);
@@ -296,6 +306,7 @@ export const CardContextprovider = ({ children }) => {
     const [filteredId, setFilteredId] = useState([]);
     const [myCardsArr, setMyCardsArr] = useState(uniqueById(getStoredJson("myCardsArr", [])));
     const [cartItems, setCartItems] = useState(uniqueById(getStoredJson("cartItems", [])));
+    const [lastDailyRewardClaim, setLastDailyRewardClaim] = useState("");
     const [alertt, setAlertt] = useState(false);
     const [carouselPage, setCarouselPage] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
@@ -527,6 +538,21 @@ export const CardContextprovider = ({ children }) => {
         setCartItems([]);
     }, []);
 
+    const dailyRewardAvailable = lastDailyRewardClaim !== getTodayKey();
+
+    const claimDailyReward = useCallback(() => {
+        const todayKey = getTodayKey();
+
+        if (lastDailyRewardClaim === todayKey) {
+            return 0;
+        }
+
+        setMoney((currentMoney) => currentMoney + DAILY_REWARD_AMOUNT);
+        setLastDailyRewardClaim(todayKey);
+
+        return DAILY_REWARD_AMOUNT;
+    }, [lastDailyRewardClaim]);
+
     const sellClick = useCallback((req) => {
         setCards((prevCards) => (
             prevCards.some((card) => card.id === req.id) ? prevCards : [req, ...prevCards]
@@ -718,6 +744,9 @@ export const CardContextprovider = ({ children }) => {
         cartItems,
         cartTotal,
         cartMissingBalance,
+        dailyRewardAmount: DAILY_REWARD_AMOUNT,
+        dailyRewardAvailable,
+        claimDailyReward,
         addToCart,
         removeFromCart,
         clearCart,
