@@ -329,7 +329,7 @@ function rarityFor(champion) {
     return 'common';
 }
 
-function ChampionCard({ champion, owned = false, inCart = false, justBought = false, onAction, onOpen }) {
+function ChampionCard({ champion, owned = false, inCart = false, justBought = false, onAction, onOpen, cartTargetRef, onCartFlight }) {
     const rarity = rarityFor(champion);
     const config = rarityConfig[rarity];
     const isHolo = rarity === 'legendary' || rarity === 'mythic';
@@ -339,6 +339,7 @@ function ChampionCard({ champion, owned = false, inCart = false, justBought = fa
     const [hovered, setHovered] = useState(false);
     const [wished, setWished] = useState(false);
     const [inCompare, setInCompare] = useState(false);
+    const [cartAnimating, setCartAnimating] = useState(false);
     const mx = useMotionValue(0);
     const my = useMotionValue(0);
     const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [3, -3]), { stiffness: 250, damping: 24 });
@@ -385,10 +386,43 @@ function ChampionCard({ champion, owned = false, inCart = false, justBought = fa
         }
     };
 
+    const handleAction = () => {
+        if (!owned && !inCart) {
+            setCartAnimating(true);
+
+            const cardRect = cardRef.current?.getBoundingClientRect();
+            const cartRect = cartTargetRef?.current?.getBoundingClientRect();
+
+            if (cardRect && cartRect) {
+                const startWidth = Math.min(cardRect.width * 0.56, 112);
+                const startHeight = startWidth * 1.36;
+                const startX = cardRect.left + cardRect.width / 2 - startWidth / 2;
+                const startY = cardRect.top + cardRect.height / 2 - startHeight / 2;
+                const endX = cartRect.left + cartRect.width / 2 - startX - startWidth / 2;
+                const endY = cartRect.top + cartRect.height / 2 - startY - startHeight / 2;
+
+                onCartFlight?.({
+                    id: `${champion.id}-${Date.now()}`,
+                    championId: champion.id,
+                    left: `${startX}px`,
+                    top: `${startY}px`,
+                    width: `${startWidth}px`,
+                    height: `${startHeight}px`,
+                    '--flight-x': `${endX}px`,
+                    '--flight-y': `${endY}px`,
+                });
+            }
+
+            window.setTimeout(() => setCartAnimating(false), 860);
+        }
+
+        onAction(champion);
+    };
+
     return (
         <motion.article
             ref={cardRef}
-            className={`market-card rarity-${rarity} ${justBought ? 'is-purchase-animating' : ''}`}
+            className={`market-card rarity-${rarity} ${justBought ? 'is-purchase-animating' : ''} ${cartAnimating ? 'is-cart-animating' : ''}`}
             onMouseMove={handleMove}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={resetTilt}
@@ -455,9 +489,21 @@ function ChampionCard({ champion, owned = false, inCart = false, justBought = fa
                         <span aria-hidden='true'><BlueEssenceIcon /></span>
                         <strong>{blueEssence.toLocaleString()}</strong>
                     </div>
-                    <motion.button type='button' whileTap={{ scale: 0.94 }} className={owned ? 'sell-action' : `buy-action ${inCart ? 'is-in-cart' : ''}`} onClick={() => onAction(champion)} disabled={owned}>
+                    <motion.button type='button' whileTap={{ scale: 0.94 }} className={owned ? 'sell-action' : `buy-action ${inCart ? 'is-in-cart' : ''}`} onClick={handleAction} disabled={owned}>
                         {owned || inCart ? <Check size={14} strokeWidth={2.8} /> : <ShoppingCart size={14} strokeWidth={2.4} />}
-                        {owned ? 'Owned' : inCart ? 'Added' : 'Cart'}
+                        <span className='buy-action-label'>{owned ? 'Owned' : inCart ? 'Added' : 'Cart'}</span>
+                        {cartAnimating ? (
+                            <span className='button-cart-effect' aria-hidden='true'>
+                                <span className='button-cart-sweep' />
+                                <span className='button-cart-ring' />
+                                <span className='button-cart-burst'>
+                                    <span />
+                                    <span />
+                                    <span />
+                                    <span />
+                                </span>
+                            </span>
+                        ) : null}
                     </motion.button>
                 </div>
             </div>
@@ -830,10 +876,14 @@ function App() {
     const [heroProgress, setHeroProgress] = useState(0);
     const [activeLink, setActiveLink] = useState('Store');
     const [cartOpen, setCartOpen] = useState(false);
+    const [cartCatching, setCartCatching] = useState(false);
+    const [cartFlight, setCartFlight] = useState(null);
     const [selectedSkinNum, setSelectedSkinNum] = useState(0);
     const [activePreviewTab, setActivePreviewTab] = useState('overview');
     const navClickLockRef = useRef(null);
     const cartDropdownRef = useRef(null);
+    const cartButtonRef = useRef(null);
+    const previousCartCountRef = useRef(cartItems.length);
     const heroProgressRef = useRef(0);
     const heroLastTickRef = useRef(null);
     const [openFilterSections, setOpenFilterSections] = useState({
@@ -891,6 +941,15 @@ function App() {
             ...sections,
             [section]: !sections[section],
         }));
+    };
+
+    const showCartFlight = (flight) => {
+        setCartFlight(flight);
+        window.setTimeout(() => {
+            setCartFlight((currentFlight) => (
+                currentFlight?.id === flight.id ? null : currentFlight
+            ));
+        }, 900);
     };
 
     const showPrevHero = () => {
@@ -1023,6 +1082,17 @@ function App() {
         setSelectedSkinNum(0);
         setActivePreviewTab('overview');
     }, [selectedChampion?.id]);
+
+    useEffect(() => {
+        if (cartItems.length > previousCartCountRef.current) {
+            window.setTimeout(() => {
+                setCartCatching(true);
+                window.setTimeout(() => setCartCatching(false), 520);
+            }, 520);
+        }
+
+        previousCartCountRef.current = cartItems.length;
+    }, [cartItems.length]);
 
     useEffect(() => {
         if (!cartOpen) {
@@ -1206,6 +1276,23 @@ function App() {
 
     return (
         <div className='market-shell'>
+            {cartFlight ? (
+                <span
+                    key={cartFlight.id}
+                    className='cart-flight-card'
+                    style={{
+                        left: cartFlight.left,
+                        top: cartFlight.top,
+                        width: cartFlight.width,
+                        height: cartFlight.height,
+                        '--flight-x': cartFlight['--flight-x'],
+                        '--flight-y': cartFlight['--flight-y'],
+                    }}
+                    aria-hidden='true'
+                >
+                    <img src={championLoadingImage(cartFlight.championId)} alt='' />
+                </span>
+            ) : null}
             <header className='topbar'>
                 <div className='topbar-inner'>
                     <a href='#marketplace' className='brand' aria-label='Nexus home'>
@@ -1253,8 +1340,9 @@ function App() {
                     </motion.div>
                     <div className='cart-dropdown-shell' ref={cartDropdownRef}>
                         <button
+                            ref={cartButtonRef}
                             type='button'
-                            className={`cart-pill ${cartOpen ? 'is-open' : ''}`}
+                            className={`cart-pill ${cartOpen ? 'is-open' : ''} ${cartCatching ? 'is-catching' : ''}`}
                             onClick={() => setCartOpen((open) => !open)}
                             aria-label={`${cartItems.length} cards in cart`}
                             aria-expanded={cartOpen}
@@ -1412,6 +1500,8 @@ function App() {
                                             justBought={recentlyBoughtId === champion.id}
                                             onAction={owned ? sellClick : inCart ? () => removeFromCart(champion.id) : addToCart}
                                             onOpen={openChampionModal}
+                                            cartTargetRef={cartButtonRef}
+                                            onCartFlight={showCartFlight}
                                         />
                                     );
                                 })}

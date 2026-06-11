@@ -1,5 +1,5 @@
 import './Cards.css';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import CardContext from '../../component/CardContext';
 import { BLUE_ESSENCE_ICON_URL, getChampionBlueEssence } from '../../component/championPrices';
@@ -23,10 +23,21 @@ function PriceAmount({ value }) {
 
 function ChampionCard({ champion, actionLabel, actionClass, onAction, onOpen, onPreview, roleIcons, statusClass = '' }) {
     const blueEssence = getChampionBlueEssence(champion);
+    const [cartAnimating, setCartAnimating] = useState(false);
+    const isCartAction = actionLabel === 'Cart';
+
+    const handleAction = () => {
+        if (isCartAction) {
+            setCartAnimating(true);
+            window.setTimeout(() => setCartAnimating(false), 760);
+        }
+
+        onAction(champion);
+    };
 
     return (
         <article
-            className={`hero-border ${statusClass}`.trim()}
+            className={`hero-border ${statusClass} ${cartAnimating ? 'is-cart-animating' : ''}`.trim()}
             id={champion.id}
             onMouseEnter={() => onPreview(champion.id)}
             onFocus={() => onPreview(champion.id)}
@@ -75,7 +86,7 @@ function ChampionCard({ champion, actionLabel, actionClass, onAction, onOpen, on
                 </div>
             </button>
             <div className='card-trade'>
-                <button className={actionClass} onClick={() => onAction(champion)}>{actionLabel}</button>
+                <button className={`${actionClass} ${cartAnimating ? 'is-cart-animating' : ''}`} onClick={handleAction}>{actionLabel}</button>
             </div>
         </article>
     );

@@ -774,6 +774,161 @@ img {
   color: #06101a;
 }
 
+.market-card.is-cart-animating {
+  animation: cartCardPop 760ms cubic-bezier(0.16, 1, 0.3, 1);
+  border-color: rgba(95, 168, 255, 0.78);
+  box-shadow:
+    0 0 0 1px rgba(95, 168, 255, 0.36),
+    0 0 34px rgba(95, 168, 255, 0.28),
+    0 18px 54px rgba(0, 0, 0, 0.34);
+}
+
+.market-card.is-cart-animating::after {
+  position: absolute;
+  inset: 8px;
+  z-index: 8;
+  border: 1px solid rgba(95, 168, 255, 0.86);
+  border-radius: 8px;
+  box-shadow: 0 0 24px rgba(95, 168, 255, 0.36);
+  content: "";
+  pointer-events: none;
+  animation: cartRing 760ms ease-out forwards;
+}
+
+.market-card.is-cart-animating .buy-action {
+  animation: cartButtonPress 760ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow:
+    0 0 0 1px rgba(130, 232, 255, 0.56),
+    0 0 24px rgba(77, 205, 255, 0.42);
+}
+
+.cart-flight-card {
+  position: fixed;
+  z-index: 120;
+  overflow: hidden;
+  border: 1px solid rgba(130, 232, 255, 0.78);
+  border-radius: 10px;
+  background: #08111d;
+  box-shadow:
+    0 0 0 1px rgba(77, 205, 255, 0.32),
+    0 0 30px rgba(77, 205, 255, 0.36),
+    0 18px 42px rgba(0, 0, 0, 0.42);
+  pointer-events: none;
+  transform-origin: center;
+  animation: cartFlight 860ms cubic-bezier(0.18, 0.78, 0.24, 1) forwards;
+}
+
+.cart-flight-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.cart-flight-card::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, transparent 32%, rgba(255, 255, 255, 0.72) 48%, rgba(130, 232, 255, 0.5) 56%, transparent 72%),
+    linear-gradient(0deg, rgba(5, 8, 13, 0.58), transparent 50%);
+  content: "";
+  mix-blend-mode: screen;
+  opacity: 0.7;
+}
+
+.cart-pill.is-catching {
+  animation: cartCatch 520ms ease-out;
+}
+
+.buy-action {
+  position: relative;
+  overflow: hidden;
+}
+
+.buy-action > svg,
+.buy-action-label {
+  position: relative;
+  z-index: 2;
+}
+
+.market-card.is-cart-animating .buy-action > svg,
+.market-card.is-cart-animating .buy-action-label {
+  animation: cartButtonContentPop 620ms ease-out;
+}
+
+.button-cart-effect,
+.button-cart-sweep,
+.button-cart-ring,
+.button-cart-burst {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.button-cart-effect {
+  z-index: 1;
+  overflow: hidden;
+}
+
+.button-cart-sweep {
+  background:
+    linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.78) 45%, rgba(130, 232, 255, 0.7) 52%, transparent 70%);
+  opacity: 0;
+  transform: translateX(-110%) skewX(-16deg);
+  animation: buttonCartSweep 700ms ease-out forwards;
+}
+
+.button-cart-ring {
+  inset: 6px;
+  border: 1px solid rgba(180, 244, 255, 0.85);
+  border-radius: inherit;
+  opacity: 0;
+  animation: buttonCartRing 720ms ease-out forwards;
+}
+
+.button-cart-burst {
+  overflow: visible;
+}
+
+.button-cart-burst span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 9px;
+  height: 11px;
+  border-radius: 999px 999px 999px 3px;
+  background:
+    radial-gradient(circle at 40% 28%, rgba(255, 255, 255, 0.95), rgba(130, 232, 255, 0.9) 34%, rgba(25, 121, 207, 0.88) 100%);
+  box-shadow: 0 0 12px rgba(77, 205, 255, 0.72);
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(45deg) scale(0.45);
+  animation: buttonEssenceDrop 700ms ease-out forwards;
+}
+
+.button-cart-burst span:nth-child(1) {
+  --button-drop-x: -42px;
+  --button-drop-y: -36px;
+  animation-delay: 20ms;
+}
+
+.button-cart-burst span:nth-child(2) {
+  --button-drop-x: -14px;
+  --button-drop-y: -50px;
+  animation-delay: 80ms;
+}
+
+.button-cart-burst span:nth-child(3) {
+  --button-drop-x: 16px;
+  --button-drop-y: -46px;
+  animation-delay: 35ms;
+}
+
+.button-cart-burst span:nth-child(4) {
+  --button-drop-x: 44px;
+  --button-drop-y: -32px;
+  animation-delay: 110ms;
+}
+
 .hero-nav {
   width: 44px;
   height: 44px;
@@ -3248,6 +3403,159 @@ img {
   100% {
     filter: brightness(1);
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes cartCardPop {
+  0% {
+    filter: brightness(1);
+  }
+
+  34% {
+    filter: brightness(1.18);
+  }
+
+  100% {
+    filter: brightness(1);
+  }
+}
+
+@keyframes cartRing {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  28% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes buttonEssenceDrop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(45deg) scale(0.35);
+  }
+
+  18% {
+    opacity: 1;
+  }
+
+  78% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--button-drop-x)), calc(-50% + var(--button-drop-y))) rotate(45deg) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--button-drop-x) * 1.08), calc(-50% + var(--button-drop-y) - 10px)) rotate(45deg) scale(0.58);
+  }
+}
+
+@keyframes cartButtonPress {
+  0% {
+    filter: brightness(1);
+  }
+
+  22% {
+    filter: brightness(1.34) saturate(1.18);
+  }
+
+  62% {
+    filter: brightness(1.16) saturate(1.08);
+  }
+
+  100% {
+    filter: brightness(1);
+  }
+}
+
+@keyframes cartFlight {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.96) rotate(0deg);
+  }
+
+  12% {
+    opacity: 1;
+    transform: translate3d(0, -10px, 0) scale(1) rotate(-1deg);
+  }
+
+  62% {
+    opacity: 0.92;
+    transform: translate3d(calc(var(--flight-x) * 0.74), calc(var(--flight-y) * 0.68 - 34px), 0) scale(0.54) rotate(7deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--flight-x), var(--flight-y), 0) scale(0.18) rotate(13deg);
+  }
+}
+
+@keyframes cartCatch {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    box-shadow: none;
+  }
+
+  42% {
+    transform: translateY(-2px) scale(1.12);
+    box-shadow:
+      0 0 0 3px rgba(77, 205, 255, 0.18),
+      0 0 24px rgba(77, 205, 255, 0.38);
+  }
+}
+
+@keyframes cartButtonContentPop {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  28% {
+    transform: translateY(-2px) scale(1.08);
+  }
+
+  62% {
+    transform: translateY(1px) scale(0.98);
+  }
+}
+
+@keyframes buttonCartSweep {
+  0% {
+    opacity: 0;
+    transform: translateX(-110%) skewX(-16deg);
+  }
+
+  18% {
+    opacity: 0.9;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(112%) skewX(-16deg);
+  }
+}
+
+@keyframes buttonCartRing {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.72) scaleY(0.65);
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scaleX(1.06) scaleY(1.28);
   }
 }
 
