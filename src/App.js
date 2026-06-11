@@ -629,7 +629,7 @@ function HeroStat({ label, value, tone }) {
     );
 }
 
-function CollectionPanel({ champions, ownedChampions, recentlyBoughtId, settlingChampionId, openChampionModal }) {
+function CollectionPanel({ champions, ownedChampions, recentlyBoughtId, settlingChampionId, impactWave, openChampionModal }) {
     const total = champions.length;
     const ownedCount = ownedChampions.length;
     const pct = total > 0 ? Math.round((ownedCount / total) * 100) : 0;
@@ -641,7 +641,14 @@ function CollectionPanel({ champions, ownedChampions, recentlyBoughtId, settling
     ];
 
     return (
-        <section className='collection-panel' id='collection'>
+        <section
+            className={`collection-panel ${impactWave ? 'is-pack-impacting' : ''}`}
+            id='collection'
+            style={impactWave ? {
+                '--impact-color': impactWave.color,
+                '--impact-glow': impactWave.glow,
+            } : undefined}
+        >
             <div className='collection-panel-top'>
                 <div className='collection-panel-heading'>
                     <div className='collection-progress' style={{ '--collection-pct': pct }}>
@@ -1022,6 +1029,7 @@ function App() {
     const [collectionFlights, setCollectionFlights] = useState([]);
     const [dailyEssenceFlights, setDailyEssenceFlights] = useState([]);
     const [packEssenceFlights, setPackEssenceFlights] = useState([]);
+    const [packImpactWave, setPackImpactWave] = useState(null);
     const [packReward, setPackReward] = useState(null);
     const [packOpening, setPackOpening] = useState(false);
     const [walletCatching, setWalletCatching] = useState(false);
@@ -1218,6 +1226,20 @@ function App() {
                             }
                             : currentReward
                     ));
+
+                    window.setTimeout(() => {
+                        const impactRarity = rarityFor(champion);
+
+                        setPackImpactWave({
+                            id: `pack-impact-${champion.id}-${Date.now()}`,
+                            left: `${targetCenterX}px`,
+                            top: `${targetCenterY}px`,
+                            rarity: impactRarity,
+                            color: rarityConfig[impactRarity].color,
+                            glow: rarityConfig[impactRarity].glow,
+                        });
+                        window.setTimeout(() => setPackImpactWave(null), 1500);
+                    }, 1080);
                 });
             });
         }, 6900);
@@ -1693,6 +1715,29 @@ function App() {
                     <BlueEssenceIcon />
                 </span>
             ))}
+            {packImpactWave ? (
+                <span
+                    key={packImpactWave.id}
+                    className={`pack-impact-wave rarity-${packImpactWave.rarity}`}
+                    style={{
+                        left: packImpactWave.left,
+                        top: packImpactWave.top,
+                        '--impact-color': packImpactWave.color,
+                        '--impact-glow': packImpactWave.glow,
+                    }}
+                    aria-hidden='true'
+                >
+                    <span />
+                    <span />
+                    <span />
+                    <i />
+                    <i />
+                    <i />
+                    <i />
+                    <i />
+                    <i />
+                </span>
+            ) : null}
             {packReward ? (
                 <div className='pack-reward-overlay' aria-live='polite'>
                     <span className='pack-reward-backdrop' />
@@ -1943,6 +1988,7 @@ function App() {
                         ownedChampions={myCardsArr}
                         recentlyBoughtId={recentlyBoughtId}
                         settlingChampionId={packReward?.phase === 'flying' ? packReward.champion.id : ''}
+                        impactWave={packImpactWave}
                         openChampionModal={openChampionModal}
                     />
                 </div>
