@@ -869,6 +869,30 @@ function TrendingCarousel({ champions, openChampionModal }) {
     );
 }
 
+function PackOpeningSection({ champions, ownedChampions, onOpenPack, isOpening }) {
+    const availableCount = champions.filter((champion) => !ownedChampions.some((owned) => owned.id === champion.id)).length;
+
+    return (
+        <section className='pack-opening-section' aria-labelledby='pack-opening-title'>
+            <button type='button' className={`pack-opening-card ${isOpening ? 'is-opening' : ''}`} onClick={onOpenPack} disabled={isOpening || champions.length === 0}>
+                <span className='pack-opening-aura' aria-hidden='true' />
+                <span className='pack-opening-seal'>
+                    <Gift size={34} strokeWidth={2.2} />
+                </span>
+                <span className='pack-opening-copy'>
+                    <span className='pack-opening-kicker'>Champion Pack</span>
+                    <strong id='pack-opening-title'>Open a Mystery Pack</strong>
+                    <span>{availableCount > 0 ? `${availableCount} champions waiting` : 'Duplicate protection active'}</span>
+                </span>
+                <span className='pack-opening-action'>
+                    {isOpening ? 'Opening' : 'Open Pack'}
+                    <Sparkles size={16} strokeWidth={2.4} />
+                </span>
+            </button>
+        </section>
+    );
+}
+
 function App() {
     const {
         money,
@@ -916,6 +940,7 @@ function App() {
         selectedChampionDetails,
         selectedChampionSkills,
         recentlyBoughtId,
+        grantPackChampion,
         totalPage,
     } = useContext(CardContext);
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -928,6 +953,8 @@ function App() {
     const [cartFlight, setCartFlight] = useState(null);
     const [collectionFlights, setCollectionFlights] = useState([]);
     const [dailyEssenceFlights, setDailyEssenceFlights] = useState([]);
+    const [packReward, setPackReward] = useState(null);
+    const [packOpening, setPackOpening] = useState(false);
     const [walletCatching, setWalletCatching] = useState(false);
     const [displayMoney, setDisplayMoney] = useState(money);
     const [selectedSkinNum, setSelectedSkinNum] = useState(0);
@@ -1016,6 +1043,56 @@ function App() {
 
         setCollectionFlights(flights);
         window.setTimeout(() => setCollectionFlights([]), 1300);
+    };
+
+    const handlePackOpen = () => {
+        if (packOpening || filtered.length === 0) {
+            return;
+        }
+
+        const ownedIds = new Set(myCardsArr.map((champion) => champion.id));
+        const availableChampions = filtered.filter((champion) => !ownedIds.has(champion.id));
+        const packPool = availableChampions.length > 0 ? availableChampions : filtered;
+        const champion = packPool[Math.floor(Math.random() * packPool.length)];
+        const rewardId = `pack-reward-${champion.id}-${Date.now()}`;
+
+        setPackOpening(true);
+        setPackReward({
+            id: rewardId,
+            champion,
+            phase: 'reveal',
+            '--pack-flight-x': '0px',
+            '--pack-flight-y': '0px',
+        });
+
+        window.setTimeout(() => {
+            const targetRect = collectionTargetRef.current?.getBoundingClientRect();
+            const startWidth = Math.min(window.innerWidth * 0.56, 250);
+            const startHeight = startWidth * 1.36;
+            const startX = window.innerWidth / 2 - startWidth / 2;
+            const startY = window.innerHeight / 2 - startHeight / 2;
+            const endX = targetRect ? targetRect.left + Math.min(targetRect.width * 0.18, 120) - startX - startWidth / 2 : 0;
+            const endY = targetRect ? targetRect.top + targetRect.height / 2 - startY - startHeight / 2 : 0;
+
+            setPackReward((currentReward) => (
+                currentReward?.id === rewardId
+                    ? {
+                        ...currentReward,
+                        phase: 'flying',
+                        '--pack-flight-x': `${endX}px`,
+                        '--pack-flight-y': `${endY}px`,
+                    }
+                    : currentReward
+            ));
+        }, 2000);
+
+        window.setTimeout(() => {
+            grantPackChampion(champion);
+            setPackReward((currentReward) => (
+                currentReward?.id === rewardId ? null : currentReward
+            ));
+            setPackOpening(false);
+        }, 2920);
     };
 
     const handleDailyRewardClaim = () => {
@@ -1465,6 +1542,27 @@ function App() {
                     aria-hidden='true'
                 />
             ))}
+            {packReward ? (
+                <div className='pack-reward-overlay' aria-live='polite'>
+                    <span className='pack-reward-backdrop' />
+                    <span
+                        key={packReward.id}
+                        className={`pack-reward-card rarity-${rarityFor(packReward.champion)} ${packReward.phase === 'flying' ? 'is-flying' : ''}`}
+                        style={{
+                            '--pack-flight-x': packReward['--pack-flight-x'],
+                            '--pack-flight-y': packReward['--pack-flight-y'],
+                        }}
+                    >
+                        <img src={championLoadingImage(packReward.champion.id)} alt={packReward.champion.name} />
+                        <span className='pack-reward-shine' />
+                        <span className='pack-reward-content'>
+                            <RarityPill rarity={rarityFor(packReward.champion)} />
+                            <strong>{packReward.champion.name}</strong>
+                            <span>{packReward.champion.title}</span>
+                        </span>
+                    </span>
+                </div>
+            ) : null}
             <header className='topbar'>
                 <div className='topbar-inner'>
                     <a href='#marketplace' className='brand' aria-label='Nexus home'>
@@ -1660,6 +1758,8 @@ function App() {
                 </div>
 
                 <TrendingCarousel champions={trending} openChampionModal={openChampionModal} />
+
+                <PackOpeningSection champions={filtered} ownedChampions={myCardsArr} onOpenPack={handlePackOpen} isOpening={packOpening} />
 
                 <section className='shop-section' id='marketplace'>
                     <div className='shop-layout'>

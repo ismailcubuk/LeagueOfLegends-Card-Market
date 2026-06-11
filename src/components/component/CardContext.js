@@ -587,6 +587,23 @@ export const CardContextprovider = ({ children }) => {
         pulseCardState(setRecentlyBoughtId, hero.id);
     }, [money, myCardsArr, pulseCardState]);
 
+    const grantPackChampion = useCallback((champion) => {
+        if (!champion) {
+            return;
+        }
+
+        setMyCardsArr((prevCards) => (
+            prevCards.some((card) => card.id === champion.id) ? prevCards : [champion, ...prevCards]
+        ));
+        setFilteredId((prevIds) => (
+            prevIds.includes(champion.id) ? prevIds : [champion.id, ...prevIds]
+        ));
+        setCards((prevCards) => prevCards.filter((card) => card.id !== champion.id));
+        setCartItems((prevItems) => prevItems.filter((card) => card.id !== champion.id));
+        setAlertt(false);
+        pulseCardState(setRecentlyBoughtId, champion.id);
+    }, [pulseCardState]);
+
     const checkoutCart = useCallback(() => {
         const availableItems = uniqueById(cartItems).filter(
             (champion) => !myCardsArr.some((card) => card.id === champion.id)
@@ -755,6 +772,7 @@ export const CardContextprovider = ({ children }) => {
         myCardsArr,
         filteredId,
         buyClick,
+        grantPackChampion,
         openChampionModal,
         closeChampionModal,
         preloadChampionDetails: loadChampionDetails,
