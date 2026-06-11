@@ -511,8 +511,53 @@ function ChampionCard({ champion, owned = false, inCart = false, justBought = fa
     );
 }
 
-function CartPanel({ cartItems, cartTotal, cartMissingBalance, money, removeFromCart, clearCart, checkoutCart }) {
+function CartPanel({ cartItems, cartTotal, cartMissingBalance, money, removeFromCart, clearCart, checkoutCart, collectionTargetRef, onCollectionFlights }) {
     const hasItems = cartItems.length > 0;
+    const cartListRef = useRef(null);
+
+    const handleCheckout = () => {
+        if (!hasItems || cartMissingBalance > 0) {
+            return;
+        }
+
+        const targetRect = collectionTargetRef?.current?.getBoundingClientRect();
+        const itemNodes = cartListRef.current ? Array.from(cartListRef.current.querySelectorAll('[data-cart-item-id]')) : [];
+
+        if (targetRect && itemNodes.length > 0) {
+            const flights = cartItems.map((champion, index) => {
+                const itemRect = itemNodes[index]?.getBoundingClientRect();
+
+                if (!itemRect) {
+                    return null;
+                }
+
+                const startWidth = 58;
+                const startHeight = 78;
+                const startX = itemRect.left + 8;
+                const startY = itemRect.top + itemRect.height / 2 - startHeight / 2;
+                const columnOffset = (index % 5) * 18;
+                const rowOffset = Math.floor(index / 5) * 14;
+                const endX = targetRect.left + 54 + columnOffset - startX - startWidth / 2;
+                const endY = targetRect.top + targetRect.height / 2 + rowOffset - startY - startHeight / 2;
+
+                return {
+                    id: `${champion.id}-collection-${Date.now()}-${index}`,
+                    championId: champion.id,
+                    left: `${startX}px`,
+                    top: `${startY}px`,
+                    width: `${startWidth}px`,
+                    height: `${startHeight}px`,
+                    '--flight-x': `${endX}px`,
+                    '--flight-y': `${endY}px`,
+                    '--flight-delay': `${index * 70}ms`,
+                };
+            }).filter(Boolean);
+
+            onCollectionFlights?.(flights);
+        }
+
+        checkoutCart();
+    };
 
     return (
         <aside className='cart-panel' aria-labelledby='cart-panel-title'>
@@ -529,9 +574,9 @@ function CartPanel({ cartItems, cartTotal, cartMissingBalance, money, removeFrom
             </div>
 
             {hasItems ? (
-                <div className='cart-list'>
+                <div className='cart-list' ref={cartListRef}>
                     {cartItems.map((champion) => (
-                        <div className='cart-item' key={champion.id}>
+                        <div className='cart-item' key={champion.id} data-cart-item-id={champion.id}>
                             <img src={championLoadingImage(champion.id)} alt='' loading='lazy' />
                             <div>
                                 <strong>{champion.name}</strong>
@@ -561,7 +606,7 @@ function CartPanel({ cartItems, cartTotal, cartMissingBalance, money, removeFrom
                 </div>
             </div>
 
-            <button type='button' className='cart-checkout' onClick={checkoutCart} disabled={!hasItems || cartMissingBalance > 0}>
+            <button type='button' className='cart-checkout' onClick={handleCheckout} disabled={!hasItems || cartMissingBalance > 0}>
                 <Check size={16} strokeWidth={2.6} />
                 Buy All
             </button>
@@ -878,11 +923,13 @@ function App() {
     const [cartOpen, setCartOpen] = useState(false);
     const [cartCatching, setCartCatching] = useState(false);
     const [cartFlight, setCartFlight] = useState(null);
+    const [collectionFlights, setCollectionFlights] = useState([]);
     const [selectedSkinNum, setSelectedSkinNum] = useState(0);
     const [activePreviewTab, setActivePreviewTab] = useState('overview');
     const navClickLockRef = useRef(null);
     const cartDropdownRef = useRef(null);
     const cartButtonRef = useRef(null);
+    const collectionTargetRef = useRef(null);
     const previousCartCountRef = useRef(cartItems.length);
     const heroProgressRef = useRef(0);
     const heroLastTickRef = useRef(null);
@@ -950,6 +997,15 @@ function App() {
                 currentFlight?.id === flight.id ? null : currentFlight
             ));
         }, 900);
+    };
+
+    const showCollectionFlights = (flights) => {
+        if (!flights.length) {
+            return;
+        }
+
+        setCollectionFlights(flights);
+        window.setTimeout(() => setCollectionFlights([]), 1300);
     };
 
     const showPrevHero = () => {
@@ -1293,6 +1349,24 @@ function App() {
                     <img src={championLoadingImage(cartFlight.championId)} alt='' />
                 </span>
             ) : null}
+            {collectionFlights.map((flight) => (
+                <span
+                    key={flight.id}
+                    className='collection-flight-card'
+                    style={{
+                        left: flight.left,
+                        top: flight.top,
+                        width: flight.width,
+                        height: flight.height,
+                        '--flight-x': flight['--flight-x'],
+                        '--flight-y': flight['--flight-y'],
+                        '--flight-delay': flight['--flight-delay'],
+                    }}
+                    aria-hidden='true'
+                >
+                    <img src={championLoadingImage(flight.championId)} alt='' />
+                </span>
+            ))}
             <header className='topbar'>
                 <div className='topbar-inner'>
                     <a href='#marketplace' className='brand' aria-label='Nexus home'>
@@ -1368,6 +1442,8 @@ function App() {
                                         removeFromCart={removeFromCart}
                                         clearCart={clearCart}
                                         checkoutCart={checkoutCart}
+                                        collectionTargetRef={collectionTargetRef}
+                                        onCollectionFlights={showCollectionFlights}
                                     />
                                 </motion.div>
                             ) : null}
@@ -1469,7 +1545,9 @@ function App() {
                     </section>
                 ) : null}
 
-                <CollectionPanel champions={filtered} ownedChampions={myCardsArr} recentlyBoughtId={recentlyBoughtId} openChampionModal={openChampionModal} />
+                <div ref={collectionTargetRef}>
+                    <CollectionPanel champions={filtered} ownedChampions={myCardsArr} recentlyBoughtId={recentlyBoughtId} openChampionModal={openChampionModal} />
+                </div>
 
                 <TrendingCarousel champions={trending} openChampionModal={openChampionModal} />
 
