@@ -734,7 +734,7 @@ function HeroStat({ label, value, tone }) {
     );
 }
 
-function CollectionPanel({ champions, ownedChampions, impactWave, openChampionModal, onOpenStore }) {
+function CollectionPanel({ champions, ownedChampions, showcaseIds = [], onClearShowcaseSlot, onOpenShowcasePicker, impactWave, openChampionModal, onOpenStore }) {
     const [profileRoleFilter, setProfileRoleFilter] = useState('all');
     const [profileRarityFilter, setProfileRarityFilter] = useState('all');
     const [profileRegionFilter, setProfileRegionFilter] = useState('all');
@@ -782,7 +782,9 @@ function CollectionPanel({ champions, ownedChampions, impactWave, openChampionMo
             pct: rarityTotal > 0 ? Math.round((rarityOwned / rarityTotal) * 100) : 0,
         };
     });
-    const showcaseCards = [0, 1, 2].map((index) => ownedSorted[index] || null);
+    const showcaseCards = [0, 1, 2].map((index) => (
+        ownedChampions.find((champion) => champion.id === showcaseIds[index]) || null
+    ));
     const milestones = [
         { label: 'First Card', value: 'Starter', complete: ownedCount > 0 },
         { label: '10 Owned', value: 'Collector', complete: ownedCount >= 10 },
@@ -874,26 +876,29 @@ function CollectionPanel({ champions, ownedChampions, impactWave, openChampionMo
                     <div className='profile-showcase-grid'>
                         {showcaseCards.map((champion, index) => (
                             champion ? (
-                                <button
-                                    type='button'
+                                <article
                                     key={champion.id}
                                     className={`profile-showcase-card rarity-${rarityFor(champion)}`}
-                                    onClick={() => openChampionModal(champion)}
                                     aria-label={`Preview ${champion.name}`}
                                     style={{
                                         '--showcase-color': rarityConfig[rarityFor(champion)].color,
                                         '--showcase-glow': rarityConfig[rarityFor(champion)].glow,
                                     }}
                                 >
-                                    <img src={championLoadingImage(champion.id)} alt='' />
-                                    <span />
-                                    <strong>{champion.name}</strong>
-                                </button>
+                                    <button type='button' className='profile-showcase-preview' onClick={() => onOpenShowcasePicker(index)} aria-label={`Edit showcase slot ${index + 1}`}>
+                                        <img src={championLoadingImage(champion.id)} alt='' />
+                                        <span />
+                                        <strong>{champion.name}</strong>
+                                    </button>
+                                    <button type='button' className='profile-showcase-clear' onClick={() => onClearShowcaseSlot(index)} aria-label={`Clear showcase slot ${index + 1}`}>
+                                        <AiOutlineClose />
+                                    </button>
+                                </article>
                             ) : (
-                                <div className='profile-showcase-empty' key={`empty-${index}`}>
+                                <button type='button' className='profile-showcase-empty' key={`empty-${index}`} onClick={() => onOpenShowcasePicker(index)} aria-label={`Choose showcase slot ${index + 1}`}>
                                     <Plus size={18} strokeWidth={2.4} />
-                                    <span>Empty Slot</span>
-                                </div>
+                                    <span>Select from roster</span>
+                                </button>
                             )
                         ))}
                     </div>
@@ -1030,27 +1035,34 @@ function CollectionPanel({ champions, ownedChampions, impactWave, openChampionMo
                         <div className='profile-owned-grid'>
                             {profileFilteredCards.map((champion) => {
                                 const rarity = rarityFor(champion);
+                                const selectedShowcaseSlot = showcaseIds.indexOf(champion.id);
 
                                 return (
-                                    <button
-                                        type='button'
+                                    <article
                                         key={champion.id}
-                                        className={`profile-owned-card rarity-${rarity}`}
-                                        onClick={() => openChampionModal(champion)}
+                                        className={`profile-owned-card rarity-${rarity} ${selectedShowcaseSlot >= 0 ? 'is-in-showcase' : ''}`}
                                         aria-label={`Preview ${champion.name}`}
                                         style={{
                                             '--owned-rarity-color': rarityConfig[rarity].color,
                                             '--owned-rarity-glow': rarityConfig[rarity].glow,
                                         }}
                                     >
-                                        <img src={championLoadingImage(champion.id)} alt='' loading='lazy' />
-                                        <span className='profile-owned-glow' />
-                                        <span className='profile-owned-rarity'>{rarityConfig[rarity].label}</span>
-                                        <span className='profile-owned-copy'>
-                                            <strong>{champion.name}</strong>
-                                            <small>{champion.tags?.[0] || 'Champion'}</small>
-                                        </span>
-                                    </button>
+                                        <button
+                                            type='button'
+                                            className='profile-owned-preview'
+                                            onClick={() => openChampionModal(champion)}
+                                            aria-label={`Preview ${champion.name}`}
+                                        >
+                                            <img src={championLoadingImage(champion.id)} alt='' loading='lazy' />
+                                            <span className='profile-owned-glow' />
+                                            <span className='profile-owned-rarity'>{rarityConfig[rarity].label}</span>
+                                            {selectedShowcaseSlot >= 0 ? <span className='profile-owned-showcase-badge'>Showcase {selectedShowcaseSlot + 1}</span> : null}
+                                            <span className='profile-owned-copy'>
+                                                <strong>{champion.name}</strong>
+                                                <small>{champion.tags?.[0] || 'Champion'}</small>
+                                            </span>
+                                        </button>
+                                    </article>
                                 );
                             })}
                         </div>
@@ -1064,6 +1076,73 @@ function CollectionPanel({ champions, ownedChampions, impactWave, openChampionMo
                 </div>
             </div>
         </section>
+    );
+}
+
+function ShowcasePickerModal({ slotIndex, ownedChampions, showcaseIds, onSelect, onClear, onClose }) {
+    const selectedChampionId = showcaseIds[slotIndex];
+    const sortedChampions = [...ownedChampions].sort((a, b) => (
+        getChampionBlueEssence(b) - getChampionBlueEssence(a) ||
+        a.name.localeCompare(b.name)
+    ));
+
+    return (
+        <Modal show={slotIndex !== null} onHide={onClose} size='lg' centered dialogClassName='showcase-picker-dialog' contentClassName='showcase-picker-content'>
+            <Modal.Body className='showcase-picker-body'>
+                <button type='button' className='champion-preview-close showcase-picker-close' onClick={onClose} aria-label='Close showcase picker'>
+                    <AiOutlineClose />
+                </button>
+                <div className='showcase-picker-head'>
+                    <div>
+                        <span><Sparkles size={15} strokeWidth={2.3} /> Showcase Slot {slotIndex + 1}</span>
+                        <h3>Select Champion</h3>
+                    </div>
+                    {selectedChampionId ? (
+                        <button type='button' className='showcase-picker-clear' onClick={() => onClear(slotIndex)}>
+                            Clear Slot
+                        </button>
+                    ) : null}
+                </div>
+
+                {sortedChampions.length > 0 ? (
+                    <div className='showcase-picker-grid'>
+                        {sortedChampions.map((champion) => {
+                            const rarity = rarityFor(champion);
+                            const selected = selectedChampionId === champion.id;
+                            const usedSlot = showcaseIds.indexOf(champion.id);
+
+                            return (
+                                <button
+                                    type='button'
+                                    key={champion.id}
+                                    className={`showcase-picker-card rarity-${rarity} ${selected ? 'active' : ''}`}
+                                    onClick={() => onSelect(slotIndex, champion.id)}
+                                    style={{
+                                        '--picker-rarity-color': rarityConfig[rarity].color,
+                                        '--picker-rarity-glow': rarityConfig[rarity].glow,
+                                    }}
+                                >
+                                    <img src={championLoadingImage(champion.id)} alt='' loading='lazy' />
+                                    <span className='showcase-picker-card-glow' />
+                                    <span className='showcase-picker-card-rarity'>{rarityConfig[rarity].label}</span>
+                                    {usedSlot >= 0 ? <span className='showcase-picker-card-slot'>Slot {usedSlot + 1}</span> : null}
+                                    <span className='showcase-picker-card-copy'>
+                                        <strong>{champion.name}</strong>
+                                        <small>{champion.tags?.[0] || 'Champion'}</small>
+                                    </span>
+                                    {selected ? <span className='showcase-picker-check'><Check size={14} strokeWidth={3} /></span> : null}
+                                </button>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className='showcase-picker-empty'>
+                        <BsCollection />
+                        <p>No owned cards yet</p>
+                    </div>
+                )}
+            </Modal.Body>
+        </Modal>
     );
 }
 
@@ -1383,6 +1462,14 @@ function App() {
             return [];
         }
     });
+    const [showcaseIds, setShowcaseIds] = useState(() => {
+        try {
+            const storedIds = JSON.parse(localStorage.getItem('profileShowcaseIds') || '[]');
+            return Array.isArray(storedIds) ? [storedIds[0] || null, storedIds[1] || null, storedIds[2] || null] : [null, null, null];
+        } catch (error) {
+            return [null, null, null];
+        }
+    });
     const [cartCatching, setCartCatching] = useState(false);
     const [favoritesCatching, setFavoritesCatching] = useState(false);
     const [cartFlight, setCartFlight] = useState(null);
@@ -1397,6 +1484,7 @@ function App() {
     const [displayMoney, setDisplayMoney] = useState(money);
     const [selectedSkinNum, setSelectedSkinNum] = useState(0);
     const [activePreviewTab, setActivePreviewTab] = useState('overview');
+    const [activeShowcaseSlot, setActiveShowcaseSlot] = useState(null);
     const navClickLockRef = useRef(null);
     const cartDropdownRef = useRef(null);
     const favoritesDropdownRef = useRef(null);
@@ -1406,6 +1494,44 @@ function App() {
     useEffect(() => {
         localStorage.setItem('favoriteItems', JSON.stringify(favoriteItems));
     }, [favoriteItems]);
+
+    useEffect(() => {
+        localStorage.setItem('profileShowcaseIds', JSON.stringify(showcaseIds));
+    }, [showcaseIds]);
+
+    useEffect(() => {
+        const ownedIds = new Set(myCardsArr.map((champion) => champion.id));
+        setShowcaseIds((ids) => {
+            const nextIds = [ids[0] || null, ids[1] || null, ids[2] || null].map((id) => (id && ownedIds.has(id) ? id : null));
+            return nextIds.length === ids.length && nextIds.every((id, index) => id === ids[index]) ? ids : nextIds;
+        });
+    }, [myCardsArr]);
+
+    const setShowcaseSlot = (slotIndex, championId) => {
+        setShowcaseIds((ids) => {
+            const nextIds = [ids[0] || null, ids[1] || null, ids[2] || null].map((id) => (id === championId ? null : id));
+            nextIds[slotIndex] = championId;
+            return nextIds;
+        });
+    };
+
+    const clearShowcaseSlot = (slotIndex) => {
+        setShowcaseIds((ids) => {
+            const nextIds = [ids[0] || null, ids[1] || null, ids[2] || null];
+            nextIds[slotIndex] = null;
+            return nextIds;
+        });
+    };
+
+    const selectShowcaseCard = (slotIndex, championId) => {
+        setShowcaseSlot(slotIndex, championId);
+        setActiveShowcaseSlot(null);
+    };
+
+    const clearActiveShowcaseSlot = (slotIndex) => {
+        clearShowcaseSlot(slotIndex);
+        setActiveShowcaseSlot(null);
+    };
 
     const favoriteIds = useMemo(() => new Set(favoriteItems.map((champion) => champion.id)), [favoriteItems]);
 
@@ -2524,6 +2650,9 @@ function App() {
                         <CollectionPanel
                             champions={filtered}
                             ownedChampions={myCardsArr}
+                            showcaseIds={showcaseIds}
+                            onClearShowcaseSlot={clearShowcaseSlot}
+                            onOpenShowcasePicker={setActiveShowcaseSlot}
                             recentlyBoughtId={recentlyBoughtId}
                             settlingChampionId={packReward?.phase === 'flying' ? packReward.champion.id : ''}
                             impactWave={packImpactWave}
@@ -2597,6 +2726,17 @@ function App() {
                 </div>
             ) : null}
 
+            {activeShowcaseSlot !== null ? (
+                <ShowcasePickerModal
+                    slotIndex={activeShowcaseSlot}
+                    ownedChampions={myCardsArr}
+                    showcaseIds={showcaseIds}
+                    onSelect={selectShowcaseCard}
+                    onClear={clearActiveShowcaseSlot}
+                    onClose={() => setActiveShowcaseSlot(null)}
+                />
+            ) : null}
+
             {selectedChampion ? (
                 <Modal show onHide={closeChampionModal} size='xl' centered dialogClassName='champion-preview-dialog' contentClassName='champion-preview-content'>
                     <Modal.Body className='modal-body'>
@@ -2622,15 +2762,24 @@ function App() {
                                         <span className='champion-preview-kicker'>Champion Preview</span>
                                         <h3>{selectedChampion.name}</h3>
                                     </div>
-                                    <button
-                                        type='button'
-                                        className={`champion-preview-price ${selectedChampionOwned ? 'is-owned' : ''}`}
-                                        onClick={() => addToCart(selectedChampion)}
-                                        disabled={selectedChampionOwned || selectedChampionInCart}
-                                    >
-                                        <span>{selectedChampionOwned ? 'In Collection' : selectedChampionInCart ? 'In Cart' : 'Add to Cart'}</span>
-                                        <PriceAmount value={selectedChampion.price} />
-                                    </button>
+                                    {selectedChampionOwned ? (
+                                        <div className='champion-preview-showcase-control'>
+                                            <div>
+                                                <span>In Collection</span>
+                                                <PriceAmount value={selectedChampion.price} />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            type='button'
+                                            className='champion-preview-price'
+                                            onClick={() => addToCart(selectedChampion)}
+                                            disabled={selectedChampionInCart}
+                                        >
+                                            <span>{selectedChampionInCart ? 'In Cart' : 'Add to Cart'}</span>
+                                            <PriceAmount value={selectedChampion.price} />
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className='champion-preview-tabs' role='tablist' aria-label='Champion preview sections'>
