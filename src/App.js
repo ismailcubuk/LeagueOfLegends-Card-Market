@@ -900,7 +900,7 @@ function CollectionPanel({ champions, ownedChampions, showcaseIds = [], onClearS
                     </button>
                     <div className='profile-title-block'>
                         <span><Shield size={15} strokeWidth={2.3} /> Summoner Profile</span>
-                        <h2>Nexus Collector</h2>
+                        <h2>League Market</h2>
                         <p>{favoriteRole} specialist from {favoriteRegion.region}</p>
                     </div>
                     <div className='profile-level-card'>
