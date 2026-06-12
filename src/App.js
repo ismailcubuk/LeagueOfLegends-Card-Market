@@ -20,14 +20,59 @@ const championLoadingImage = (id) => `https://ddragon.leagueoflegends.com/cdn/im
 const championSplashImage = (id, skin = 0) => `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_${skin}.jpg`;
 const LOL_ICON_URL = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/lol_icon.png';
 const HEXTECH_CHEST_ICON_URL = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-loot/global/default/assets/loot_item_icons/chest.png';
+const PROFILE_ICON_DATA_URL = 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons.json';
 const profileIconImage = (id) => `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${id}.jpg`;
-const profileIconIds = [
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
-    10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-    20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-    588, 907, 984, 1151, 1381, 1427, 1455, 1637, 1667, 2074,
+const fallbackProfileIconIds = [
+    ...Array.from({ length: 30 }, (_, index) => index),
+    ...Array.from({ length: 90 }, (_, index) => index + 500),
+    ...Array.from({ length: 90 }, (_, index) => index + 900),
+    ...Array.from({ length: 80 }, (_, index) => index + 1300),
+    ...Array.from({ length: 80 }, (_, index) => index + 1600),
+    ...Array.from({ length: 80 }, (_, index) => index + 2000),
+    ...Array.from({ length: 80 }, (_, index) => index + 3000),
+    ...Array.from({ length: 80 }, (_, index) => index + 4000),
 ];
+const buildProfileIconGroups = (ids) => {
+    const sortedIds = Array.from(new Set(ids.map(Number).filter(Number.isFinite))).sort((a, b) => a - b);
 
+    return [
+        {
+            key: 'classic',
+            label: 'Classic',
+            ids: sortedIds.filter((id) => id < 100),
+        },
+        {
+            key: 'champion',
+            label: 'Champion',
+            ids: sortedIds.filter((id) => id >= 100 && id < 1000),
+        },
+        {
+            key: 'event',
+            label: 'Event',
+            ids: sortedIds.filter((id) => id >= 1000 && id < 3000),
+        },
+        {
+            key: 'special',
+            label: 'Special',
+            ids: sortedIds.filter((id) => id >= 3000),
+        },
+    ].filter((group) => group.ids.length > 0);
+};
+const defaultProfileIconGroups = buildProfileIconGroups(fallbackProfileIconIds);
+const profileIconFallbackGroup = defaultProfileIconGroups[0] || {
+    key: 'classic',
+    label: 'Classic',
+    ids: [0],
+};
+const profileIconGroupForId = (groups, iconId) => (
+    groups.find((group) => group.ids.some((groupIconId) => String(groupIconId) === String(iconId)))
+);
+const profileIconGroupsFromData = (data) => {
+    const entries = Array.isArray(data) ? data : Object.entries(data || {}).map(([key, value]) => ({ id: key, ...value }));
+    const ids = entries.map((icon) => Number(icon.id)).filter(Number.isFinite);
+
+    return buildProfileIconGroups(ids);
+};
 const sidebarRoles = ['Assassin', 'Mage', 'Fighter', 'Tank', 'Marksman', 'Support'];
 const navLinks = [
     { label: 'Profile', href: '#profile', view: 'profile' },
@@ -797,11 +842,16 @@ function CollectionPanel({ champions, ownedChampions, showcaseIds = [], onClearS
     const [profileRegionFilter, setProfileRegionFilter] = useState('all');
     const [profileSortFilter, setProfileSortFilter] = useState('value');
     const [isProfileIconPickerOpen, setIsProfileIconPickerOpen] = useState(false);
+    const [profileIconGroups, setProfileIconGroups] = useState(defaultProfileIconGroups);
+    const [hasLoadedProfileIcons, setHasLoadedProfileIcons] = useState(false);
     const [selectedProfileIconId, setSelectedProfileIconId] = useState(() => {
         const savedIconId = window.localStorage.getItem('league-market-profile-icon-id');
 
         return savedIconId || '29';
     });
+    const selectedIconGroup = profileIconGroupForId(profileIconGroups, selectedProfileIconId);
+    const [activeProfileIconGroup, setActiveProfileIconGroup] = useState(selectedIconGroup?.key || profileIconFallbackGroup.key);
+    const activeProfileIcons = profileIconGroups.find((group) => group.key === activeProfileIconGroup)?.ids || profileIconFallbackGroup.ids;
     const total = champions.length;
     const ownedCount = ownedChampions.length;
     const pct = total > 0 ? Math.round((ownedCount / total) * 100) : 0;
@@ -889,6 +939,52 @@ function CollectionPanel({ champions, ownedChampions, showcaseIds = [], onClearS
         { icon: AiOutlineTrophy, label: 'Completion', value: `${pct}%` },
         { icon: AiOutlineStar, label: 'Legendary+', value: String(legendaryCount) },
     ];
+
+    useEffect(() => {
+        if (!isProfileIconPickerOpen || hasLoadedProfileIcons) {
+            return;
+        }
+
+        let isMounted = true;
+
+        fetch(PROFILE_ICON_DATA_URL)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Unable to load profile icon data');
+                }
+
+                return response.json();
+            })
+            .then((data) => {
+                if (!isMounted) {
+                    return;
+                }
+
+                const loadedGroups = profileIconGroupsFromData(data);
+
+                if (loadedGroups.length > 0) {
+                    setProfileIconGroups(loadedGroups);
+                    setActiveProfileIconGroup((currentGroup) => (
+                        profileIconGroupForId(loadedGroups, selectedProfileIconId)?.key ||
+                        (loadedGroups.some((group) => group.key === currentGroup) ? currentGroup : loadedGroups[0].key)
+                    ));
+                }
+            })
+            .catch(() => {
+                if (isMounted) {
+                    setProfileIconGroups(defaultProfileIconGroups);
+                }
+            })
+            .finally(() => {
+                if (isMounted) {
+                    setHasLoadedProfileIcons(true);
+                }
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [hasLoadedProfileIcons, isProfileIconPickerOpen, selectedProfileIconId]);
 
     return (
         <section
@@ -994,8 +1090,23 @@ function CollectionPanel({ champions, ownedChampions, showcaseIds = [], onClearS
                             <AiOutlineClose />
                         </button>
                     </div>
+                    <div className='profile-icon-tabs' role='tablist' aria-label='Profile icon categories'>
+                        {profileIconGroups.map((group) => (
+                            <button
+                                type='button'
+                                key={group.key}
+                                className={activeProfileIconGroup === group.key ? 'is-active' : ''}
+                                onClick={() => setActiveProfileIconGroup(group.key)}
+                                role='tab'
+                                aria-selected={activeProfileIconGroup === group.key}
+                            >
+                                <span>{group.label}</span>
+                                <small>{group.ids.length}</small>
+                            </button>
+                        ))}
+                    </div>
                     <div className='profile-icon-grid'>
-                        {profileIconIds.map((iconId) => {
+                        {activeProfileIcons.map((iconId) => {
                             const iconIdValue = String(iconId);
                             const isSelected = iconIdValue === selectedProfileIconId;
 
@@ -1198,34 +1309,68 @@ function CollectionPanel({ champions, ownedChampions, showcaseIds = [], onClearS
     );
 }
 
-function ShowcasePickerModal({ slotIndex, ownedChampions, showcaseIds, onSelect, onClear, onClose }) {
+function ShowcasePickerModal({ slotIndex, champions, ownedChampions, showcaseIds, onSelect, onClear, onClose }) {
+    const [showcaseSearch, setShowcaseSearch] = useState('');
+    const [showcaseRoleFilter, setShowcaseRoleFilter] = useState('all');
+    const [showcaseRarityFilter, setShowcaseRarityFilter] = useState('all');
     const selectedChampionId = showcaseIds[slotIndex];
     const sortedChampions = [...ownedChampions].sort((a, b) => (
         getChampionBlueEssence(b) - getChampionBlueEssence(a) ||
         a.name.localeCompare(b.name)
     ));
+    const filteredChampions = sortedChampions.filter((champion) => {
+        const matchesSearch = champion.name.toLowerCase().includes(showcaseSearch.trim().toLowerCase());
+        const matchesRole = showcaseRoleFilter === 'all' || champion.tags?.includes(showcaseRoleFilter);
+        const matchesRarity = showcaseRarityFilter === 'all' || rarityFor(champion) === showcaseRarityFilter;
+
+        return matchesSearch && matchesRole && matchesRarity;
+    });
 
     return (
         <Modal show={slotIndex !== null} onHide={onClose} size='lg' centered dialogClassName='showcase-picker-dialog' contentClassName='showcase-picker-content'>
             <Modal.Body className='showcase-picker-body'>
-                <button type='button' className='champion-preview-close showcase-picker-close' onClick={onClose} aria-label='Close showcase picker'>
-                    <AiOutlineClose />
-                </button>
                 <div className='showcase-picker-head'>
                     <div>
                         <span><Sparkles size={15} strokeWidth={2.3} /> Showcase Slot {slotIndex + 1}</span>
                         <h3>Select Champion</h3>
                     </div>
-                    {selectedChampionId ? (
-                        <button type='button' className='showcase-picker-clear' onClick={() => onClear(slotIndex)}>
-                            Clear Slot
+                    <div className='showcase-picker-actions'>
+                        <span className='showcase-picker-count'>{ownedChampions.length}/{champions.length} Owned</span>
+                        {selectedChampionId ? (
+                            <button type='button' className='showcase-picker-clear' onClick={() => onClear(slotIndex)}>
+                                Clear Slot
+                            </button>
+                        ) : null}
+                        <button type='button' className='showcase-picker-close' onClick={onClose} aria-label='Close showcase picker'>
+                            <AiOutlineClose />
                         </button>
-                    ) : null}
+                    </div>
                 </div>
 
-                {sortedChampions.length > 0 ? (
+                <div className='showcase-picker-filters'>
+                    <label>
+                        <Search size={16} strokeWidth={2.4} />
+                        <input
+                            type='search'
+                            value={showcaseSearch}
+                            onChange={(event) => setShowcaseSearch(event.target.value)}
+                            placeholder='Search champion'
+                            aria-label='Search showcase champions'
+                        />
+                    </label>
+                    <select value={showcaseRoleFilter} onChange={(event) => setShowcaseRoleFilter(event.target.value)} aria-label='Filter showcase champions by role'>
+                        <option value='all'>All Roles</option>
+                        {sidebarRoles.map((role) => <option key={role} value={role}>{role}</option>)}
+                    </select>
+                    <select value={showcaseRarityFilter} onChange={(event) => setShowcaseRarityFilter(event.target.value)} aria-label='Filter showcase champions by rarity'>
+                        <option value='all'>All Rarities</option>
+                        {Object.entries(rarityConfig).map(([key, rarity]) => <option key={key} value={key}>{rarity.label}</option>)}
+                    </select>
+                </div>
+
+                {filteredChampions.length > 0 ? (
                     <div className='showcase-picker-grid'>
-                        {sortedChampions.map((champion) => {
+                        {filteredChampions.map((champion) => {
                             const rarity = rarityFor(champion);
                             const selected = selectedChampionId === champion.id;
                             const usedSlot = showcaseIds.indexOf(champion.id);
@@ -1257,7 +1402,7 @@ function ShowcasePickerModal({ slotIndex, ownedChampions, showcaseIds, onSelect,
                 ) : (
                     <div className='showcase-picker-empty'>
                         <BsCollection />
-                        <p>No owned cards yet</p>
+                        <p>{sortedChampions.length > 0 ? 'No matching cards' : 'No owned cards yet'}</p>
                     </div>
                 )}
             </Modal.Body>
@@ -2866,6 +3011,7 @@ function App() {
             {activeShowcaseSlot !== null ? (
                 <ShowcasePickerModal
                     slotIndex={activeShowcaseSlot}
+                    champions={filtered}
                     ownedChampions={myCardsArr}
                     showcaseIds={showcaseIds}
                     onSelect={selectShowcaseCard}
