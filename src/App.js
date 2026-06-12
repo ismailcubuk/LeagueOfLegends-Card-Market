@@ -9,7 +9,7 @@ import {
     AiOutlineStar,
     AiOutlineTrophy,
 } from 'react-icons/ai';
-import { BsClock, BsCollection } from 'react-icons/bs';
+import { BsCollection } from 'react-icons/bs';
 import { Check, ChevronDown, ChevronLeft, ChevronRight, Droplet, Eye, Flame, Gift, Heart, MapPin, Menu, Play, Plus, Search, Shield, ShoppingCart, Skull, SlidersHorizontal, Sparkles, Swords, Wand2, Zap } from 'lucide-react';
 import CardContext from './components/component/CardContext';
 import { BLUE_ESSENCE_ICON_URL, getChampionBlueEssence } from './components/component/championPrices';
@@ -23,9 +23,9 @@ const HEXTECH_CHEST_ICON_URL = 'https://raw.communitydragon.org/latest/plugins/r
 
 const sidebarRoles = ['Assassin', 'Mage', 'Fighter', 'Tank', 'Marksman', 'Support'];
 const navLinks = [
-    { label: 'Collection', href: '#collection' },
-    { label: 'Trends', href: '#trending' },
-    { label: 'Store', href: '#marketplace' },
+    { label: 'Profile', href: '#profile', view: 'profile' },
+    { label: 'Trends', href: '#trending', view: 'market' },
+    { label: 'Store', href: '#marketplace', view: 'market' },
 ];
 const previewTabs = [
     { key: 'overview', label: 'Overview' },
@@ -330,7 +330,7 @@ function rarityFor(champion) {
     return 'common';
 }
 
-function ChampionCard({ champion, owned = false, inCart = false, justBought = false, onAction, onOpen, cartTargetRef, onCartFlight }) {
+function ChampionCard({ champion, owned = false, inCart = false, favorite = false, justBought = false, onAction, onOpen, onFavoriteToggle, cartTargetRef, favoriteTargetRef, onCartFlight, onFavoriteFlight }) {
     const rarity = rarityFor(champion);
     const config = rarityConfig[rarity];
     const isHolo = rarity === 'legendary' || rarity === 'mythic';
@@ -338,9 +338,9 @@ function ChampionCard({ champion, owned = false, inCart = false, justBought = fa
     const blueEssence = getChampionBlueEssence(champion);
     const cardRef = useRef(null);
     const [hovered, setHovered] = useState(false);
-    const [wished, setWished] = useState(false);
     const [inCompare, setInCompare] = useState(false);
     const [cartAnimating, setCartAnimating] = useState(false);
+    const [favoriteAnimating, setFavoriteAnimating] = useState(false);
     const mx = useMotionValue(0);
     const my = useMotionValue(0);
     const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [3, -3]), { stiffness: 250, damping: 24 });
@@ -367,7 +367,43 @@ function ChampionCard({ champion, owned = false, inCart = false, justBought = fa
 
     const toggleWished = (event) => {
         event.stopPropagation();
-        setWished((current) => !current);
+
+        if (!favorite && favoriteAnimating) {
+            return;
+        }
+
+        if (!favorite) {
+            setFavoriteAnimating(true);
+
+            const cardRect = cardRef.current?.getBoundingClientRect();
+            const favoriteRect = favoriteTargetRef?.current?.getBoundingClientRect();
+
+            if (cardRect && favoriteRect) {
+                const startWidth = Math.min(cardRect.width * 0.48, 94);
+                const startHeight = startWidth * 1.36;
+                const startX = cardRect.left + cardRect.width / 2 - startWidth / 2;
+                const startY = cardRect.top + cardRect.height / 2 - startHeight / 2;
+                const endX = favoriteRect.left + favoriteRect.width / 2 - startX - startWidth / 2;
+                const endY = favoriteRect.top + favoriteRect.height / 2 - startY - startHeight / 2;
+
+                onFavoriteFlight?.({
+                    id: `${champion.id}-favorite-${Date.now()}`,
+                    championId: champion.id,
+                    left: `${startX}px`,
+                    top: `${startY}px`,
+                    width: `${startWidth}px`,
+                    height: `${startHeight}px`,
+                    '--favorite-flight-x': `${endX}px`,
+                    '--favorite-flight-y': `${endY}px`,
+                });
+            }
+
+            window.setTimeout(() => setFavoriteAnimating(false), 760);
+            window.setTimeout(() => onFavoriteToggle?.(champion), 720);
+            return;
+        }
+
+        onFavoriteToggle?.(champion);
     };
 
     const toggleCompare = (event) => {
@@ -388,6 +424,10 @@ function ChampionCard({ champion, owned = false, inCart = false, justBought = fa
     };
 
     const handleAction = () => {
+        if (!owned && !inCart && cartAnimating) {
+            return;
+        }
+
         if (!owned && !inCart) {
             setCartAnimating(true);
 
@@ -415,6 +455,8 @@ function ChampionCard({ champion, owned = false, inCart = false, justBought = fa
             }
 
             window.setTimeout(() => setCartAnimating(false), 860);
+            window.setTimeout(() => onAction(champion), 760);
+            return;
         }
 
         onAction(champion);
@@ -423,7 +465,7 @@ function ChampionCard({ champion, owned = false, inCart = false, justBought = fa
     return (
         <motion.article
             ref={cardRef}
-            className={`market-card rarity-${rarity} ${justBought ? 'is-purchase-animating' : ''} ${cartAnimating ? 'is-cart-animating' : ''}`}
+            className={`market-card rarity-${rarity} ${justBought ? 'is-purchase-animating' : ''} ${cartAnimating ? 'is-cart-animating' : ''} ${favoriteAnimating ? 'is-favorite-animating' : ''}`}
             onMouseMove={handleMove}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={resetTilt}
@@ -469,7 +511,7 @@ function ChampionCard({ champion, owned = false, inCart = false, justBought = fa
                     <button type='button' className='market-card-icon-action' onClick={previewChampion} aria-label={`Preview ${champion.name}`}>
                         <Eye size={16} strokeWidth={2.2} />
                     </button>
-                    <button type='button' className={`market-card-icon-action ${wished ? 'is-wished' : ''}`} onClick={toggleWished} aria-label='Wishlist'>
+                    <button type='button' className={`market-card-icon-action ${favorite ? 'is-wished' : ''}`} onClick={toggleWished} aria-label={favorite ? `Remove ${champion.name} from favorites` : `Add ${champion.name} to favorites`}>
                         <Heart size={16} strokeWidth={2.2} />
                     </button>
                     <button type='button' className={`market-card-icon-action ${inCompare ? 'is-compare' : ''}`} onClick={toggleCompare} aria-label='Compare'>
@@ -509,6 +551,69 @@ function ChampionCard({ champion, owned = false, inCart = false, justBought = fa
                 </div>
             </div>
         </motion.article>
+    );
+}
+
+function FavoritesPanel({ favorites, ownedChampions, cartItems, addToCart, removeFavorite, clearFavorites, openChampionModal }) {
+    const hasFavorites = favorites.length > 0;
+
+    return (
+        <section className='favorites-panel' aria-label='Favorite champions'>
+            <div className='favorites-panel-head'>
+                <div>
+                    <span>
+                        <Heart size={15} strokeWidth={2.4} />
+                        Favorites
+                    </span>
+                    <strong>{favorites.length} saved</strong>
+                </div>
+                {hasFavorites ? (
+                    <button type='button' onClick={clearFavorites}>
+                        Clear
+                    </button>
+                ) : null}
+            </div>
+
+            {hasFavorites ? (
+                <div className='favorites-list'>
+                    {favorites.map((champion) => {
+                        const owned = ownedChampions.some((card) => card.id === champion.id);
+                        const inCart = cartItems.some((card) => card.id === champion.id);
+
+                        return (
+                            <article className='favorite-item' key={champion.id}>
+                                <button type='button' className='favorite-item-art' onClick={() => openChampionModal(champion)} aria-label={`Preview ${champion.name}`}>
+                                    <img src={championLoadingImage(champion.id)} alt='' loading='lazy' />
+                                </button>
+                                <div className='favorite-item-copy'>
+                                    <strong>{champion.name}</strong>
+                                    <span>{champion.title}</span>
+                                    <PriceAmount value={getChampionBlueEssence(champion)} />
+                                </div>
+                                <div className='favorite-item-actions'>
+                                    <button type='button' className='favorite-icon-button' onClick={() => openChampionModal(champion)} aria-label={`Preview ${champion.name}`}>
+                                        <Eye size={15} strokeWidth={2.4} />
+                                    </button>
+                                    <button type='button' className='favorite-icon-button' onClick={() => removeFavorite(champion.id)} aria-label={`Remove ${champion.name} from favorites`}>
+                                        <AiOutlineClose />
+                                    </button>
+                                    <button type='button' className='favorite-add-button' onClick={() => addToCart(champion)} disabled={owned || inCart}>
+                                        {owned || inCart ? <Check size={14} strokeWidth={2.8} /> : <ShoppingCart size={14} strokeWidth={2.4} />}
+                                        <span>{owned ? 'Owned' : inCart ? 'Added' : 'Cart'}</span>
+                                    </button>
+                                </div>
+                            </article>
+                        );
+                    })}
+                </div>
+            ) : (
+                <div className='favorites-empty'>
+                    <Heart size={30} strokeWidth={2.1} />
+                    <strong>No favorites yet</strong>
+                    <span>Use the heart button on champion cards.</span>
+                </div>
+            )}
+        </section>
     );
 }
 
@@ -629,11 +734,91 @@ function HeroStat({ label, value, tone }) {
     );
 }
 
-function CollectionPanel({ champions, ownedChampions, recentlyBoughtId, settlingChampionId, impactWave, openChampionModal }) {
+function CollectionPanel({ champions, ownedChampions, impactWave, openChampionModal, onOpenStore }) {
+    const [profileRoleFilter, setProfileRoleFilter] = useState('all');
+    const [profileRarityFilter, setProfileRarityFilter] = useState('all');
+    const [profileRegionFilter, setProfileRegionFilter] = useState('all');
+    const [profileSortFilter, setProfileSortFilter] = useState('value');
     const total = champions.length;
     const ownedCount = ownedChampions.length;
     const pct = total > 0 ? Math.round((ownedCount / total) * 100) : 0;
     const legendaryCount = ownedChampions.filter((champion) => ['legendary', 'mythic'].includes(rarityFor(champion))).length;
+    const collectionValue = ownedChampions.reduce((sum, champion) => sum + getChampionBlueEssence(champion), 0);
+    const ownedSorted = [...ownedChampions].sort((a, b) => (
+        getChampionBlueEssence(b) - getChampionBlueEssence(a) ||
+        a.name.localeCompare(b.name)
+    ));
+    const featuredChampion = ownedSorted[0];
+    const collectionLevel = Math.max(1, Math.floor(ownedCount / 8) + 1);
+    const nextLevelAt = collectionLevel * 8;
+    const levelProgress = nextLevelAt > 0 ? Math.round((ownedCount / nextLevelAt) * 100) : 0;
+    const championRegion = (champion) => championOrigins[champion.id] || 'Runeterra';
+    const roleCounts = sidebarRoles.map((role) => ({
+        role,
+        count: ownedChampions.filter((champion) => champion.tags?.includes(role)).length,
+    })).sort((a, b) => b.count - a.count || a.role.localeCompare(b.role));
+    const favoriteRole = roleCounts.find((item) => item.count > 0)?.role || 'Unclaimed';
+    const allRegions = Array.from(new Set(champions.map((champion) => championRegion(champion)))).sort();
+    const regionProgress = allRegions.map((region) => {
+        const regionTotal = champions.filter((champion) => championRegion(champion) === region).length;
+        const regionOwned = ownedChampions.filter((champion) => championRegion(champion) === region).length;
+
+        return {
+            region,
+            owned: regionOwned,
+            total: regionTotal,
+            pct: regionTotal > 0 ? Math.round((regionOwned / regionTotal) * 100) : 0,
+        };
+    }).sort((a, b) => b.owned - a.owned || b.pct - a.pct || a.region.localeCompare(b.region));
+    const favoriteRegion = regionProgress.find((region) => region.owned > 0) || regionProgress[0] || { region: 'Runeterra', owned: 0, total: 0, pct: 0 };
+    const rarityProgress = Object.keys(rarityConfig).map((rarity) => {
+        const rarityTotal = champions.filter((champion) => rarityFor(champion) === rarity).length;
+        const rarityOwned = ownedChampions.filter((champion) => rarityFor(champion) === rarity).length;
+
+        return {
+            rarity,
+            owned: rarityOwned,
+            total: rarityTotal,
+            pct: rarityTotal > 0 ? Math.round((rarityOwned / rarityTotal) * 100) : 0,
+        };
+    });
+    const showcaseCards = [0, 1, 2].map((index) => ownedSorted[index] || null);
+    const milestones = [
+        { label: 'First Card', value: 'Starter', complete: ownedCount > 0 },
+        { label: '10 Owned', value: 'Collector', complete: ownedCount >= 10 },
+        { label: 'Legendary+', value: 'Elite', complete: legendaryCount > 0 },
+        { label: `${favoriteRegion.region} Set`, value: `${favoriteRegion.pct}%`, complete: favoriteRegion.total > 0 && favoriteRegion.owned === favoriteRegion.total },
+        { label: 'Half Roster', value: '50%', complete: pct >= 50 },
+    ];
+    const profileFilteredCards = (() => {
+        const filteredCards = ownedChampions.filter((champion) => {
+            const matchesRole = profileRoleFilter === 'all' || champion.tags?.includes(profileRoleFilter);
+            const matchesRarity = profileRarityFilter === 'all' || rarityFor(champion) === profileRarityFilter;
+            const matchesRegion = profileRegionFilter === 'all' || championRegion(champion) === profileRegionFilter;
+
+            return matchesRole && matchesRarity && matchesRegion;
+        });
+        const sortedCards = [...filteredCards];
+
+        if (profileSortFilter === 'name') {
+            sortedCards.sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        if (profileSortFilter === 'rarity') {
+            const rarityWeight = { mythic: 5, legendary: 4, epic: 3, rare: 2, common: 1 };
+            sortedCards.sort((a, b) => (
+                rarityWeight[rarityFor(b)] - rarityWeight[rarityFor(a)] ||
+                getChampionBlueEssence(b) - getChampionBlueEssence(a) ||
+                a.name.localeCompare(b.name)
+            ));
+        }
+
+        if (profileSortFilter === 'value') {
+            sortedCards.sort((a, b) => getChampionBlueEssence(b) - getChampionBlueEssence(a) || a.name.localeCompare(b.name));
+        }
+
+        return sortedCards;
+    })();
     const stats = [
         { icon: BsCollection, label: 'Owned', value: `${ownedCount}/${total}` },
         { icon: AiOutlineTrophy, label: 'Completion', value: `${pct}%` },
@@ -642,76 +827,241 @@ function CollectionPanel({ champions, ownedChampions, recentlyBoughtId, settling
 
     return (
         <section
-            className={`collection-panel ${impactWave ? 'is-pack-impacting' : ''}`}
-            id='collection'
+            className={`collection-panel profile-collection-panel ${impactWave ? 'is-pack-impacting' : ''}`}
+            id='profile'
             style={impactWave ? {
                 '--impact-color': impactWave.color,
                 '--impact-glow': impactWave.glow,
             } : undefined}
         >
-            <div className='collection-panel-top'>
-                <div className='collection-panel-heading'>
-                    <div className='collection-progress' style={{ '--collection-pct': pct }}>
-                        <svg viewBox='0 0 100 100'>
-                            <circle cx='50' cy='50' r='42' />
-                            <circle cx='50' cy='50' r='42' />
-                        </svg>
-                        <div>
-                            <span>{pct}%</span>
-                        </div>
+            <div className='profile-hero-shell'>
+                {featuredChampion ? <img className='profile-hero-bg' src={championSplashImage(featuredChampion.id)} alt='' aria-hidden='true' /> : null}
+                <span className='profile-hero-shade' />
+                <div className='profile-identity'>
+                    <button
+                        type='button'
+                        className='profile-avatar'
+                        onClick={() => featuredChampion && openChampionModal(featuredChampion)}
+                        aria-label={featuredChampion ? `Preview ${featuredChampion.name}` : 'Profile avatar'}
+                    >
+                        <img src={featuredChampion ? championLoadingImage(featuredChampion.id) : LOL_ICON_URL} alt='' />
+                    </button>
+                    <div className='profile-title-block'>
+                        <span><Shield size={15} strokeWidth={2.3} /> Summoner Profile</span>
+                        <h2>Nexus Collector</h2>
+                        <p>{favoriteRole} specialist from {favoriteRegion.region}</p>
                     </div>
-                    <div className='collection-static-copy'>
-                        <div className='collection-kicker'>
-                            <BsCollection />
-                            My Collection
+                    <div className='profile-level-card'>
+                        <div className='profile-level-ring' style={{ '--profile-level-pct': Math.min(levelProgress, 100) }}>
+                            <svg viewBox='0 0 100 100'>
+                                <circle cx='50' cy='50' r='42' />
+                                <circle cx='50' cy='50' r='42' />
+                            </svg>
+                            <span>{collectionLevel}</span>
                         </div>
-                        <h2>{ownedCount} Champions Owned</h2>
-                        <p>{Math.max(total - ownedCount, 0)} more to complete the Roster</p>
+                        <div>
+                            <strong>Collection Level</strong>
+                            <span>{Math.max(nextLevelAt - ownedCount, 0)} cards to next</span>
+                        </div>
                     </div>
                 </div>
 
-                <div className='collection-stat-chips'>
-                    {stats.map((stat) => (
-                        <div key={stat.label}>
-                            <stat.icon />
-                            <p>{stat.value}</p>
-                            <span>{stat.label}</span>
-                        </div>
-                    ))}
+                <div className='profile-showcase'>
+                    <div className='profile-showcase-head'>
+                        <span><Sparkles size={15} strokeWidth={2.2} /> Showcase</span>
+                        <strong>{showcaseCards.filter(Boolean).length}/3</strong>
+                    </div>
+                    <div className='profile-showcase-grid'>
+                        {showcaseCards.map((champion, index) => (
+                            champion ? (
+                                <button
+                                    type='button'
+                                    key={champion.id}
+                                    className={`profile-showcase-card rarity-${rarityFor(champion)}`}
+                                    onClick={() => openChampionModal(champion)}
+                                    aria-label={`Preview ${champion.name}`}
+                                    style={{
+                                        '--showcase-color': rarityConfig[rarityFor(champion)].color,
+                                        '--showcase-glow': rarityConfig[rarityFor(champion)].glow,
+                                    }}
+                                >
+                                    <img src={championLoadingImage(champion.id)} alt='' />
+                                    <span />
+                                    <strong>{champion.name}</strong>
+                                </button>
+                            ) : (
+                                <div className='profile-showcase-empty' key={`empty-${index}`}>
+                                    <Plus size={18} strokeWidth={2.4} />
+                                    <span>Empty Slot</span>
+                                </div>
+                            )
+                        ))}
+                    </div>
                 </div>
             </div>
 
-            <div className='recently-acquired'>
-                <div className='recently-title'>
-                    <BsClock />
-                    Recently Acquired
+            <div className='collection-stat-chips profile-stat-chips'>
+                {stats.map((stat) => (
+                    <div key={stat.label}>
+                        <stat.icon />
+                        <p>{stat.value}</p>
+                        <span>{stat.label}</span>
+                    </div>
+                ))}
+                <div>
+                    <BlueEssenceIcon />
+                    <p>{collectionValue.toLocaleString()}</p>
+                    <span>Vault Value</span>
                 </div>
-                {ownedChampions.length > 0 ? (
-                    <div className='recently-track'>
-                        {ownedChampions.map((champion) => (
-                            <button
-                                type='button'
-                                key={champion.id}
-                                className={`recent-card rarity-${rarityFor(champion)} ${recentlyBoughtId === champion.id ? 'is-new-vault-card' : ''} ${settlingChampionId === champion.id ? 'is-pack-landing-placeholder' : ''}`}
-                                onClick={() => openChampionModal(champion)}
-                                aria-label={`Preview ${champion.name}`}
-                            >
-                                <img src={championLoadingImage(champion.id)} alt={champion.name} />
+            </div>
+
+            <div className='profile-insight-grid'>
+                <section className='profile-progress-panel'>
+                    <div className='profile-panel-heading'>
+                        <span><AiOutlineStar /> Rarity Progress</span>
+                    </div>
+                    <div className='profile-rarity-progress'>
+                        {rarityProgress.map(({ rarity, owned, total: rarityTotal, pct: rarityPct }) => (
+                            <div key={rarity} className='profile-progress-row' style={{ '--progress-color': rarityConfig[rarity].color, '--progress-glow': rarityConfig[rarity].glow }}>
                                 <div>
-                                    <p>{champion.name}</p>
+                                    <span>{rarityConfig[rarity].label}</span>
+                                    <strong>{owned}/{rarityTotal}</strong>
                                 </div>
-                            </button>
+                                <i><b style={{ width: `${rarityPct}%` }} /></i>
+                            </div>
                         ))}
                     </div>
-                ) : (
-                    <div className='vault-empty'>
-                        <div>
-                            <BsCollection />
-                        </div>
-                        <p>Your vault is empty</p>
-                        <span>Unlock your first champion to start collecting</span>
+                </section>
+
+                <section className='profile-progress-panel'>
+                    <div className='profile-panel-heading'>
+                        <span><MapPin size={15} strokeWidth={2.3} /> Region Mastery</span>
                     </div>
-                )}
+                    <div className='profile-region-list'>
+                        {regionProgress.slice(0, 6).map((region) => (
+                            <div className='profile-region-row' key={region.region}>
+                                <span className='profile-region-thumb'>
+                                    {originImageUrls[region.region] ? <img src={originImageUrls[region.region]} alt='' /> : <MapPin size={16} strokeWidth={2.3} />}
+                                </span>
+                                <div>
+                                    <strong>{region.region}</strong>
+                                    <i><b style={{ width: `${region.pct}%` }} /></i>
+                                </div>
+                                <span>{region.owned}/{region.total}</span>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                <section className='profile-progress-panel profile-milestone-panel'>
+                    <div className='profile-panel-heading'>
+                        <span><AiOutlineTrophy /> Milestones</span>
+                    </div>
+                    <div className='profile-milestones'>
+                        {milestones.map((milestone) => (
+                            <div className={milestone.complete ? 'is-complete' : ''} key={milestone.label}>
+                                <span>{milestone.complete ? <Check size={14} strokeWidth={2.8} /> : <Sparkles size={14} strokeWidth={2.3} />}</span>
+                                <div>
+                                    <strong>{milestone.label}</strong>
+                                    <small>{milestone.value}</small>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            </div>
+
+            <div className='profile-focus-strip'>
+                <div>
+                    <span><Swords size={16} strokeWidth={2.4} /> Favorite Role</span>
+                    <strong>{favoriteRole}</strong>
+                    <small>{roleCounts.find((item) => item.role === favoriteRole)?.count || 0} owned cards</small>
+                </div>
+                <div>
+                    <span><MapPin size={16} strokeWidth={2.4} /> Strongest Region</span>
+                    <strong>{favoriteRegion.region}</strong>
+                    <small>{favoriteRegion.owned}/{favoriteRegion.total} collected</small>
+                </div>
+                <div>
+                    <span><AiOutlineTrophy /> Next Goal</span>
+                    <strong>{Math.max(nextLevelAt - ownedCount, 0)} Cards</strong>
+                    <small>to collection level {collectionLevel + 1}</small>
+                </div>
+                <a href='#marketplace' onClick={onOpenStore}>
+                    <ShoppingCart size={18} strokeWidth={2.4} />
+                    Store
+                </a>
+            </div>
+
+            <div className='profile-collection-layout'>
+                <div className='profile-card-library'>
+                    <div className='profile-card-library-head'>
+                        <div>
+                            <span><Sparkles size={15} strokeWidth={2.2} /> Owned Cards</span>
+                            <h3>Personal Roster</h3>
+                        </div>
+                        <a href='#marketplace' className='profile-store-link' onClick={onOpenStore}>
+                            Store
+                            <ChevronRight size={16} strokeWidth={2.4} />
+                        </a>
+                    </div>
+
+                    <div className='profile-library-controls'>
+                        <select value={profileRoleFilter} onChange={(event) => setProfileRoleFilter(event.target.value)} aria-label='Filter owned cards by role'>
+                            <option value='all'>All Roles</option>
+                            {sidebarRoles.map((role) => <option key={role} value={role}>{role}</option>)}
+                        </select>
+                        <select value={profileRarityFilter} onChange={(event) => setProfileRarityFilter(event.target.value)} aria-label='Filter owned cards by rarity'>
+                            <option value='all'>All Rarities</option>
+                            {Object.entries(rarityConfig).map(([key, rarity]) => <option key={key} value={key}>{rarity.label}</option>)}
+                        </select>
+                        <select value={profileRegionFilter} onChange={(event) => setProfileRegionFilter(event.target.value)} aria-label='Filter owned cards by region'>
+                            <option value='all'>All Regions</option>
+                            {regionProgress.map((region) => <option key={region.region} value={region.region}>{region.region}</option>)}
+                        </select>
+                        <select value={profileSortFilter} onChange={(event) => setProfileSortFilter(event.target.value)} aria-label='Sort owned cards'>
+                            <option value='value'>Highest Value</option>
+                            <option value='rarity'>Rarity</option>
+                            <option value='name'>Name</option>
+                        </select>
+                    </div>
+
+                    {profileFilteredCards.length > 0 ? (
+                        <div className='profile-owned-grid'>
+                            {profileFilteredCards.map((champion) => {
+                                const rarity = rarityFor(champion);
+
+                                return (
+                                    <button
+                                        type='button'
+                                        key={champion.id}
+                                        className={`profile-owned-card rarity-${rarity}`}
+                                        onClick={() => openChampionModal(champion)}
+                                        aria-label={`Preview ${champion.name}`}
+                                        style={{
+                                            '--owned-rarity-color': rarityConfig[rarity].color,
+                                            '--owned-rarity-glow': rarityConfig[rarity].glow,
+                                        }}
+                                    >
+                                        <img src={championLoadingImage(champion.id)} alt='' loading='lazy' />
+                                        <span className='profile-owned-glow' />
+                                        <span className='profile-owned-rarity'>{rarityConfig[rarity].label}</span>
+                                        <span className='profile-owned-copy'>
+                                            <strong>{champion.name}</strong>
+                                            <small>{champion.tags?.[0] || 'Champion'}</small>
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        <div className='profile-library-empty'>
+                            <BsCollection />
+                            <p>No owned cards here</p>
+                            <a href='#marketplace' onClick={onOpenStore}>Browse the store</a>
+                        </div>
+                    )}
+                </div>
             </div>
         </section>
     );
@@ -1022,10 +1372,21 @@ function App() {
     const [activeHeroIndex, setActiveHeroIndex] = useState(0);
     const [heroPaused, setHeroPaused] = useState(false);
     const [heroProgress, setHeroProgress] = useState(0);
+    const [activeView, setActiveView] = useState('market');
     const [activeLink, setActiveLink] = useState('Store');
     const [cartOpen, setCartOpen] = useState(false);
+    const [favoritesOpen, setFavoritesOpen] = useState(false);
+    const [favoriteItems, setFavoriteItems] = useState(() => {
+        try {
+            return JSON.parse(localStorage.getItem('favoriteItems') || '[]');
+        } catch (error) {
+            return [];
+        }
+    });
     const [cartCatching, setCartCatching] = useState(false);
+    const [favoritesCatching, setFavoritesCatching] = useState(false);
     const [cartFlight, setCartFlight] = useState(null);
+    const [favoriteFlight, setFavoriteFlight] = useState(null);
     const [collectionFlights, setCollectionFlights] = useState([]);
     const [dailyEssenceFlights, setDailyEssenceFlights] = useState([]);
     const [packEssenceFlights, setPackEssenceFlights] = useState([]);
@@ -1038,7 +1399,98 @@ function App() {
     const [activePreviewTab, setActivePreviewTab] = useState('overview');
     const navClickLockRef = useRef(null);
     const cartDropdownRef = useRef(null);
+    const favoritesDropdownRef = useRef(null);
+    const favoritesButtonRef = useRef(null);
     const cartButtonRef = useRef(null);
+
+    useEffect(() => {
+        localStorage.setItem('favoriteItems', JSON.stringify(favoriteItems));
+    }, [favoriteItems]);
+
+    const favoriteIds = useMemo(() => new Set(favoriteItems.map((champion) => champion.id)), [favoriteItems]);
+
+    const toggleFavorite = (champion) => {
+        setFavoriteItems((items) => {
+            if (items.some((item) => item.id === champion.id)) {
+                return items.filter((item) => item.id !== champion.id);
+            }
+
+            return [champion, ...items];
+        });
+    };
+
+    const removeFavorite = (championId) => {
+        setFavoriteItems((items) => items.filter((item) => item.id !== championId));
+    };
+
+    const clearFavorites = () => {
+        setFavoriteItems([]);
+    };
+
+    const showFavoriteFlight = (flight) => {
+        setFavoriteFlight(flight);
+        window.setTimeout(() => {
+            setFavoriteFlight(null);
+            setFavoritesCatching(true);
+            window.setTimeout(() => setFavoritesCatching(false), 620);
+        }, 720);
+    };
+
+    const toggleHeroFavorite = (event, champion) => {
+        if (!favoriteIds.has(champion.id)) {
+            const sourceRect = event.currentTarget?.getBoundingClientRect();
+            const favoriteRect = favoritesButtonRef.current?.getBoundingClientRect();
+
+            if (sourceRect && favoriteRect) {
+                const startWidth = 70;
+                const startHeight = 94;
+                const startX = sourceRect.left + sourceRect.width / 2 - startWidth / 2;
+                const startY = sourceRect.top + sourceRect.height / 2 - startHeight / 2;
+                const endX = favoriteRect.left + favoriteRect.width / 2 - startX - startWidth / 2;
+                const endY = favoriteRect.top + favoriteRect.height / 2 - startY - startHeight / 2;
+
+                showFavoriteFlight({
+                    id: `${champion.id}-favorite-${Date.now()}`,
+                    championId: champion.id,
+                    left: `${startX}px`,
+                    top: `${startY}px`,
+                    width: `${startWidth}px`,
+                    height: `${startHeight}px`,
+                    '--favorite-flight-x': `${endX}px`,
+                    '--favorite-flight-y': `${endY}px`,
+                });
+            }
+
+            window.setTimeout(() => toggleFavorite(champion), 720);
+            return;
+        }
+
+        toggleFavorite(champion);
+    };
+
+    useEffect(() => {
+        if (!favoritesOpen) return undefined;
+
+        const handlePointerDown = (event) => {
+            if (!favoritesDropdownRef.current?.contains(event.target)) {
+                setFavoritesOpen(false);
+            }
+        };
+
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape') {
+                setFavoritesOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handlePointerDown);
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('mousedown', handlePointerDown);
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [favoritesOpen]);
     const walletRef = useRef(null);
     const dailyRewardButtonRef = useRef(null);
     const collectionTargetRef = useRef(null);
@@ -1197,21 +1649,23 @@ function App() {
             window.requestAnimationFrame(() => {
                 window.requestAnimationFrame(() => {
                     const collectionRoot = collectionTargetRef.current;
-                    const targetCard = collectionRoot?.querySelector(`.recently-track .recent-card[aria-label="Preview ${champion.name}"]`);
-                    const firstRecentCard = collectionRoot?.querySelector('.recently-track .recent-card');
-                    const recentlyTrack = collectionRoot?.querySelector('.recently-track');
+                    const targetCard = collectionRoot?.querySelector(`.profile-owned-grid .profile-owned-card[aria-label="Preview ${champion.name}"]`)
+                        || collectionRoot?.querySelector(`.profile-showcase-card[aria-label="Preview ${champion.name}"]`);
+                    const firstOwnedCard = collectionRoot?.querySelector('.profile-owned-grid .profile-owned-card')
+                        || collectionRoot?.querySelector('.profile-showcase-card');
+                    const ownedGrid = collectionRoot?.querySelector('.profile-owned-grid');
                     const emptyVault = collectionRoot?.querySelector('.vault-empty');
-                    const fallbackTarget = collectionRoot?.querySelector('.collection-panel-heading') || collectionRoot;
+                    const fallbackTarget = collectionRoot?.querySelector('.profile-card-library') || collectionRoot?.querySelector('.profile-hero-shell') || collectionRoot;
                     const targetRect = targetCard?.getBoundingClientRect()
-                        || firstRecentCard?.getBoundingClientRect()
-                        || recentlyTrack?.getBoundingClientRect()
+                        || firstOwnedCard?.getBoundingClientRect()
+                        || ownedGrid?.getBoundingClientRect()
                         || emptyVault?.getBoundingClientRect()
                         || fallbackTarget?.getBoundingClientRect();
                     const targetCenterX = targetRect
-                        ? targetRect.left + (targetCard || firstRecentCard ? targetRect.width / 2 : Math.min(44, targetRect.width / 2))
+                        ? targetRect.left + (targetCard || firstOwnedCard ? targetRect.width / 2 : Math.min(44, targetRect.width / 2))
                         : window.innerWidth / 2;
                     const targetCenterY = targetRect
-                        ? targetRect.top + (targetCard || firstRecentCard ? targetRect.height / 2 : Math.min(62, targetRect.height / 2))
+                        ? targetRect.top + (targetCard || firstOwnedCard ? targetRect.height / 2 : Math.min(62, targetRect.height / 2))
                         : window.innerHeight / 2;
                     const endX = targetCenterX - window.innerWidth / 2;
                     const endY = targetCenterY - window.innerHeight / 2;
@@ -1305,6 +1759,20 @@ function App() {
         setActiveHeroIndex((index) => (index + 1) % featured.length);
     };
 
+    const openStoreView = (event) => {
+        event?.preventDefault();
+        setActiveView('market');
+        setActiveLink('Store');
+        window.requestAnimationFrame(() => {
+            const section = document.querySelector('#marketplace');
+
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+        window.history.replaceState(null, '', '#marketplace');
+    };
+
     const handleNavClick = (event, link) => {
         event.preventDefault();
         window.clearTimeout(navClickLockRef.current);
@@ -1312,12 +1780,21 @@ function App() {
             navClickLockRef.current = null;
         }, 700);
         setActiveLink(link.label);
+        setActiveView(link.view);
 
-        const section = document.querySelector(link.href);
-
-        if (section) {
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (link.view === 'profile') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            window.history.replaceState(null, '', link.href);
+            return;
         }
+
+        window.requestAnimationFrame(() => {
+            const section = document.querySelector(link.href);
+
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
 
         window.history.replaceState(null, '', link.href);
     };
@@ -1390,12 +1867,12 @@ function App() {
 
     useEffect(() => {
         const updateActiveSection = () => {
-            if (navClickLockRef.current) {
+            if (navClickLockRef.current || activeView === 'profile') {
                 return;
             }
 
             const viewportAnchor = window.scrollY + window.innerHeight * 0.35;
-            const currentLink = [...navLinks].reverse().find((link) => {
+            const currentLink = [...navLinks].filter((link) => link.view === 'market').reverse().find((link) => {
                 const section = document.querySelector(link.href);
                 return section ? section.offsetTop <= viewportAnchor : false;
             });
@@ -1413,7 +1890,7 @@ function App() {
             window.removeEventListener('scroll', updateActiveSection);
             window.removeEventListener('resize', updateActiveSection);
         };
-    }, []);
+    }, [activeView]);
 
     useEffect(() => {
         setSelectedSkinNum(0);
@@ -1422,10 +1899,8 @@ function App() {
 
     useEffect(() => {
         if (cartItems.length > previousCartCountRef.current) {
-            window.setTimeout(() => {
-                setCartCatching(true);
-                window.setTimeout(() => setCartCatching(false), 520);
-            }, 520);
+            setCartCatching(true);
+            window.setTimeout(() => setCartCatching(false), 520);
         }
 
         previousCartCountRef.current = cartItems.length;
@@ -1666,6 +2141,26 @@ function App() {
                     <img src={championLoadingImage(cartFlight.championId)} alt='' />
                 </span>
             ) : null}
+            {favoriteFlight ? (
+                <span
+                    key={favoriteFlight.id}
+                    className='favorite-flight-card'
+                    style={{
+                        left: favoriteFlight.left,
+                        top: favoriteFlight.top,
+                        width: favoriteFlight.width,
+                        height: favoriteFlight.height,
+                        '--favorite-flight-x': favoriteFlight['--favorite-flight-x'],
+                        '--favorite-flight-y': favoriteFlight['--favorite-flight-y'],
+                    }}
+                    aria-hidden='true'
+                >
+                    <img src={championLoadingImage(favoriteFlight.championId)} alt='' />
+                    <span>
+                        <Heart size={17} strokeWidth={2.5} />
+                    </span>
+                </span>
+            ) : null}
             {collectionFlights.map((flight) => (
                 <span
                     key={flight.id}
@@ -1794,7 +2289,7 @@ function App() {
             ) : null}
             <header className='topbar'>
                 <div className='topbar-inner'>
-                    <a href='#marketplace' className='brand' aria-label='Nexus home'>
+                    <a href='#marketplace' className='brand' aria-label='Nexus home' onClick={openStoreView}>
                         <span className='brand-mark'>
                             <img src={LOL_ICON_URL} alt='League of Legends' />
                         </span>
@@ -1849,13 +2344,55 @@ function App() {
                         <span>{dailyRewardAvailable ? 'Claim' : 'Claimed'}</span>
                         {dailyRewardAvailable ? <PriceAmount value={dailyRewardAmount} /> : null}
                     </button>
-                    <div className='cart-dropdown-shell' ref={cartDropdownRef}>
-                        <button
-                            ref={cartButtonRef}
-                            type='button'
-                            className={`cart-pill ${cartOpen ? 'is-open' : ''} ${cartCatching ? 'is-catching' : ''}`}
-                            onClick={() => setCartOpen((open) => !open)}
-                            aria-label={`${cartItems.length} cards in cart`}
+                        <div className='favorites-dropdown-shell' ref={favoritesDropdownRef}>
+                            <button
+                                ref={favoritesButtonRef}
+                                type='button'
+                                className={`favorites-pill ${favoritesOpen ? 'is-open' : ''} ${favoritesCatching ? 'is-catching' : ''}`}
+                                onClick={() => {
+                                    setFavoritesOpen((open) => !open);
+                                    setCartOpen(false);
+                                }}
+                                aria-label={`${favoriteItems.length} favorite champions`}
+                                aria-expanded={favoritesOpen}
+                                aria-haspopup='dialog'
+                            >
+                                <Heart size={17} strokeWidth={2.4} />
+                                <span>{favoriteItems.length}</span>
+                            </button>
+                            <AnimatePresence>
+                                {favoritesOpen ? (
+                                    <motion.div
+                                        className='favorites-dropdown'
+                                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                                        transition={{ duration: 0.18, ease: 'easeOut' }}
+                                    >
+                                        <FavoritesPanel
+                                            favorites={favoriteItems}
+                                            ownedChampions={myCardsArr}
+                                            cartItems={cartItems}
+                                            addToCart={addToCart}
+                                            removeFavorite={removeFavorite}
+                                            clearFavorites={clearFavorites}
+                                            openChampionModal={openChampionModal}
+                                        />
+                                    </motion.div>
+                                ) : null}
+                            </AnimatePresence>
+                        </div>
+
+                        <div className='cart-dropdown-shell' ref={cartDropdownRef}>
+                            <button
+                                ref={cartButtonRef}
+                                type='button'
+                                className={`cart-pill ${cartOpen ? 'is-open' : ''} ${cartCatching ? 'is-catching' : ''}`}
+                                onClick={() => {
+                                    setCartOpen((open) => !open);
+                                    setFavoritesOpen(false);
+                                }}
+                                aria-label={`${cartItems.length} cards in cart`}
                             aria-expanded={cartOpen}
                             aria-haspopup='dialog'
                         >
@@ -1892,8 +2429,8 @@ function App() {
                 </div>
             </header>
 
-            <main className='market-main'>
-                {heroChampion ? (
+            <main className={`market-main ${activeView === 'profile' ? 'profile-main' : ''}`}>
+                {activeView === 'market' && heroChampion ? (
                     <section
                         className={`hero-section rarity-${rarityFor(heroChampion)}`}
                         onMouseEnter={() => setHeroPaused(true)}
@@ -1959,7 +2496,7 @@ function App() {
                                             <Play size={16} strokeWidth={2.4} />
                                             Preview
                                         </button>
-                                        <button type='button' className='hero-like' onClick={() => openChampionModal(heroChampion)} aria-label={`Preview ${heroChampion.name}`}>
+                                        <button type='button' className={`hero-like ${favoriteIds.has(heroChampion.id) ? 'is-wished' : ''}`} onClick={(event) => toggleHeroFavorite(event, heroChampion)} aria-label={favoriteIds.has(heroChampion.id) ? `Remove ${heroChampion.name} from favorites` : `Add ${heroChampion.name} to favorites`}>
                                             <Heart size={20} strokeWidth={2.2} />
                                         </button>
                                     </motion.div>
@@ -1982,61 +2519,70 @@ function App() {
                     </section>
                 ) : null}
 
-                <div ref={collectionTargetRef}>
-                    <CollectionPanel
-                        champions={filtered}
-                        ownedChampions={myCardsArr}
-                        recentlyBoughtId={recentlyBoughtId}
-                        settlingChampionId={packReward?.phase === 'flying' ? packReward.champion.id : ''}
-                        impactWave={packImpactWave}
-                        openChampionModal={openChampionModal}
-                    />
-                </div>
-
-                <TrendingCarousel champions={trending} openChampionModal={openChampionModal} />
-
-                <PackOpeningSection champions={filtered} ownedChampions={myCardsArr} onOpenPack={handlePackOpen} isOpening={packOpening} money={money} />
-
-                <section className='shop-section' id='marketplace'>
-                    <div className='shop-layout'>
-                        {filters}
-                        <div className='shop-content'>
-                            <div className='section-heading shop-heading'>
-                                <div>
-                                    <span><Sparkles size={17} strokeWidth={2.2} />Marketplace</span>
-                                    <h2>Champion Store</h2>
-                                </div>
-                                <button type='button' className='mobile-filter-toggle' onClick={() => setMobileFiltersOpen(true)}>
-                                    Filters
-                                </button>
-                            </div>
-                            <div className='market-grid'>
-                                {displayedIChampions.map((champion) => {
-                                    const owned = myCardsArr.some((card) => card.id === champion.id);
-                                    const inCart = cartItems.some((card) => card.id === champion.id);
-
-                                    return (
-                                        <ChampionCard
-                                            key={champion.id}
-                                            champion={champion}
-                                            owned={owned}
-                                            inCart={inCart}
-                                            justBought={recentlyBoughtId === champion.id}
-                                            onAction={owned ? sellClick : inCart ? () => removeFromCart(champion.id) : addToCart}
-                                            onOpen={openChampionModal}
-                                            cartTargetRef={cartButtonRef}
-                                            onCartFlight={showCartFlight}
-                                        />
-                                    );
-                                })}
-                            </div>
-                            {displayedIChampions.length === 0 ? (
-                                <div className='empty-market'>No champions match this search.</div>
-                            ) : null}
-                        </div>
+                {activeView === 'profile' ? (
+                    <div ref={collectionTargetRef}>
+                        <CollectionPanel
+                            champions={filtered}
+                            ownedChampions={myCardsArr}
+                            recentlyBoughtId={recentlyBoughtId}
+                            settlingChampionId={packReward?.phase === 'flying' ? packReward.champion.id : ''}
+                            impactWave={packImpactWave}
+                            openChampionModal={openChampionModal}
+                            onOpenStore={openStoreView}
+                        />
                     </div>
-                    {totalPage > 1 ? <Pagination /> : null}
-                </section>
+                ) : null}
+
+                {activeView === 'market' ? <TrendingCarousel champions={trending} openChampionModal={openChampionModal} /> : null}
+
+                {activeView === 'market' ? <PackOpeningSection champions={filtered} ownedChampions={myCardsArr} onOpenPack={handlePackOpen} isOpening={packOpening} money={money} /> : null}
+
+                {activeView === 'market' ? (
+                    <section className='shop-section' id='marketplace'>
+                        <div className='shop-layout'>
+                            {filters}
+                            <div className='shop-content'>
+                                <div className='section-heading shop-heading'>
+                                    <div>
+                                        <span><Sparkles size={17} strokeWidth={2.2} />Marketplace</span>
+                                        <h2>Champion Store</h2>
+                                    </div>
+                                    <button type='button' className='mobile-filter-toggle' onClick={() => setMobileFiltersOpen(true)}>
+                                        Filters
+                                    </button>
+                                </div>
+                                <div className='market-grid'>
+                                    {displayedIChampions.map((champion) => {
+                                        const owned = myCardsArr.some((card) => card.id === champion.id);
+                                        const inCart = cartItems.some((card) => card.id === champion.id);
+
+                                        return (
+                                            <ChampionCard
+                                                key={champion.id}
+                                                champion={champion}
+                                                owned={owned}
+                                                inCart={inCart}
+                                                favorite={favoriteIds.has(champion.id)}
+                                                justBought={recentlyBoughtId === champion.id}
+                                                onAction={owned ? sellClick : inCart ? () => removeFromCart(champion.id) : addToCart}
+                                                onOpen={openChampionModal}
+                                                onFavoriteToggle={toggleFavorite}
+                                                cartTargetRef={cartButtonRef}
+                                                favoriteTargetRef={favoritesButtonRef}
+                                                onCartFlight={showCartFlight}
+                                                onFavoriteFlight={showFavoriteFlight}
+                                            />
+                                        );
+                                    })}
+                                </div>
+                                {displayedIChampions.length === 0 ? (
+                                    <div className='empty-market'>No champions match this search.</div>
+                                ) : null}
+                            </div>
+                        </div>
+                        {totalPage > 1 ? <Pagination /> : null}
+                    </section>
+                ) : null}
 
             </main>
 
