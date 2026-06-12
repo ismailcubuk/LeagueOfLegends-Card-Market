@@ -20,6 +20,13 @@ const championLoadingImage = (id) => `https://ddragon.leagueoflegends.com/cdn/im
 const championSplashImage = (id, skin = 0) => `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_${skin}.jpg`;
 const LOL_ICON_URL = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/lol_icon.png';
 const HEXTECH_CHEST_ICON_URL = 'https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-loot/global/default/assets/loot_item_icons/chest.png';
+const profileIconImage = (id) => `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/profile-icons/${id}.jpg`;
+const profileIconIds = [
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+    10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+    20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+    588, 907, 984, 1151, 1381, 1427, 1455, 1637, 1667, 2074,
+];
 
 const sidebarRoles = ['Assassin', 'Mage', 'Fighter', 'Tank', 'Marksman', 'Support'];
 const navLinks = [
@@ -789,6 +796,12 @@ function CollectionPanel({ champions, ownedChampions, showcaseIds = [], onClearS
     const [profileRarityFilter, setProfileRarityFilter] = useState('all');
     const [profileRegionFilter, setProfileRegionFilter] = useState('all');
     const [profileSortFilter, setProfileSortFilter] = useState('value');
+    const [isProfileIconPickerOpen, setIsProfileIconPickerOpen] = useState(false);
+    const [selectedProfileIconId, setSelectedProfileIconId] = useState(() => {
+        const savedIconId = window.localStorage.getItem('league-market-profile-icon-id');
+
+        return savedIconId || '29';
+    });
     const total = champions.length;
     const ownedCount = ownedChampions.length;
     const pct = total > 0 ? Math.round((ownedCount / total) * 100) : 0;
@@ -893,10 +906,11 @@ function CollectionPanel({ champions, ownedChampions, showcaseIds = [], onClearS
                     <button
                         type='button'
                         className='profile-avatar'
-                        onClick={() => featuredChampion && openChampionModal(featuredChampion)}
-                        aria-label={featuredChampion ? `Preview ${featuredChampion.name}` : 'Profile avatar'}
+                        onClick={() => setIsProfileIconPickerOpen(true)}
+                        aria-label='Choose profile icon'
+                        aria-haspopup='dialog'
                     >
-                        <img src={featuredChampion ? championLoadingImage(featuredChampion.id) : LOL_ICON_URL} alt='' />
+                        <img src={profileIconImage(selectedProfileIconId)} alt='' />
                     </button>
                     <div className='profile-title-block'>
                         <span><Shield size={15} strokeWidth={2.3} /> Summoner Profile</span>
@@ -968,6 +982,44 @@ function CollectionPanel({ champions, ownedChampions, showcaseIds = [], onClearS
                     </div>
                 </div>
             </div>
+
+            <Modal show={isProfileIconPickerOpen} onHide={() => setIsProfileIconPickerOpen(false)} centered dialogClassName='profile-icon-picker-dialog' contentClassName='profile-icon-picker-content'>
+                <Modal.Body>
+                    <div className='profile-icon-picker-head'>
+                        <div>
+                            <span><Shield size={15} strokeWidth={2.3} /> Summoner Icons</span>
+                            <h3>Choose Profile Icon</h3>
+                        </div>
+                        <button type='button' onClick={() => setIsProfileIconPickerOpen(false)} aria-label='Close profile icon picker'>
+                            <AiOutlineClose />
+                        </button>
+                    </div>
+                    <div className='profile-icon-grid'>
+                        {profileIconIds.map((iconId) => {
+                            const iconIdValue = String(iconId);
+                            const isSelected = iconIdValue === selectedProfileIconId;
+
+                            return (
+                                <button
+                                    type='button'
+                                    key={iconId}
+                                    className={isSelected ? 'is-selected' : ''}
+                                    onClick={() => {
+                                        setSelectedProfileIconId(iconIdValue);
+                                        window.localStorage.setItem('league-market-profile-icon-id', iconIdValue);
+                                        setIsProfileIconPickerOpen(false);
+                                    }}
+                                    aria-label={`Choose profile icon ${iconId}`}
+                                    aria-pressed={isSelected}
+                                >
+                                    <img src={profileIconImage(iconId)} alt='' loading='lazy' />
+                                    {isSelected ? <span><Check size={14} strokeWidth={3} /></span> : null}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </Modal.Body>
+            </Modal>
 
             <div className='collection-stat-chips profile-stat-chips'>
                 {stats.map((stat) => (
