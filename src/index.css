@@ -1958,6 +1958,327 @@ img {
   white-space: nowrap;
 }
 
+.home-my-cards-section {
+  margin: 28px 0 4px;
+}
+
+.home-my-cards-heading {
+  margin-bottom: 14px;
+}
+
+.home-my-cards-count {
+  display: inline-grid;
+  min-height: 38px;
+  place-items: center;
+  border: 1px solid rgba(218, 185, 94, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--gold-bright);
+  font-size: 0.75rem;
+  font-weight: 950;
+  padding: 0 13px;
+  text-transform: uppercase;
+}
+
+.home-my-cards-grid {
+  display: grid;
+  max-height: min(620px, 70vh);
+  overflow-y: auto;
+  grid-template-columns: repeat(auto-fill, minmax(138px, 1fr));
+  grid-auto-rows: 208px;
+  gap: 12px;
+  border: 1px solid rgba(218, 185, 94, 0.14);
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 12% 0%, rgba(124, 233, 255, 0.1), transparent 34%),
+    rgba(3, 7, 13, 0.38);
+  padding: 14px;
+  scrollbar-color: rgba(124, 233, 255, 0.58) rgba(255, 255, 255, 0.08);
+  scrollbar-width: thin;
+}
+
+.home-my-card {
+  display: grid;
+  min-width: 0;
+  grid-template-rows: minmax(0, 1fr);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--my-card-rarity-color) 54%, rgba(255, 255, 255, 0.08));
+  border-radius: 9px;
+  background: #07101b;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.home-my-card:hover,
+.home-my-card:focus-within {
+  border-color: var(--my-card-rarity-color);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--my-card-rarity-color) 28%, transparent),
+    0 0 28px var(--my-card-rarity-glow),
+    0 16px 34px rgba(0, 0, 0, 0.32);
+  transform: translateY(-3px);
+}
+
+.home-my-card.is-new-recent-card {
+  animation: homeRecentCardArrive 760ms cubic-bezier(0.18, 1, 0.28, 1), homeRecentCardPulse 980ms ease-out 100ms;
+}
+
+.home-my-cards-section.is-rarity-impacting .home-my-cards-grid {
+  animation: homeRecentImpactShake 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.home-my-cards-section.is-rarity-impacting .home-my-card {
+  animation: collectionCardRipple 960ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.home-my-cards-section.is-rarity-impacting .home-my-card:nth-child(1) {
+  animation: homeRecentImpactHit 820ms cubic-bezier(0.16, 1, 0.3, 1), homeRecentCardPulse 980ms ease-out 80ms;
+}
+
+.home-my-cards-section.is-rarity-impacting .home-my-card:nth-child(2) {
+  animation-delay: 65ms;
+}
+
+.home-my-cards-section.is-rarity-impacting .home-my-card:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.home-my-cards-section.is-rarity-impacting .home-my-card:nth-child(4) {
+  animation-delay: 175ms;
+}
+
+.home-my-cards-section.is-rarity-impacting .home-my-card:nth-child(5) {
+  animation-delay: 230ms;
+}
+
+.home-my-cards-section.is-rarity-impacting .home-my-card:nth-child(n+6) {
+  animation-delay: 285ms;
+}
+
+.home-my-cards-section.impact-epic .home-my-card.is-new-recent-card,
+.home-my-cards-section.impact-legendary .home-my-card.is-new-recent-card,
+.home-my-cards-section.impact-mythic .home-my-card.is-new-recent-card {
+  border-color: var(--my-card-rarity-color);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--my-card-rarity-color) 45%, transparent),
+    0 0 36px var(--my-card-rarity-glow),
+    0 18px 46px rgba(0, 0, 0, 0.38);
+}
+
+.home-my-card.is-new-recent-card::after {
+  position: absolute;
+  inset: -24%;
+  background:
+    linear-gradient(120deg, transparent 28%, rgba(255, 255, 255, 0.72) 48%, rgba(77, 205, 255, 0.38) 58%, transparent 74%);
+  content: "";
+  pointer-events: none;
+  transform: translateX(-70%) rotate(8deg);
+  animation: homeRecentCardShine 860ms ease-out 120ms forwards;
+  mix-blend-mode: screen;
+}
+
+.home-my-card-preview {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  text-align: left;
+}
+
+.home-my-card-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 220ms ease;
+}
+
+.home-my-card:hover .home-my-card-preview img,
+.home-my-card:focus-within .home-my-card-preview img {
+  transform: scale(1.08);
+}
+
+.home-my-card-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg, rgba(3, 7, 13, 0.98), transparent 58%),
+    radial-gradient(90% 50% at 50% 100%, var(--my-card-rarity-glow), transparent 72%);
+}
+
+.home-my-card-rarity {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 2;
+  max-width: calc(100% - 16px);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--my-card-rarity-color) 62%, transparent);
+  border-radius: 999px;
+  background: rgba(5, 10, 18, 0.74);
+  color: var(--my-card-rarity-color);
+  font-size: 0.58rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  padding: 4px 7px;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.home-my-card-copy {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
+  z-index: 2;
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.home-my-card-copy strong,
+.home-my-card-copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-my-card-copy strong {
+  color: var(--foreground);
+  font-size: 0.86rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.home-my-card-copy small {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 850;
+}
+
+.home-my-cards-empty {
+  display: grid;
+  min-height: 150px;
+  place-items: center;
+  align-content: center;
+  gap: 8px;
+  border: 1px dashed rgba(218, 185, 94, 0.24);
+  border-radius: 12px;
+  background: rgba(8, 16, 27, 0.56);
+  color: var(--muted);
+  text-align: center;
+}
+
+.home-my-cards-empty svg {
+  color: var(--gold-bright);
+  font-size: 2rem;
+}
+
+.home-my-cards-empty p {
+  margin: 0;
+  color: var(--foreground);
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+@keyframes homeRecentCardArrive {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.92);
+  }
+
+  64% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.03);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes homeRecentCardPulse {
+  0% {
+    box-shadow:
+      0 0 0 1px rgba(77, 205, 255, 0.5),
+      0 0 30px rgba(77, 205, 255, 0.4);
+  }
+
+  100% {
+    box-shadow: none;
+  }
+}
+
+@keyframes homeRecentCardShine {
+  0% {
+    opacity: 0;
+    transform: translateX(-70%) rotate(8deg);
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(80%) rotate(8deg);
+  }
+}
+
+@keyframes homeRecentImpactHit {
+  0% {
+    filter: brightness(1.42) saturate(1.2);
+    transform: translateY(0) scale(1);
+  }
+
+  24% {
+    filter: brightness(1.7) saturate(1.34);
+    transform: translateY(-8px) scale(1.08) rotate(-1deg);
+  }
+
+  52% {
+    filter: brightness(1.22) saturate(1.14);
+    transform: translateY(3px) scale(0.98) rotate(0.5deg);
+  }
+
+  78% {
+    filter: brightness(1.1);
+    transform: translateY(-2px) scale(1.02);
+  }
+
+  100% {
+    filter: brightness(1);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes homeRecentImpactShake {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  18% {
+    transform: translate3d(5px, 0, 0);
+  }
+
+  34% {
+    transform: translate3d(-4px, 2px, 0);
+  }
+
+  52% {
+    transform: translate3d(2px, 1px, 0);
+  }
+
+  70% {
+    transform: translate3d(-2px, -1px, 0);
+  }
+}
+
 .vault-empty {
   display: flex;
   flex-direction: column;
@@ -6943,6 +7264,20 @@ img {
   .profile-icon-grid button {
     width: 68px;
     height: 68px;
+  }
+}
+
+@media (max-width: 560px) {
+  .home-my-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 196px;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .home-my-cards-heading {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 

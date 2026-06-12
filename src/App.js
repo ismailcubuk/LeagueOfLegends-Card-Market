@@ -1660,6 +1660,58 @@ function PackOpeningSection({ champions, ownedChampions, onOpenPack, isOpening, 
     );
 }
 
+function HomeMyCardsSection({ ownedChampions, openChampionModal, targetRef, impactRarity }) {
+    return (
+        <section className={`home-my-cards-section ${impactRarity ? `is-rarity-impacting impact-${impactRarity}` : ''}`} aria-label='Recently Opened Cards' ref={targetRef}>
+            <div className='section-heading home-my-cards-heading'>
+                <div>
+                    <span><BsCollection />Recently Opened Cards</span>
+                </div>
+                <span className='home-my-cards-count'>{ownedChampions.length}/10 Shown</span>
+            </div>
+
+            {ownedChampions.length > 0 ? (
+                <div className='home-my-cards-grid'>
+                    {ownedChampions.map((champion, index) => {
+                        const rarity = rarityFor(champion);
+
+                        return (
+                            <article
+                                key={champion.id}
+                                className={`home-my-card rarity-${rarity} ${index === 0 ? 'is-new-recent-card' : ''}`}
+                                style={{
+                                    '--my-card-rarity-color': rarityConfig[rarity].color,
+                                    '--my-card-rarity-glow': rarityConfig[rarity].glow,
+                                }}
+                            >
+                                <button
+                                    type='button'
+                                    className='home-my-card-preview'
+                                    onClick={() => openChampionModal(champion)}
+                                    aria-label={`Preview ${champion.name}`}
+                                >
+                                    <img src={championLoadingImage(champion.id)} alt='' loading='lazy' />
+                                    <span className='home-my-card-shade' />
+                                    <span className='home-my-card-rarity'>{rarityConfig[rarity].label}</span>
+                                    <span className='home-my-card-copy'>
+                                        <strong>{champion.name}</strong>
+                                        <small>{champion.tags?.[0] || 'Champion'}</small>
+                                    </span>
+                                </button>
+                            </article>
+                        );
+                    })}
+                </div>
+            ) : (
+                <div className='home-my-cards-empty'>
+                    <BsCollection />
+                    <p>Your collection is waiting for its first champion.</p>
+                </div>
+            )}
+        </section>
+    );
+}
+
 function App() {
     const {
         money,
@@ -1726,6 +1778,14 @@ function App() {
             return [];
         }
     });
+    const [recentAcquiredCards, setRecentAcquiredCards] = useState(() => {
+        try {
+            const storedCards = JSON.parse(localStorage.getItem('recentAcquiredCards') || '[]');
+            return Array.isArray(storedCards) ? storedCards.slice(0, 10) : [];
+        } catch (error) {
+            return [];
+        }
+    });
     const [showcaseIds, setShowcaseIds] = useState(() => {
         try {
             const storedIds = JSON.parse(localStorage.getItem('profileShowcaseIds') || '[]');
@@ -1749,15 +1809,62 @@ function App() {
     const [selectedSkinNum, setSelectedSkinNum] = useState(0);
     const [activePreviewTab, setActivePreviewTab] = useState('overview');
     const [activeShowcaseSlot, setActiveShowcaseSlot] = useState(null);
+    const [pendingRecentCardIds, setPendingRecentCardIds] = useState([]);
+    const [recentCardsImpactRarity, setRecentCardsImpactRarity] = useState('');
     const navClickLockRef = useRef(null);
     const cartDropdownRef = useRef(null);
     const favoritesDropdownRef = useRef(null);
     const favoritesButtonRef = useRef(null);
     const cartButtonRef = useRef(null);
+    const previousOwnedIdsRef = useRef(new Set(myCardsArr.map((champion) => champion.id)));
 
     useEffect(() => {
         localStorage.setItem('favoriteItems', JSON.stringify(favoriteItems));
     }, [favoriteItems]);
+
+    useEffect(() => {
+        localStorage.setItem('recentAcquiredCards', JSON.stringify(recentAcquiredCards.slice(0, 10)));
+    }, [recentAcquiredCards]);
+
+    useEffect(() => {
+        const previousOwnedIds = previousOwnedIdsRef.current;
+        const newlyOwnedCards = myCardsArr.filter((champion) => !previousOwnedIds.has(champion.id));
+
+        if (newlyOwnedCards.length > 0) {
+            const flightDelay = 1150 + Math.max(newlyOwnedCards.length - 1, 0) * 70;
+            const newlyOwnedIds = newlyOwnedCards.map((champion) => champion.id);
+
+            setPendingRecentCardIds((ids) => Array.from(new Set([...ids, ...newlyOwnedIds])));
+
+            window.setTimeout(() => {
+                setRecentAcquiredCards((cards) => {
+                    const nextCards = [...newlyOwnedCards.reverse(), ...cards];
+                    const seenIds = new Set();
+
+                    return nextCards.filter((champion) => {
+                        if (seenIds.has(champion.id)) {
+                            return false;
+                        }
+
+                        seenIds.add(champion.id);
+                        return true;
+                    }).slice(0, 10);
+                });
+                setPendingRecentCardIds((ids) => ids.filter((id) => !newlyOwnedIds.includes(id)));
+
+                const highestImpactRarity = newlyOwnedCards
+                    .map((champion) => rarityFor(champion))
+                    .find((rarity) => ['mythic', 'legendary', 'epic'].includes(rarity));
+
+                if (highestImpactRarity) {
+                    setRecentCardsImpactRarity(highestImpactRarity);
+                    window.setTimeout(() => setRecentCardsImpactRarity(''), 1200);
+                }
+            }, flightDelay);
+        }
+
+        previousOwnedIdsRef.current = new Set(myCardsArr.map((champion) => champion.id));
+    }, [myCardsArr]);
 
     useEffect(() => {
         localStorage.setItem('profileShowcaseIds', JSON.stringify(showcaseIds));
@@ -1897,6 +2004,7 @@ function App() {
     const moneyAnimationRef = useRef(null);
     const heroProgressRef = useRef(0);
     const heroLastTickRef = useRef(null);
+    const recentCardsTargetRef = useRef(null);
     const [openFilterSections, setOpenFilterSections] = useState({
         role: true,
         region: true,
@@ -2046,14 +2154,12 @@ function App() {
             grantPackChampion(champion, PACK_OPEN_COST);
             window.requestAnimationFrame(() => {
                 window.requestAnimationFrame(() => {
-                    const collectionRoot = collectionTargetRef.current;
-                    const targetCard = collectionRoot?.querySelector(`.profile-owned-grid .profile-owned-card[aria-label="Preview ${champion.name}"]`)
-                        || collectionRoot?.querySelector(`.profile-showcase-card[aria-label="Preview ${champion.name}"]`);
-                    const firstOwnedCard = collectionRoot?.querySelector('.profile-owned-grid .profile-owned-card')
-                        || collectionRoot?.querySelector('.profile-showcase-card');
-                    const ownedGrid = collectionRoot?.querySelector('.profile-owned-grid');
-                    const emptyVault = collectionRoot?.querySelector('.vault-empty');
-                    const fallbackTarget = collectionRoot?.querySelector('.profile-card-library') || collectionRoot?.querySelector('.profile-hero-shell') || collectionRoot;
+                    const collectionRoot = recentCardsTargetRef.current;
+                    const targetCard = collectionRoot?.querySelector(`.home-my-card-preview[aria-label="Preview ${champion.name}"]`);
+                    const firstOwnedCard = collectionRoot?.querySelector('.home-my-card');
+                    const ownedGrid = collectionRoot?.querySelector('.home-my-cards-grid');
+                    const emptyVault = collectionRoot?.querySelector('.home-my-cards-empty');
+                    const fallbackTarget = collectionRoot;
                     const targetRect = targetCard?.getBoundingClientRect()
                         || firstOwnedCard?.getBoundingClientRect()
                         || ownedGrid?.getBoundingClientRect()
@@ -2528,6 +2634,13 @@ function App() {
         </aside>
     );
 
+    const ownedChampionIds = new Set(myCardsArr.map((champion) => champion.id));
+    const pendingRecentIds = new Set(pendingRecentCardIds);
+    const visibleRecentCards = recentAcquiredCards.filter((champion) => ownedChampionIds.has(champion.id) && !pendingRecentIds.has(champion.id)).slice(0, 10);
+    const homeRecentCards = visibleRecentCards.length > 0
+        ? visibleRecentCards
+        : myCardsArr.filter((champion) => !pendingRecentIds.has(champion.id)).slice(0, 10);
+
     return (
         <div className='market-shell'>
             {cartFlight ? (
@@ -2823,7 +2936,7 @@ function App() {
                                         removeFromCart={removeFromCart}
                                         clearCart={clearCart}
                                         checkoutCart={checkoutCart}
-                                        collectionTargetRef={collectionTargetRef}
+                                        collectionTargetRef={recentCardsTargetRef}
                                         onCollectionFlights={showCollectionFlights}
                                         openChampionModal={openChampionModal}
                                     />
@@ -2947,6 +3060,15 @@ function App() {
                 {activeView === 'market' ? <TrendingCarousel champions={trending} openChampionModal={openChampionModal} /> : null}
 
                 {activeView === 'market' ? <PackOpeningSection champions={filtered} ownedChampions={myCardsArr} onOpenPack={handlePackOpen} isOpening={packOpening} money={money} /> : null}
+
+                {activeView === 'market' ? (
+                    <HomeMyCardsSection
+                        ownedChampions={homeRecentCards}
+                        openChampionModal={openChampionModal}
+                        targetRef={recentCardsTargetRef}
+                        impactRarity={recentCardsImpactRarity}
+                    />
+                ) : null}
 
                 {activeView === 'market' ? (
                     <section className='shop-section' id='marketplace'>
