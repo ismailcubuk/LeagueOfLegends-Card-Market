@@ -609,7 +609,24 @@ img {
   border: 1px solid rgba(218, 185, 94, 0.14);
   border-radius: 10px;
   background: rgba(8, 16, 27, 0.72);
+  cursor: pointer;
   padding: 8px;
+  transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.favorite-item:hover,
+.favorite-item:focus-visible,
+.favorite-item:focus-within {
+  border-color: rgba(255, 143, 163, 0.48);
+  background:
+    radial-gradient(circle at 14% 18%, rgba(255, 143, 163, 0.12), transparent 38%),
+    rgba(10, 20, 34, 0.86);
+  box-shadow:
+    0 0 0 1px rgba(255, 143, 163, 0.12),
+    0 0 24px rgba(255, 143, 163, 0.12),
+    0 14px 32px rgba(0, 0, 0, 0.28);
+  outline: none;
+  transform: translateY(-2px);
 }
 
 .favorite-item-art {
@@ -628,6 +645,14 @@ img {
   height: 100%;
   object-fit: cover;
   object-position: top center;
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.favorite-item:hover .favorite-item-art img,
+.favorite-item:focus-visible .favorite-item-art img,
+.favorite-item:focus-within .favorite-item-art img {
+  filter: brightness(1.08);
+  transform: scale(1.05);
 }
 
 .favorite-item-copy {
@@ -1518,7 +1543,24 @@ img {
   border: 1px solid rgba(218, 185, 94, 0.14);
   border-radius: 10px;
   background: rgba(7, 11, 18, 0.48);
+  cursor: pointer;
   padding: 8px;
+  transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.cart-item:hover,
+.cart-item:focus-visible,
+.cart-item:focus-within {
+  border-color: rgba(95, 168, 255, 0.5);
+  background:
+    radial-gradient(circle at 14% 18%, rgba(95, 168, 255, 0.14), transparent 38%),
+    rgba(12, 25, 40, 0.78);
+  box-shadow:
+    0 0 0 1px rgba(95, 168, 255, 0.14),
+    0 0 24px rgba(95, 168, 255, 0.14),
+    0 14px 32px rgba(0, 0, 0, 0.28);
+  outline: none;
+  transform: translateY(-2px);
 }
 
 .cart-item img {
@@ -1528,6 +1570,14 @@ img {
   border-radius: 7px;
   object-fit: cover;
   object-position: top;
+  transition: transform 180ms ease, filter 180ms ease;
+}
+
+.cart-item:hover img,
+.cart-item:focus-visible img,
+.cart-item:focus-within img {
+  filter: brightness(1.08);
+  transform: scale(1.05);
 }
 
 .cart-item div {

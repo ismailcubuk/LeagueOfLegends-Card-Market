@@ -554,7 +554,7 @@ function ChampionCard({ champion, owned = false, inCart = false, favorite = fals
     );
 }
 
-function FavoritesPanel({ favorites, ownedChampions, cartItems, addToCart, removeFavorite, clearFavorites, openChampionModal }) {
+function FavoritesPanel({ favorites, ownedChampions, cartItems, addToCart, removeFromCart, removeFavorite, clearFavorites, openChampionModal }) {
     const hasFavorites = favorites.length > 0;
 
     return (
@@ -581,23 +581,51 @@ function FavoritesPanel({ favorites, ownedChampions, cartItems, addToCart, remov
                         const inCart = cartItems.some((card) => card.id === champion.id);
 
                         return (
-                            <article className='favorite-item' key={champion.id}>
-                                <button type='button' className='favorite-item-art' onClick={() => openChampionModal(champion)} aria-label={`Preview ${champion.name}`}>
+                            <article
+                                className='favorite-item'
+                                key={champion.id}
+                                role='button'
+                                tabIndex='0'
+                                onClick={() => openChampionModal(champion)}
+                                onKeyDown={(event) => {
+                                    if (event.key === 'Enter' || event.key === ' ') {
+                                        event.preventDefault();
+                                        openChampionModal(champion);
+                                    }
+                                }}
+                                aria-label={`Preview ${champion.name}`}
+                            >
+                                <div className='favorite-item-art'>
                                     <img src={championLoadingImage(champion.id)} alt='' loading='lazy' />
-                                </button>
+                                </div>
                                 <div className='favorite-item-copy'>
                                     <strong>{champion.name}</strong>
                                     <span>{champion.title}</span>
                                     <PriceAmount value={getChampionBlueEssence(champion)} />
                                 </div>
                                 <div className='favorite-item-actions'>
-                                    <button type='button' className='favorite-icon-button' onClick={() => openChampionModal(champion)} aria-label={`Preview ${champion.name}`}>
-                                        <Eye size={15} strokeWidth={2.4} />
-                                    </button>
-                                    <button type='button' className='favorite-icon-button' onClick={() => removeFavorite(champion.id)} aria-label={`Remove ${champion.name} from favorites`}>
+                                    <button
+                                        type='button'
+                                        className='favorite-icon-button'
+                                        onClick={(event) => {
+                                            event.stopPropagation();
+                                            removeFavorite(champion.id);
+                                        }}
+                                        onKeyDown={(event) => event.stopPropagation()}
+                                        aria-label={`Remove ${champion.name} from favorites`}
+                                    >
                                         <AiOutlineClose />
                                     </button>
-                                    <button type='button' className='favorite-add-button' onClick={() => addToCart(champion)} disabled={owned || inCart}>
+                                    <button
+                                        type='button'
+                                        className='favorite-add-button'
+                                        onClick={(event) => {
+                                            event.stopPropagation();
+                                            inCart ? removeFromCart(champion.id) : addToCart(champion);
+                                        }}
+                                        onKeyDown={(event) => event.stopPropagation()}
+                                        disabled={owned}
+                                    >
                                         {owned || inCart ? <Check size={14} strokeWidth={2.8} /> : <ShoppingCart size={14} strokeWidth={2.4} />}
                                         <span>{owned ? 'Owned' : inCart ? 'Added' : 'Cart'}</span>
                                     </button>
@@ -617,7 +645,7 @@ function FavoritesPanel({ favorites, ownedChampions, cartItems, addToCart, remov
     );
 }
 
-function CartPanel({ cartItems, cartTotal, cartMissingBalance, money, removeFromCart, clearCart, checkoutCart, collectionTargetRef, onCollectionFlights }) {
+function CartPanel({ cartItems, cartTotal, cartMissingBalance, money, removeFromCart, clearCart, checkoutCart, collectionTargetRef, onCollectionFlights, openChampionModal }) {
     const hasItems = cartItems.length > 0;
     const cartListRef = useRef(null);
 
@@ -682,13 +710,35 @@ function CartPanel({ cartItems, cartTotal, cartMissingBalance, money, removeFrom
             {hasItems ? (
                 <div className='cart-list' ref={cartListRef}>
                     {cartItems.map((champion) => (
-                        <div className='cart-item' key={champion.id} data-cart-item-id={champion.id}>
+                        <div
+                            className='cart-item'
+                            key={champion.id}
+                            data-cart-item-id={champion.id}
+                            role='button'
+                            tabIndex='0'
+                            onClick={() => openChampionModal(champion)}
+                            onKeyDown={(event) => {
+                                if (event.key === 'Enter' || event.key === ' ') {
+                                    event.preventDefault();
+                                    openChampionModal(champion);
+                                }
+                            }}
+                            aria-label={`Preview ${champion.name}`}
+                        >
                             <img src={championLoadingImage(champion.id)} alt='' loading='lazy' />
                             <div>
                                 <strong>{champion.name}</strong>
                                 <PriceAmount value={getChampionBlueEssence(champion)} />
                             </div>
-                            <button type='button' onClick={() => removeFromCart(champion.id)} aria-label={`Remove ${champion.name} from cart`}>
+                            <button
+                                type='button'
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    removeFromCart(champion.id);
+                                }}
+                                onKeyDown={(event) => event.stopPropagation()}
+                                aria-label={`Remove ${champion.name} from cart`}
+                            >
                                 <AiOutlineClose />
                             </button>
                         </div>
@@ -1612,12 +1662,20 @@ function App() {
         if (!favoritesOpen) return undefined;
 
         const handlePointerDown = (event) => {
+            if (selectedChampion) {
+                return;
+            }
+
             if (!favoritesDropdownRef.current?.contains(event.target)) {
                 setFavoritesOpen(false);
             }
         };
 
         const handleKeyDown = (event) => {
+            if (selectedChampion) {
+                return;
+            }
+
             if (event.key === 'Escape') {
                 setFavoritesOpen(false);
             }
@@ -1630,7 +1688,7 @@ function App() {
             document.removeEventListener('mousedown', handlePointerDown);
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [favoritesOpen]);
+    }, [favoritesOpen, selectedChampion]);
     const walletRef = useRef(null);
     const dailyRewardButtonRef = useRef(null);
     const collectionTargetRef = useRef(null);
@@ -2088,12 +2146,20 @@ function App() {
         }
 
         const handlePointerDown = (event) => {
+            if (selectedChampion) {
+                return;
+            }
+
             if (!cartDropdownRef.current?.contains(event.target)) {
                 setCartOpen(false);
             }
         };
 
         const handleKeyDown = (event) => {
+            if (selectedChampion) {
+                return;
+            }
+
             if (event.key === 'Escape') {
                 setCartOpen(false);
             }
@@ -2106,7 +2172,7 @@ function App() {
             document.removeEventListener('mousedown', handlePointerDown);
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [cartOpen]);
+    }, [cartOpen, selectedChampion]);
 
     const filters = (
         <aside className='filter-panel'>
@@ -2514,6 +2580,7 @@ function App() {
                                             ownedChampions={myCardsArr}
                                             cartItems={cartItems}
                                             addToCart={addToCart}
+                                            removeFromCart={removeFromCart}
                                             removeFavorite={removeFavorite}
                                             clearFavorites={clearFavorites}
                                             openChampionModal={openChampionModal}
@@ -2558,6 +2625,7 @@ function App() {
                                         checkoutCart={checkoutCart}
                                         collectionTargetRef={collectionTargetRef}
                                         onCollectionFlights={showCollectionFlights}
+                                        openChampionModal={openChampionModal}
                                     />
                                 </motion.div>
                             ) : null}
