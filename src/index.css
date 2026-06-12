@@ -3566,7 +3566,7 @@ img {
   gap: 12px;
 }
 
-.preview-stat-heading span {
+.preview-stat-heading > span {
   display: inline-flex;
   gap: 8px;
   align-items: center;
@@ -3578,7 +3578,7 @@ img {
 }
 
 .preview-stat-heading strong {
-  color: var(--muted);
+  color: var(--text);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   font-size: 0.78rem;
   font-weight: 800;
@@ -3589,27 +3589,47 @@ img {
   font: inherit;
 }
 
+.preview-stat-heading strong span {
+  color: var(--text);
+}
+
 .preview-stat-heading svg {
   color: currentColor;
 }
 
-.preview-stat-row.stat-attack .preview-stat-heading span,
+.preview-stat-row.stat-attack .preview-stat-heading > span,
 .preview-stat-row.stat-attack .preview-stat-heading strong b {
   color: #ff5d82;
 }
 
-.preview-stat-row.stat-magic .preview-stat-heading span,
+.preview-stat-row.stat-attack.is-complete .preview-stat-heading strong span {
+  color: #ff5d82;
+}
+
+.preview-stat-row.stat-magic .preview-stat-heading > span,
 .preview-stat-row.stat-magic .preview-stat-heading strong b {
   color: #20c3f3;
 }
 
-.preview-stat-row.stat-defense .preview-stat-heading span,
+.preview-stat-row.stat-magic.is-complete .preview-stat-heading strong span {
+  color: #20c3f3;
+}
+
+.preview-stat-row.stat-defense .preview-stat-heading > span,
 .preview-stat-row.stat-defense .preview-stat-heading strong b {
   color: #f2c758;
 }
 
-.preview-stat-row.stat-difficulty .preview-stat-heading span,
+.preview-stat-row.stat-defense.is-complete .preview-stat-heading strong span {
+  color: #f2c758;
+}
+
+.preview-stat-row.stat-difficulty .preview-stat-heading > span,
 .preview-stat-row.stat-difficulty .preview-stat-heading strong b {
+  color: #b679ff;
+}
+
+.preview-stat-row.stat-difficulty.is-complete .preview-stat-heading strong span {
   color: #b679ff;
 }
 
@@ -6933,8 +6953,28 @@ img {
   text-transform: uppercase;
 }
 
+.profile-progress-row > div > span {
+  color: var(--progress-color);
+  text-shadow: 0 0 10px var(--progress-glow);
+}
+
 .profile-progress-row strong {
   color: var(--foreground);
+}
+
+.profile-progress-row .profile-progress-owned-count {
+  color: var(--progress-color);
+  text-shadow: 0 0 10px var(--progress-glow);
+}
+
+.profile-progress-row .profile-progress-total-count {
+  color: var(--foreground);
+  text-shadow: none;
+}
+
+.profile-progress-row.is-complete .profile-progress-total-count {
+  color: var(--progress-color);
+  text-shadow: 0 0 10px var(--progress-glow);
 }
 
 .profile-progress-row i,

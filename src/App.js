@@ -991,10 +991,13 @@ function CollectionPanel({ champions, ownedChampions, showcaseIds = [], onClearS
                     </div>
                     <div className='profile-rarity-progress'>
                         {rarityProgress.map(({ rarity, owned, total: rarityTotal, pct: rarityPct }) => (
-                            <div key={rarity} className='profile-progress-row' style={{ '--progress-color': rarityConfig[rarity].color, '--progress-glow': rarityConfig[rarity].glow }}>
+                            <div key={rarity} className={`profile-progress-row ${rarityTotal > 0 && owned === rarityTotal ? 'is-complete' : ''}`} style={{ '--progress-color': rarityConfig[rarity].color, '--progress-glow': rarityConfig[rarity].glow }}>
                                 <div>
                                     <span>{rarityConfig[rarity].label}</span>
-                                    <strong>{owned}/{rarityTotal}</strong>
+                                    <strong>
+                                        <span className='profile-progress-owned-count'>{owned}</span>
+                                        <span className='profile-progress-total-count'>/{rarityTotal}</span>
+                                    </strong>
                                 </div>
                                 <i><b style={{ width: `${rarityPct}%` }} /></i>
                             </div>
@@ -2934,13 +2937,16 @@ function App() {
                                                     const StatIcon = stat.icon;
 
                                                     return (
-                                                    <div className={`preview-stat-row stat-${stat.tone}`} key={stat.label}>
+                                                    <div className={`preview-stat-row stat-${stat.tone} ${value >= 10 ? 'is-complete' : ''}`} key={stat.label}>
                                                         <div className='preview-stat-heading'>
                                                             <span>
                                                                 <StatIcon size={15} strokeWidth={2.3} aria-hidden='true' />
                                                                 {stat.label}
                                                             </span>
-                                                            <strong><b>{value}</b>/10</strong>
+                                                            <strong>
+                                                                <b>{value}</b>
+                                                                <span>/10</span>
+                                                            </strong>
                                                         </div>
                                                         <div className='preview-stat-track'>
                                                             <i className={`tone-${stat.tone}`} style={{ width: `${Math.min(Math.max(value * 10, 0), 100)}%` }} />
