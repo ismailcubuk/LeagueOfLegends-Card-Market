@@ -10,7 +10,7 @@ import {
     AiOutlineTrophy,
 } from 'react-icons/ai';
 import { BsCollection } from 'react-icons/bs';
-import { Check, ChevronDown, ChevronLeft, ChevronRight, Droplet, Eye, Flame, Gift, Heart, MapPin, Menu, Play, Plus, Search, Shield, ShoppingCart, Skull, SlidersHorizontal, Sparkles, Swords, Wand2, Zap } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, ChevronRight, Droplet, Eye, Flame, Gift, Heart, MapPin, Menu, Pencil, Play, Plus, Search, Shield, ShoppingCart, Skull, SlidersHorizontal, Sparkles, Swords, Wand2, Zap } from 'lucide-react';
 import CardContext from './components/component/CardContext';
 import { BLUE_ESSENCE_ICON_URL, getChampionBlueEssence } from './components/component/championPrices';
 import Alert from './components/Body/Alert/Alert';
@@ -885,12 +885,26 @@ function CollectionPanel({ champions, ownedChampions, showcaseIds = [], onClearS
                                         '--showcase-glow': rarityConfig[rarityFor(champion)].glow,
                                     }}
                                 >
-                                    <button type='button' className='profile-showcase-preview' onClick={() => onOpenShowcasePicker(index)} aria-label={`Edit showcase slot ${index + 1}`}>
+                                    <button
+                                        type='button'
+                                        className='profile-showcase-preview'
+                                        onClick={() => openChampionModal(champion)}
+                                        aria-label={`Preview ${champion.name}`}
+                                    >
                                         <img src={championLoadingImage(champion.id)} alt='' />
                                         <span />
                                         <strong>{champion.name}</strong>
                                     </button>
-                                    <button type='button' className='profile-showcase-clear' onClick={() => onClearShowcaseSlot(index)} aria-label={`Clear showcase slot ${index + 1}`}>
+                                    <button type='button' className='profile-showcase-edit' onClick={(event) => {
+                                        event.stopPropagation();
+                                        onOpenShowcasePicker(index);
+                                    }} aria-label={`Edit showcase slot ${index + 1}`}>
+                                        <Pencil size={14} strokeWidth={2.4} />
+                                    </button>
+                                    <button type='button' className='profile-showcase-clear' onClick={(event) => {
+                                        event.stopPropagation();
+                                        onClearShowcaseSlot(index);
+                                    }} aria-label={`Clear showcase slot ${index + 1}`}>
                                         <AiOutlineClose />
                                     </button>
                                 </article>
