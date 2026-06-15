@@ -4684,10 +4684,12 @@ img {
 }
 
 .pack-opening-seal {
+  position: relative;
   display: grid;
   width: clamp(76px, 9vw, 110px);
   aspect-ratio: 1;
   place-items: center;
+  overflow: hidden;
   border: 1px solid rgba(240, 216, 137, 0.5);
   border-radius: 14px;
   background:
@@ -4697,15 +4699,56 @@ img {
   box-shadow:
     inset 0 0 28px rgba(240, 216, 137, 0.18),
     0 0 36px rgba(95, 168, 255, 0.18);
+  animation: packSealFloat 4.8s ease-in-out infinite;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.pack-opening-seal::before {
+  position: absolute;
+  inset: -44%;
+  background: conic-gradient(from 0deg, transparent 0 18%, rgba(77, 205, 255, 0.32) 25%, transparent 34% 58%, rgba(240, 216, 137, 0.26) 66%, transparent 76%);
+  content: "";
+  opacity: 0.54;
+  animation: packSealOrbit 6s linear infinite;
+}
+
+.pack-opening-seal::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, transparent 18%, rgba(255, 255, 255, 0.2) 42%, transparent 62%) -120% 0 / 76% 100% no-repeat,
+    radial-gradient(circle at 50% 50%, rgba(77, 205, 255, 0.18), transparent 58%);
+  content: "";
+  opacity: 0.62;
+  animation: packSealShine 3.6s ease-in-out infinite;
+}
+
+.pack-opening-card:hover .pack-opening-seal,
+.pack-opening-card:focus-visible .pack-opening-seal,
+.pack-opening-card.is-opening .pack-opening-seal {
+  border-color: rgba(240, 216, 137, 0.72);
+  box-shadow:
+    inset 0 0 30px rgba(240, 216, 137, 0.22),
+    0 0 28px rgba(77, 205, 255, 0.26),
+    0 0 54px rgba(240, 216, 137, 0.12);
+  transform: translateY(-1px) scale(1.02);
+}
+
+.pack-opening-card.is-opening .pack-opening-seal::before {
+  animation-duration: 1.1s;
+  opacity: 0.82;
 }
 
 .pack-opening-seal img {
+  position: relative;
+  z-index: 1;
   width: 92%;
   height: 92%;
   object-fit: contain;
   filter:
     drop-shadow(0 8px 14px rgba(0, 0, 0, 0.34))
     drop-shadow(0 0 16px rgba(77, 205, 255, 0.24));
+  animation: packSealIconGlow 3.2s ease-in-out infinite;
 }
 
 .pack-opening-copy {
@@ -5594,6 +5637,76 @@ img {
 @keyframes packAuraSpin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes packOpeningAuraDrift {
+  0% {
+    opacity: 0.3;
+    transform: rotate(0deg) scale(1);
+  }
+
+  50% {
+    opacity: 0.52;
+    transform: rotate(180deg) scale(1.04);
+  }
+
+  100% {
+    opacity: 0.3;
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes packSealFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes packSealOrbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes packSealShine {
+  0%,
+  38% {
+    background-position: -120% 0, 0 0;
+    opacity: 0.42;
+  }
+
+  58% {
+    background-position: 180% 0, 0 0;
+    opacity: 0.74;
+  }
+
+  100% {
+    background-position: 180% 0, 0 0;
+    opacity: 0.42;
+  }
+}
+
+@keyframes packSealIconGlow {
+  0%,
+  100% {
+    filter:
+      drop-shadow(0 8px 14px rgba(0, 0, 0, 0.34))
+      drop-shadow(0 0 14px rgba(77, 205, 255, 0.22));
+    transform: scale(1);
+  }
+
+  50% {
+    filter:
+      drop-shadow(0 10px 16px rgba(0, 0, 0, 0.36))
+      drop-shadow(0 0 22px rgba(77, 205, 255, 0.42))
+      drop-shadow(0 0 14px rgba(240, 216, 137, 0.24));
+    transform: scale(1.035);
   }
 }
 
