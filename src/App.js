@@ -1804,8 +1804,10 @@ function App() {
     const [dailyEssenceFlights, setDailyEssenceFlights] = useState([]);
     const [packEssenceFlights, setPackEssenceFlights] = useState([]);
     const [packImpactWave, setPackImpactWave] = useState(null);
+    const [packConfirmOpen, setPackConfirmOpen] = useState(false);
     const [packReward, setPackReward] = useState(null);
     const [packOpening, setPackOpening] = useState(false);
+    const isPackRewardOpen = packConfirmOpen || Boolean(packReward);
     const [walletCatching, setWalletCatching] = useState(false);
     const [displayMoney, setDisplayMoney] = useState(money);
     const [selectedSkinNum, setSelectedSkinNum] = useState(0);
@@ -1823,6 +1825,23 @@ function App() {
     useEffect(() => {
         localStorage.setItem('favoriteItems', JSON.stringify(favoriteItems));
     }, [favoriteItems]);
+
+    useEffect(() => {
+        if (!isPackRewardOpen) {
+            return undefined;
+        }
+
+        const previousHtmlOverflow = document.documentElement.style.overflow;
+        const previousBodyOverflow = document.body.style.overflow;
+
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+
+        return () => {
+            document.documentElement.style.overflow = previousHtmlOverflow;
+            document.body.style.overflow = previousBodyOverflow;
+        };
+    }, [isPackRewardOpen]);
 
     useEffect(() => {
         localStorage.setItem('recentAcquiredCards', JSON.stringify(recentAcquiredCards.slice(0, 10)));
@@ -2082,6 +2101,25 @@ function App() {
         window.setTimeout(() => setCollectionFlights([]), 1300);
     };
 
+    const handlePackRequest = () => {
+        if (packOpening || packConfirmOpen || packReward || filtered.length === 0) {
+            return;
+        }
+
+        if (money < PACK_OPEN_COST) {
+            setAlertt(true);
+            return;
+        }
+
+        setPackConfirmOpen(true);
+    };
+
+    const closePackConfirm = () => {
+        if (!packOpening) {
+            setPackConfirmOpen(false);
+        }
+    };
+
     const handlePackOpen = (event) => {
         if (packOpening || filtered.length === 0) {
             return;
@@ -2091,6 +2129,8 @@ function App() {
             setAlertt(true);
             return;
         }
+
+        setPackConfirmOpen(false);
 
         const ownedIds = new Set(myCardsArr.map((champion) => champion.id));
         const availableChampions = filtered.filter((champion) => !ownedIds.has(champion.id));
@@ -2754,6 +2794,30 @@ function App() {
                     <i />
                 </span>
             ) : null}
+            {packConfirmOpen && !packReward ? (
+                <div className='pack-reward-overlay pack-confirm-overlay' aria-live='polite'>
+                    <span className='pack-reward-backdrop' onClick={closePackConfirm} />
+                    <div className='pack-confirm-stage' role='dialog' aria-modal='true' aria-labelledby='pack-confirm-title'>
+                        <button type='button' className='pack-confirm-close' onClick={closePackConfirm} aria-label='Close mystery pack'>
+                            <AiOutlineClose />
+                        </button>
+                        <span className='pack-confirm-chest'>
+                            <img src={HEXTECH_CHEST_ICON_URL} alt='' aria-hidden='true' />
+                        </span>
+                        <span className='pack-confirm-kicker' id='pack-confirm-title'>Mystery Pack</span>
+                        <button type='button' className='pack-confirm-spin' onClick={handlePackOpen}>
+                            <span className='pack-confirm-spin-aura' aria-hidden='true' />
+                            <span className='pack-action-label'>Döndür</span>
+                            <span className='pack-action-price'>
+                                <span className='wallet-coin'>
+                                    <BlueEssenceIcon />
+                                </span>
+                                <span>{PACK_OPEN_COST.toLocaleString('tr-TR')}</span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            ) : null}
             {packReward ? (
                 <div className='pack-reward-overlay' aria-live='polite'>
                     <span className='pack-reward-backdrop' />
@@ -3081,7 +3145,7 @@ function App() {
 
                 {activeView === 'market' ? <TrendingCarousel champions={trending} openChampionModal={openChampionModal} /> : null}
 
-                {activeView === 'market' ? <PackOpeningSection champions={filtered} ownedChampions={myCardsArr} onOpenPack={handlePackOpen} isOpening={packOpening} money={money} /> : null}
+                {activeView === 'market' ? <PackOpeningSection champions={filtered} ownedChampions={myCardsArr} onOpenPack={handlePackRequest} isOpening={packOpening} money={money} /> : null}
 
                 {activeView === 'market' ? (
                     <HomeMyCardsSection

@@ -4812,7 +4812,9 @@ img {
   position: fixed;
   inset: 0;
   z-index: 210;
-  pointer-events: none;
+  overscroll-behavior: contain;
+  pointer-events: auto;
+  touch-action: none;
 }
 
 .pack-reward-backdrop {
@@ -4824,6 +4826,167 @@ img {
     rgba(2, 6, 12, 0.68);
   backdrop-filter: blur(4px);
   animation: packBackdropFade 6100ms ease forwards;
+}
+
+.pack-confirm-overlay .pack-reward-backdrop {
+  animation: none;
+}
+
+.pack-confirm-stage {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 240;
+  display: grid;
+  width: min(440px, calc(100vw - 32px));
+  justify-items: center;
+  gap: 18px;
+  border: 1px solid rgba(218, 185, 94, 0.42);
+  border-radius: 16px;
+  background:
+    radial-gradient(80% 100% at 50% 0%, rgba(77, 205, 255, 0.18), transparent 58%),
+    linear-gradient(180deg, rgba(13, 29, 46, 0.98), rgba(3, 8, 15, 0.99));
+  box-shadow:
+    0 30px 110px rgba(0, 0, 0, 0.65),
+    0 0 0 1px rgba(95, 168, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  padding: clamp(22px, 5vw, 34px);
+  text-align: center;
+  transform: translate(-50%, -50%);
+  animation: packCaseEnter 420ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.pack-confirm-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(218, 185, 94, 0.26);
+  border-radius: 999px;
+  background: rgba(5, 10, 18, 0.72);
+  color: var(--text);
+}
+
+.pack-confirm-chest {
+  display: grid;
+  width: 94px;
+  height: 94px;
+  place-items: center;
+  border: 1px solid rgba(218, 185, 94, 0.34);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle, rgba(95, 168, 255, 0.22), transparent 62%),
+    rgba(7, 13, 22, 0.78);
+  box-shadow: 0 0 34px rgba(77, 205, 255, 0.18);
+}
+
+.pack-confirm-chest img {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 18px rgba(77, 205, 255, 0.28));
+}
+
+.pack-confirm-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.pack-confirm-copy span {
+  color: var(--gold-bright);
+  font-size: 0.76rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.pack-confirm-kicker {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(240, 216, 137, 0.34);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(240, 216, 137, 0.18), rgba(5, 10, 18, 0.58)),
+    rgba(5, 10, 18, 0.72);
+  box-shadow:
+    0 0 22px rgba(218, 185, 94, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: #f8e7a7;
+  font-size: 0.82rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  padding: 9px 14px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.72);
+  text-transform: uppercase;
+}
+
+.pack-confirm-copy h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(1.45rem, 5vw, 2.05rem);
+  font-weight: 950;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.pack-confirm-copy p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+  font-weight: 750;
+}
+
+.pack-confirm-spin {
+  position: relative;
+  display: inline-flex;
+  min-height: 64px;
+  min-width: 156px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  overflow: hidden;
+  border: 1px solid rgba(240, 216, 137, 0.35);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(127, 221, 255, 0.18), transparent 36%),
+    rgba(6, 12, 22, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 16px 36px rgba(0, 0, 0, 0.34),
+    0 0 28px rgba(218, 185, 94, 0.14);
+  padding: 8px 24px;
+}
+
+.pack-confirm-spin:hover,
+.pack-confirm-spin:focus-visible {
+  border-color: rgba(240, 216, 137, 0.62);
+  filter: brightness(1.08);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.pack-confirm-spin-aura {
+  position: absolute;
+  inset: -85%;
+  background:
+    conic-gradient(from 90deg, transparent, rgba(95, 168, 255, 0.24), transparent, rgba(240, 216, 137, 0.28), transparent);
+  opacity: 0.78;
+  animation: packAuraSpin 1.2s linear infinite;
+}
+
+.pack-confirm-spin .pack-action-label,
+.pack-confirm-spin .pack-action-price {
+  position: relative;
+  z-index: 1;
 }
 
 .pack-essence-flight {
