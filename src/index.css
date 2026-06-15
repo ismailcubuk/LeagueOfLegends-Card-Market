@@ -328,6 +328,61 @@ img {
   animation: walletCatch 620ms ease-out;
 }
 
+.topbar-profile-link {
+  position: relative;
+  display: inline-flex;
+  min-height: 42px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid rgba(218, 185, 94, 0.26);
+  border-radius: 999px;
+  background: rgba(14, 22, 34, 0.72);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  padding: 0 14px 0 6px;
+  text-decoration: none;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+  white-space: nowrap;
+}
+
+.topbar-profile-link:hover,
+.topbar-profile-link:focus-visible,
+.topbar-profile-link.active {
+  border-color: rgba(240, 216, 137, 0.62);
+  background: rgba(20, 32, 50, 0.86);
+  color: var(--foreground);
+  outline: none;
+  box-shadow: 0 0 22px rgba(217, 183, 93, 0.12);
+}
+
+.topbar-profile-link:hover,
+.topbar-profile-link:focus-visible {
+  transform: translateY(-1px);
+}
+
+.topbar-profile-icon {
+  display: inline-grid;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(240, 216, 137, 0.44);
+  border-radius: 999px;
+  background: #07101b;
+  box-shadow: 0 0 18px rgba(217, 183, 93, 0.16);
+}
+
+.topbar-profile-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .daily-essence-flight {
   position: fixed;
   z-index: 170;
@@ -5733,6 +5788,27 @@ img {
     min-height: 38px;
     gap: 6px;
     padding: 0 10px;
+  }
+
+  .topbar-profile-link {
+    min-height: 38px;
+    gap: 0;
+    padding: 0 4px;
+  }
+
+  .topbar-profile-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .topbar-profile-icon {
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
   }
 
   .daily-reward-button > span:not(.price-amount) {

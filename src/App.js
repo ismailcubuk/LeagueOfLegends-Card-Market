@@ -79,6 +79,8 @@ const navLinks = [
     { label: 'Trends', href: '#trending', view: 'market' },
     { label: 'Store', href: '#marketplace', view: 'market' },
 ];
+const profileNavLink = navLinks.find((link) => link.view === 'profile');
+const marketNavLinks = navLinks.filter((link) => link.view === 'market');
 const previewTabs = [
     { key: 'overview', label: 'Overview' },
     { key: 'abilities', label: 'Abilities' },
@@ -836,7 +838,7 @@ function HeroStat({ label, value, tone }) {
     );
 }
 
-function CollectionPanel({ champions, ownedChampions, showcaseIds = [], onClearShowcaseSlot, onOpenShowcasePicker, impactWave, openChampionModal, onOpenStore }) {
+function CollectionPanel({ champions, ownedChampions, showcaseIds = [], selectedProfileIconId, setSelectedProfileIconId, onClearShowcaseSlot, onOpenShowcasePicker, impactWave, openChampionModal, onOpenStore }) {
     const [profileRoleFilter, setProfileRoleFilter] = useState('all');
     const [profileRarityFilter, setProfileRarityFilter] = useState('all');
     const [profileRegionFilter, setProfileRegionFilter] = useState('all');
@@ -844,11 +846,6 @@ function CollectionPanel({ champions, ownedChampions, showcaseIds = [], onClearS
     const [isProfileIconPickerOpen, setIsProfileIconPickerOpen] = useState(false);
     const [profileIconGroups, setProfileIconGroups] = useState(defaultProfileIconGroups);
     const [hasLoadedProfileIcons, setHasLoadedProfileIcons] = useState(false);
-    const [selectedProfileIconId, setSelectedProfileIconId] = useState(() => {
-        const savedIconId = window.localStorage.getItem('league-market-profile-icon-id');
-
-        return savedIconId || '29';
-    });
     const selectedIconGroup = profileIconGroupForId(profileIconGroups, selectedProfileIconId);
     const [activeProfileIconGroup, setActiveProfileIconGroup] = useState(selectedIconGroup?.key || profileIconFallbackGroup.key);
     const activeProfileIcons = profileIconGroups.find((group) => group.key === activeProfileIconGroup)?.ids || profileIconFallbackGroup.ids;
@@ -1785,6 +1782,11 @@ function App() {
         } catch (error) {
             return [];
         }
+    });
+    const [selectedProfileIconId, setSelectedProfileIconId] = useState(() => {
+        const savedIconId = window.localStorage.getItem('league-market-profile-icon-id');
+
+        return savedIconId || '29';
     });
     const [showcaseIds, setShowcaseIds] = useState(() => {
         try {
@@ -2818,7 +2820,7 @@ function App() {
                         </div>
                     </a>
                     <div className='topbar-links'>
-                        {navLinks.map((link) => (
+                        {marketNavLinks.map((link) => (
                             <a
                                 key={link.label}
                                 href={link.href}
@@ -2946,6 +2948,22 @@ function App() {
                             ) : null}
                         </AnimatePresence>
                     </div>
+                    {profileNavLink ? (
+                        <a
+                            href={profileNavLink.href}
+                            className={`topbar-profile-link ${activeLink === profileNavLink.label ? 'active' : ''}`}
+                            onClick={(event) => handleNavClick(event, profileNavLink)}
+                            aria-label='Open profile'
+                        >
+                            <span className='topbar-profile-icon'>
+                                <img src={profileIconImage(selectedProfileIconId)} alt='' />
+                            </span>
+                            <span className='topbar-profile-label'>Profile</span>
+                            {activeLink === profileNavLink.label ? (
+                                <span className='topbar-link-underline' aria-hidden='true' />
+                            ) : null}
+                        </a>
+                    ) : null}
                     <button type='button' className='icon-button mobile-menu-button' onClick={() => setMobileFiltersOpen(true)} aria-label='Menu'>
                         <Menu size={20} strokeWidth={2.2} />
                     </button>
@@ -3048,6 +3066,8 @@ function App() {
                             champions={filtered}
                             ownedChampions={myCardsArr}
                             showcaseIds={showcaseIds}
+                            selectedProfileIconId={selectedProfileIconId}
+                            setSelectedProfileIconId={setSelectedProfileIconId}
                             onClearShowcaseSlot={clearShowcaseSlot}
                             onOpenShowcasePicker={setActiveShowcaseSlot}
                             recentlyBoughtId={recentlyBoughtId}
