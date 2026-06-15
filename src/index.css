@@ -8472,15 +8472,25 @@ img {
   display: grid;
   grid-template-columns: minmax(280px, 1fr) minmax(280px, 1fr) minmax(240px, 0.86fr);
   gap: 12px;
+  align-items: start;
   margin-top: 14px;
+  --profile-insight-panel-height: 266px;
 }
 
 .profile-progress-panel {
+  display: flex;
+  height: var(--profile-insight-panel-height);
+  flex-direction: column;
   min-width: 0;
+  min-height: 0;
   border: 1px solid rgba(218, 185, 94, 0.16);
   border-radius: 12px;
   background: rgba(7, 14, 24, 0.7);
   padding: 14px;
+}
+
+.profile-rarity-panel {
+  height: auto;
 }
 
 .profile-panel-heading {
@@ -8497,8 +8507,13 @@ img {
   gap: 10px;
 }
 
+.profile-rarity-progress {
+  flex: 0 0 auto;
+}
+
 .profile-region-list {
-  max-height: 322px;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   padding-right: 6px;
   overscroll-behavior: contain;
@@ -8506,16 +8521,29 @@ img {
   scrollbar-color: rgba(218, 185, 94, 0.55) rgba(8, 16, 27, 0.72);
 }
 
-.profile-region-list::-webkit-scrollbar {
+.profile-milestones {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(218, 185, 94, 0.55) rgba(8, 16, 27, 0.72);
+}
+
+.profile-region-list::-webkit-scrollbar,
+.profile-milestones::-webkit-scrollbar {
   width: 6px;
 }
 
-.profile-region-list::-webkit-scrollbar-track {
+.profile-region-list::-webkit-scrollbar-track,
+.profile-milestones::-webkit-scrollbar-track {
   border-radius: 999px;
   background: rgba(8, 16, 27, 0.72);
 }
 
-.profile-region-list::-webkit-scrollbar-thumb {
+.profile-region-list::-webkit-scrollbar-thumb,
+.profile-milestones::-webkit-scrollbar-thumb {
   border-radius: 999px;
   background: linear-gradient(180deg, rgba(218, 185, 94, 0.72), rgba(124, 233, 255, 0.45));
 }
@@ -8580,6 +8608,7 @@ img {
 
 .profile-region-row {
   display: grid;
+  min-height: 44px;
   grid-template-columns: 42px minmax(0, 1fr) auto;
   gap: 10px;
   align-items: center;
@@ -8632,11 +8661,18 @@ img {
   grid-template-columns: 32px minmax(0, 1fr);
   gap: 10px;
   align-items: center;
-  min-height: 48px;
+  min-height: 44px;
   border: 1px solid rgba(218, 185, 94, 0.12);
   border-radius: 9px;
   background: rgba(8, 16, 27, 0.52);
-  padding: 8px;
+  padding: 6px 8px;
+}
+
+.profile-milestones > div > div {
+  display: grid;
+  align-content: center;
+  align-self: stretch;
+  gap: 2px;
 }
 
 .profile-milestones > div > span {
@@ -8671,6 +8707,7 @@ img {
   color: var(--foreground);
   font-size: 0.78rem;
   font-weight: 950;
+  line-height: 1.1;
   text-transform: uppercase;
 }
 
@@ -8678,6 +8715,7 @@ img {
   color: var(--muted);
   font-size: 0.7rem;
   font-weight: 850;
+  line-height: 1.1;
 }
 
 .profile-library-controls {

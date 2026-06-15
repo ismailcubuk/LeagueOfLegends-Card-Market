@@ -1145,7 +1145,7 @@ function CollectionPanel({ champions, ownedChampions, showcaseIds = [], selected
             </div>
 
             <div className='profile-insight-grid'>
-                <section className='profile-progress-panel'>
+                <section className='profile-progress-panel profile-rarity-panel'>
                     <div className='profile-panel-heading'>
                         <span><AiOutlineStar /> Rarity Progress</span>
                     </div>
