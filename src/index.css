@@ -32,6 +32,9 @@
 
 html {
   min-height: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
   background: #050b16;
   scroll-behavior: smooth;
 }
@@ -39,6 +42,9 @@ html {
 body {
   min-height: 100vh;
   min-width: 320px;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
   background: #050b16;
   color: var(--text);
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -46,6 +52,9 @@ body {
 
 #root {
   min-height: 100vh;
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
   background: #050b16;
 }
 
@@ -112,6 +121,7 @@ img {
 .topbar-inner {
   display: flex;
   width: min(1600px, 100%);
+  max-width: 100%;
   min-height: 64px;
   align-items: center;
   gap: clamp(10px, 1.6vw, 24px);
@@ -5759,6 +5769,40 @@ img {
   }
 }
 
+@media (min-width: 981px) and (max-width: 1220px) {
+  .topbar-inner {
+    flex-wrap: wrap;
+    gap: 10px 12px;
+  }
+
+  .brand-copy small {
+    display: none;
+  }
+
+  .topbar-links {
+    margin-right: auto;
+  }
+
+  .topbar-links a {
+    padding: 0 10px;
+  }
+
+  .top-search {
+    order: 3;
+    flex: 1 1 100%;
+    max-width: none;
+    margin-left: 0;
+  }
+
+  .daily-reward-button {
+    width: 138px;
+  }
+
+  .topbar-profile-link {
+    padding-right: 12px;
+  }
+}
+
 @media (min-width: 981px) {
   .hero-section {
     aspect-ratio: 21 / 9;
@@ -8277,8 +8321,9 @@ img {
 
 @media (max-width: 560px) {
   .favorites-dropdown {
-    right: -54px;
+    right: 0;
     width: min(430px, calc(100vw - 18px));
+    max-width: calc(100vw - 18px);
   }
 
   .favorite-item {
