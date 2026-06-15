@@ -2798,13 +2798,17 @@ function App() {
                 <div className='pack-reward-overlay pack-confirm-overlay' aria-live='polite'>
                     <span className='pack-reward-backdrop' onClick={closePackConfirm} />
                     <div className='pack-confirm-stage' role='dialog' aria-modal='true' aria-labelledby='pack-confirm-title'>
+                        <span className='pack-confirm-frame' aria-hidden='true' />
                         <button type='button' className='pack-confirm-close' onClick={closePackConfirm} aria-label='Close mystery pack'>
                             <AiOutlineClose />
                         </button>
-                        <span className='pack-confirm-chest'>
-                            <img src={HEXTECH_CHEST_ICON_URL} alt='' aria-hidden='true' />
-                        </span>
-                        <span className='pack-confirm-kicker' id='pack-confirm-title'>Mystery Pack</span>
+                        <div className='pack-confirm-header'>
+                            <span className='pack-confirm-overline'>Champion Capsule</span>
+                            <span className='pack-confirm-chest'>
+                                <img src={HEXTECH_CHEST_ICON_URL} alt='' aria-hidden='true' />
+                            </span>
+                            <span className='pack-confirm-kicker' id='pack-confirm-title'>Mystery Pack</span>
+                        </div>
                         <button type='button' className='pack-confirm-spin' onClick={handlePackOpen}>
                             <span className='pack-confirm-spin-aura' aria-hidden='true' />
                             <span className='pack-action-label'>Döndür</span>
