@@ -4925,11 +4925,15 @@ img {
 }
 
 .pack-action-label {
-  color: var(--text);
-  font-size: 0.72rem;
+  color: #f8e7a7;
+  font-size: 0.74rem;
   font-weight: 950;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.16em;
   line-height: 1;
+  text-shadow:
+    0 1px 8px rgba(0, 0, 0, 0.72),
+    0 0 14px rgba(240, 216, 137, 0.22);
+  text-transform: uppercase;
 }
 
 .pack-action-price {
@@ -5576,7 +5580,7 @@ img {
 .pack-case-header {
   position: relative;
   z-index: 1;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   gap: 14px;
@@ -5622,7 +5626,7 @@ img {
 .pack-roulette-window {
   position: relative;
   z-index: 1;
-  height: clamp(180px, 28vw, 236px);
+  height: clamp(208px, 30vw, 268px);
   overflow: hidden;
   border: 1px solid rgba(95, 168, 255, 0.28);
   border-radius: 12px;
@@ -5671,18 +5675,19 @@ img {
 
 .pack-roulette-track {
   position: absolute;
-  top: 16px;
+  top: 20px;
   left: 50%;
   display: flex;
   gap: 12px;
   will-change: transform;
-  transform: translateX(-64px);
+  transform: translateX(-520px);
 }
 
 .phase-rolling .pack-roulette-track {
   animation: packRouletteRoll 5000ms cubic-bezier(0.08, 0.92, 0.14, 1) forwards;
 }
 
+.pack-case-stage.phase-won,
 .pack-case-stage.phase-flying {
   overflow: visible;
 }
@@ -6073,7 +6078,7 @@ img {
 @keyframes packRouletteRoll {
   0% {
     filter: blur(0.2px);
-    transform: translateX(-64px);
+    transform: translateX(-520px);
   }
 
   42% {
