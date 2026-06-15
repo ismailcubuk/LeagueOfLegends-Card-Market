@@ -1170,7 +1170,7 @@ function CollectionPanel({ champions, ownedChampions, showcaseIds = [], selected
                         <span><MapPin size={15} strokeWidth={2.3} /> Region Mastery</span>
                     </div>
                     <div className='profile-region-list'>
-                        {regionProgress.slice(0, 6).map((region) => (
+                        {regionProgress.map((region) => (
                             <div className='profile-region-row' key={region.region}>
                                 <span className='profile-region-thumb'>
                                     {originImageUrls[region.region] ? <img src={originImageUrls[region.region]} alt='' /> : <MapPin size={16} strokeWidth={2.3} />}

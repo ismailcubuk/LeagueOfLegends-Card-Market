@@ -8497,6 +8497,29 @@ img {
   gap: 10px;
 }
 
+.profile-region-list {
+  max-height: 322px;
+  overflow-y: auto;
+  padding-right: 6px;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(218, 185, 94, 0.55) rgba(8, 16, 27, 0.72);
+}
+
+.profile-region-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.profile-region-list::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(8, 16, 27, 0.72);
+}
+
+.profile-region-list::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(218, 185, 94, 0.72), rgba(124, 233, 255, 0.45));
+}
+
 .profile-progress-row > div {
   display: flex;
   align-items: center;
