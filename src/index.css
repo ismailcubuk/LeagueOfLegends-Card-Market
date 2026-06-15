@@ -7584,7 +7584,19 @@ img {
   border-radius: 50%;
   background: rgba(12, 18, 28, 0.72);
   color: #ffd5de;
-  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition: border-color 160ms ease, background 160ms ease, opacity 160ms ease, transform 160ms ease, visibility 160ms ease;
+}
+
+.profile-showcase-card:hover .profile-showcase-edit,
+.profile-showcase-card:hover .profile-showcase-clear,
+.profile-showcase-card:focus-within .profile-showcase-edit,
+.profile-showcase-card:focus-within .profile-showcase-clear {
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
 }
 
 .profile-showcase-edit {
