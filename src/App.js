@@ -2826,7 +2826,9 @@ function App() {
                                 onClick={(event) => handleNavClick(event, link)}
                             >
                                 {link.label}
-                                {activeLink === link.label ? <motion.span layoutId='nav-underline' className='topbar-link-underline' /> : null}
+                                {activeLink === link.label ? (
+                                    <span className='topbar-link-underline' aria-hidden='true' />
+                                ) : null}
                             </a>
                         ))}
                     </div>
