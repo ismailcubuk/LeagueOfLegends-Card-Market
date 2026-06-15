@@ -5038,10 +5038,192 @@ img {
   pointer-events: none;
 }
 
+.pack-confirm-preview {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  opacity: 0.34;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 72%, transparent 100%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 72%, transparent 100%);
+}
+
+.pack-confirm-preview::before {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    radial-gradient(circle at 50% 38%, transparent 0 18%, rgba(4, 10, 18, 0.52) 54%, rgba(4, 10, 18, 0.88) 100%),
+    linear-gradient(180deg, rgba(4, 10, 18, 0.42), rgba(4, 10, 18, 0.82));
+  content: "";
+}
+
+.pack-confirm-preview-card {
+  position: absolute;
+  top: 50%;
+  display: block;
+  width: 78px;
+  aspect-ratio: 10 / 13.6;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--preview-color) 58%, transparent);
+  border-radius: 10px;
+  background: rgba(4, 9, 16, 0.82);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    0 0 22px var(--preview-glow);
+  filter: saturate(0.82) contrast(1.05);
+  --preview-x: 0;
+  --preview-y: -50%;
+  --preview-rotate: 0deg;
+  --preview-scale: 0.8;
+  transform: translate3d(var(--preview-x), var(--preview-y), 0) rotate(var(--preview-rotate)) scale(var(--preview-scale));
+  transform-origin: 50% 78%;
+  will-change: transform;
+  animation: packConfirmPreviewFloat 5.8s ease-in-out infinite;
+}
+
+.pack-confirm-preview-card:nth-child(1) {
+  left: 3%;
+  top: 28%;
+  --preview-x: 0;
+  --preview-y: -56%;
+  --preview-rotate: -9deg;
+  --preview-scale: 0.7;
+}
+
+.pack-confirm-preview-card:nth-child(2) {
+  left: 15%;
+  top: 46%;
+  --preview-x: 0;
+  --preview-y: -48%;
+  --preview-rotate: 6deg;
+  --preview-scale: 0.82;
+  animation-delay: -1.1s;
+}
+
+.pack-confirm-preview-card:nth-child(3) {
+  left: 28%;
+  top: 25%;
+  --preview-x: 0;
+  --preview-y: -58%;
+  --preview-rotate: -5deg;
+  --preview-scale: 0.76;
+  animation-delay: -2.2s;
+}
+
+.pack-confirm-preview-card:nth-child(4) {
+  left: 42%;
+  top: 62%;
+  --preview-x: 0;
+  --preview-y: -47%;
+  --preview-rotate: 10deg;
+  --preview-scale: 0.82;
+  animation-delay: -3.2s;
+}
+
+.pack-confirm-preview-card:nth-child(5) {
+  right: 34%;
+  top: 32%;
+  --preview-x: 0;
+  --preview-y: -57%;
+  --preview-rotate: -8deg;
+  --preview-scale: 0.76;
+  animation-delay: -4.1s;
+}
+
+.pack-confirm-preview-card:nth-child(6) {
+  right: 20%;
+  top: 52%;
+  --preview-x: 0;
+  --preview-y: -46%;
+  --preview-rotate: 7deg;
+  --preview-scale: 0.82;
+  animation-delay: -5s;
+}
+
+.pack-confirm-preview-card:nth-child(7) {
+  right: 8%;
+  top: 26%;
+  --preview-x: 0;
+  --preview-y: -58%;
+  --preview-rotate: -5deg;
+  --preview-scale: 0.72;
+  animation-delay: -5.7s;
+}
+
+.pack-confirm-preview-card:nth-child(8) {
+  right: -4%;
+  top: 61%;
+  --preview-x: 0;
+  --preview-y: -48%;
+  --preview-rotate: 9deg;
+  --preview-scale: 0.68;
+  opacity: 0.82;
+  animation-delay: -6.4s;
+}
+
+.pack-confirm-preview-card:nth-child(9) {
+  left: -5%;
+  top: 72%;
+  --preview-y: -48%;
+  --preview-rotate: 8deg;
+  --preview-scale: 0.64;
+  opacity: 0.74;
+  animation-delay: -0.7s;
+}
+
+.pack-confirm-preview-card:nth-child(10) {
+  left: 22%;
+  top: 78%;
+  --preview-y: -52%;
+  --preview-rotate: -7deg;
+  --preview-scale: 0.68;
+  opacity: 0.78;
+  animation-delay: -1.8s;
+}
+
+.pack-confirm-preview-card:nth-child(11) {
+  right: 25%;
+  top: 77%;
+  --preview-y: -50%;
+  --preview-rotate: 6deg;
+  --preview-scale: 0.66;
+  opacity: 0.72;
+  animation-delay: -2.8s;
+}
+
+.pack-confirm-preview-card:nth-child(12) {
+  right: -8%;
+  top: 38%;
+  --preview-y: -50%;
+  --preview-rotate: -10deg;
+  --preview-scale: 0.62;
+  opacity: 0.68;
+  animation-delay: -3.8s;
+}
+
+.pack-confirm-preview-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pack-confirm-preview-card::after {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 26%),
+    linear-gradient(0deg, rgba(3, 7, 13, 0.84), transparent 48%),
+    radial-gradient(circle at 50% 100%, var(--preview-glow), transparent 62%);
+  content: "";
+}
+
 .pack-confirm-close {
   position: absolute;
   top: 18px;
   right: 18px;
+  z-index: 2;
   display: grid;
   width: 36px;
   height: 36px;
@@ -5066,6 +5248,8 @@ img {
 }
 
 .pack-confirm-header {
+  position: relative;
+  z-index: 1;
   display: grid;
   justify-items: center;
   gap: 13px;
@@ -5176,6 +5360,7 @@ img {
 
 .pack-confirm-spin {
   position: relative;
+  z-index: 1;
   display: inline-flex;
   min-height: 62px;
   min-width: 168px;
@@ -5827,6 +6012,17 @@ img {
   }
 }
 
+@keyframes packConfirmPreviewFloat {
+  0%,
+  100% {
+    transform: translate3d(var(--preview-x), var(--preview-y), 0) rotate(var(--preview-rotate)) scale(var(--preview-scale));
+  }
+
+  50% {
+    transform: translate3d(var(--preview-x), calc(var(--preview-y) - 9px), 0) rotate(calc(var(--preview-rotate) + 1.5deg)) scale(calc(var(--preview-scale) + 0.02));
+  }
+}
+
 @keyframes packBackdropFade {
   0%,
   86% {
@@ -6363,6 +6559,18 @@ img {
   }
 
   .pack-opening-preview-card:nth-child(n+4) {
+    display: none;
+  }
+
+  .pack-confirm-preview {
+    opacity: 0.24;
+  }
+
+  .pack-confirm-preview-card {
+    width: 68px;
+  }
+
+  .pack-confirm-preview-card:nth-child(n+6) {
     display: none;
   }
 

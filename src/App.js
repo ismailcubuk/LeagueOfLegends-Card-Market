@@ -1422,6 +1422,8 @@ const PACK_RARITY_CHANCES = [
     { rarity: 'legendary', chance: 9 },
     { rarity: 'mythic', chance: 3 },
 ];
+const PACK_PREVIEW_CHAMPION_IDS = ['Zed', 'Yasuo', 'Jinx', 'Yone'];
+const PACK_MODAL_PREVIEW_COUNT = 12;
 
 function pickPackChampion(champions) {
     const pools = PACK_RARITY_CHANCES.reduce((groups, item) => ({
@@ -1620,9 +1622,7 @@ function TrendingCarousel({ champions, openChampionModal }) {
 function PackOpeningSection({ champions, ownedChampions, onOpenPack, isOpening, money }) {
     const availableCount = champions.filter((champion) => !ownedChampions.some((owned) => owned.id === champion.id)).length;
     const packPreviewChampions = useMemo(() => {
-        const previewIds = ['Zed', 'Yasuo', 'Jinx', 'Yone'];
-
-        return previewIds
+        return PACK_PREVIEW_CHAMPION_IDS
             .map((id) => champions.find((champion) => champion.id === id))
             .filter(Boolean);
     }, [champions]);
@@ -2082,6 +2082,10 @@ function App() {
 
     const trending = useMemo(() => (
         [...filtered].sort((a, b) => getChampionBlueEssence(b) - getChampionBlueEssence(a) || b.info.magic - a.info.magic).slice(0, 8)
+    ), [filtered]);
+
+    const packModalPreviewChampions = useMemo(() => (
+        [...filtered].sort(() => Math.random() - 0.5).slice(0, PACK_MODAL_PREVIEW_COUNT)
     ), [filtered]);
 
     const heroChampion = featured.length > 0 ? featured[activeHeroIndex % featured.length] : null;
@@ -2824,6 +2828,24 @@ function App() {
                     <span className='pack-reward-backdrop' onClick={closePackConfirm} />
                     <div className='pack-confirm-stage' role='dialog' aria-modal='true' aria-labelledby='pack-confirm-title'>
                         <span className='pack-confirm-frame' aria-hidden='true' />
+                        <span className='pack-confirm-preview' aria-hidden='true'>
+                            {packModalPreviewChampions.map((champion) => {
+                                const rarity = rarityFor(champion);
+
+                                return (
+                                    <span
+                                        className={`pack-confirm-preview-card rarity-${rarity}`}
+                                        key={champion.id}
+                                        style={{
+                                            '--preview-color': rarityConfig[rarity].color,
+                                            '--preview-glow': rarityConfig[rarity].glow,
+                                        }}
+                                    >
+                                        <img src={championLoadingImage(champion.id)} alt='' loading='lazy' draggable='false' />
+                                    </span>
+                                );
+                            })}
+                        </span>
                         <button type='button' className='pack-confirm-close' onClick={closePackConfirm} aria-label='Close mystery pack'>
                             <AiOutlineClose />
                         </button>
