@@ -36,39 +36,72 @@ Live demo: [League of Legends Card Market](https://ismailcubuk.github.io/LeagueO
 ```text
 src/
   components/
+    cart/
+      CartPanel.js
+    collection/
+      HomeMyCardsSection.js
+    common/
+      BlueEssenceIcon.js
+      PriceAmount.js
+      RarityPill.js
+    favorites/
+      FavoritesPanel.js
+    filters/
+      FilterSection.js
+    hero/
+      HeroStat.js
+    market/
+      ChampionCard.js
+      TrendingCarousel.js
+    pack/
+      PackOpeningSection.js
+    profile/
+      CollectionPanel.js
+      ShowcasePickerModal.js
     Body/
       Alert/
-        Alert.js
-        Alert.css
       Cards/
-        MappedCard.js
-        Cards.css
       Carousel/
-        Carousel.js
-        Carousel.css
       Navbar/
-        Navbar.js
-        Wallet.js
-        navbar.css
       Pagination/
-        Pagination.js
-        pagination.css
       Sidebar/
-        Sidebar.js
-        sidebar.css
     component/
       CardContext.js
       Lol.json
+      championPrices.js
+  config/
+    navigation.js
+    profileIcons.js
+  data/
+    championOrigins.js
+  utils/
+    championMedia.js
+    championMeta.js
+    packOpening.js
+  styles/
+    index.css
   Images/
     Passive/
     Skills/
     Stats/
   App.js
   index.js
-  index.css
 
 public/
   index.html
   manifest.json
   robots.txt
   favicon.ico
+  regions/
+  images/
+```
+
+## Code Organization
+
+- `public/index.html` is the HTML shell used by Create React App.
+- `src/styles/index.css` and component CSS files keep styling separate from JavaScript.
+- `src/App.js` owns the main screen flow and composes the marketplace sections.
+- `src/components/common` contains reusable UI pieces used across the app.
+- `src/config` contains app navigation and profile icon configuration.
+- `src/data` contains domain mapping data such as champion origins.
+- `src/utils` contains pure helper logic for media URLs, rarity metadata, scoring, and pack opening.
