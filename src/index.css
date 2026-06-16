@@ -2681,6 +2681,21 @@ img {
   background: rgba(15, 23, 34, 0.6);
   backdrop-filter: blur(18px) saturate(150%);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(217, 183, 93, 0.36) transparent;
+}
+
+.filter-shell::-webkit-scrollbar {
+  width: 4px;
+}
+
+.filter-shell::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.filter-shell::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(217, 183, 93, 0.36);
 }
 
 .filter-panel-title {
@@ -2832,6 +2847,8 @@ img {
   overflow-y: auto;
   padding-top: 12px;
   padding-right: 2px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(217, 183, 93, 0.36) transparent;
 }
 
 .filter-region-grid::-webkit-scrollbar {
