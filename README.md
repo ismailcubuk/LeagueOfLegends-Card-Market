@@ -46,15 +46,24 @@ src/
       RarityPill.js
     favorites/
       FavoritesPanel.js
+    effects/
+      FlightEffects.js
     filters/
+      FilterPanel.js
       FilterSection.js
     hero/
+      HeroSection.js
       HeroStat.js
+    layout/
+      Topbar.js
     market/
       ChampionCard.js
       TrendingCarousel.js
     pack/
+      PackOverlays.js
       PackOpeningSection.js
+    preview/
+      ChampionPreviewModal.js
     profile/
       CollectionPanel.js
       ShowcasePickerModal.js
@@ -74,6 +83,8 @@ src/
     profileIcons.js
   data/
     championOrigins.js
+  hooks/
+    useBodyScrollLock.js
   utils/
     championMedia.js
     championMeta.js
@@ -102,6 +113,8 @@ public/
 - `src/styles/index.css` and component CSS files keep styling separate from JavaScript.
 - `src/App.js` owns the main screen flow and composes the marketplace sections.
 - `src/components/common` contains reusable UI pieces used across the app.
+- `src/components/layout`, `filters`, `hero`, `pack`, `preview`, and `effects` contain App-level UI sections extracted from the main screen.
+- `src/hooks` contains focused reusable React behavior.
 - `src/config` contains app navigation and profile icon configuration.
 - `src/data` contains domain mapping data such as champion origins.
 - `src/utils` contains pure helper logic for media URLs, rarity metadata, scoring, and pack opening.

@@ -1,35 +1,26 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import Modal from 'react-bootstrap/Modal';
-import {
-    AiOutlineClose,
-    AiOutlineLeft,
-    AiOutlineRight,
-    AiOutlineStar,
-} from 'react-icons/ai';
-import { Check, Droplet, Gift, Heart, MapPin, Menu, Play, Search, Shield, ShoppingCart, Skull, SlidersHorizontal, Sparkles, Swords, Wand2, Zap } from 'lucide-react';
+import { AiOutlineClose } from 'react-icons/ai';
+import { Droplet, Shield, Skull, Sparkles, Swords, Wand2, Zap } from 'lucide-react';
 import CardContext from './components/component/CardContext';
 import { getChampionBlueEssence } from './components/component/championPrices';
 import Alert from './components/Body/Alert/Alert';
 import Pagination from './components/Body/Pagination/Pagination';
-import BlueEssenceIcon from './components/common/BlueEssenceIcon';
-import PriceAmount from './components/common/PriceAmount';
-import RarityPill from './components/common/RarityPill';
-import CartPanel from './components/cart/CartPanel';
+import FlightEffects from './components/effects/FlightEffects';
 import HomeMyCardsSection from './components/collection/HomeMyCardsSection';
-import FavoritesPanel from './components/favorites/FavoritesPanel';
-import FilterSection from './components/filters/FilterSection';
-import HeroStat from './components/hero/HeroStat';
+import FilterPanel from './components/filters/FilterPanel';
+import HeroSection from './components/hero/HeroSection';
+import Topbar from './components/layout/Topbar';
 import ChampionCard from './components/market/ChampionCard';
 import TrendingCarousel from './components/market/TrendingCarousel';
 import PackOpeningSection from './components/pack/PackOpeningSection';
+import PackOverlays from './components/pack/PackOverlays';
+import ChampionPreviewModal from './components/preview/ChampionPreviewModal';
 import CollectionPanel from './components/profile/CollectionPanel';
 import ShowcasePickerModal from './components/profile/ShowcasePickerModal';
 import { HERO_AUTOPLAY_MS, marketNavLinks, navLinks, previewTabs, profileNavLink, sidebarRoles } from './config/navigation';
-import { profileIconImage } from './config/profileIcons';
 import { championOrigins, originImageUrls } from './data/championOrigins';
-import { championLoadingImage, championSplashImage, HEXTECH_CHEST_ICON_URL, LOL_ICON_URL } from './utils/championMedia';
+import useBodyScrollLock from './hooks/useBodyScrollLock';
 import { rarityConfig, rarityFor, scoreChampion } from './utils/championMeta';
 import { buildPackRouletteItems, PACK_MODAL_PREVIEW_COUNT, PACK_OPEN_COST, pickPackChampion } from './utils/packOpening';
 
@@ -205,22 +196,7 @@ function App() {
         localStorage.setItem('favoriteItems', JSON.stringify(favoriteItems));
     }, [favoriteItems]);
 
-    useEffect(() => {
-        if (!isPackRewardOpen) {
-            return undefined;
-        }
-
-        const previousHtmlOverflow = document.documentElement.style.overflow;
-        const previousBodyOverflow = document.body.style.overflow;
-
-        document.documentElement.style.overflow = 'hidden';
-        document.body.style.overflow = 'hidden';
-
-        return () => {
-            document.documentElement.style.overflow = previousHtmlOverflow;
-            document.body.style.overflow = previousBodyOverflow;
-        };
-    }, [isPackRewardOpen]);
+    useBodyScrollLock(isPackRewardOpen);
 
     useEffect(() => {
         localStorage.setItem('recentAcquiredCards', JSON.stringify(recentAcquiredCards.slice(0, 10)));
@@ -906,157 +882,27 @@ function App() {
     }, [cartOpen, selectedChampion]);
 
     const filters = (
-        <aside className='filter-panel'>
-            <div className='filter-shell'>
-                <div className='filter-panel-title'>
-                    <div>
-                        <SlidersHorizontal size={16} strokeWidth={2.2} />
-                        <span>Filters</span>
-                    </div>
-                </div>
-
-                <div className='filter-panel-body'>
-                    <FilterSection title='Role' isOpen={openFilterSections.role} onToggle={() => toggleFilterSection('role')}>
-                        <div className='filter-role-grid'>
-                            {sidebarRoles.map((role) => (
-                                <button
-                                    type='button'
-                                    key={role}
-                                    className={`filter-role-button ${roleFilters.includes(role) ? 'active' : ''}`}
-                                    onClick={roleActions[role]}
-                                >
-                                    <img src={roleIcons[role]} alt='' />
-                                    {role}
-                                </button>
-                            ))}
-                        </div>
-                    </FilterSection>
-
-                    <FilterSection title='Region' isOpen={openFilterSections.region} onToggle={() => toggleFilterSection('region')}>
-                        <div className='filter-region-grid'>
-                            <button
-                                type='button'
-                                className={`filter-region-button ${regionFilters.length === 0 ? 'active' : ''}`}
-                                onClick={clearRegionFilters}
-                            >
-                                <span className='filter-region-icon filter-region-icon-empty'>
-                                    <MapPin size={16} strokeWidth={2.2} />
-                                </span>
-                                <span>All Regions</span>
-                            </button>
-                            {regionOptions.map((region) => (
-                                <button
-                                    type='button'
-                                    key={region.id}
-                                    className={`filter-region-button ${regionFilters.includes(region.id) ? 'active' : ''}`}
-                                    onClick={() => handleRegionClick(region.id)}
-                                >
-                                    <span className='filter-region-icon'>
-                                        <img src={region.image} alt='' />
-                                    </span>
-                                    <span>{region.label}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </FilterSection>
-
-                    <FilterSection title='Price Range' isOpen={openFilterSections.price} onToggle={() => toggleFilterSection('price')}>
-                        <div className='filter-price-range'>
-                            <div>
-                                <span className='filter-price-value'>
-                                    <BlueEssenceIcon />
-                                    <span>450</span>
-                                </span>
-                                <strong className='filter-price-value'>
-                                    <span>{maxPrice.toLocaleString()}</span>
-                                    <BlueEssenceIcon />
-                                </strong>
-                            </div>
-                            <input
-                                type='range'
-                                min='450'
-                                max='6300'
-                                step='450'
-                                value={maxPrice}
-                                onChange={(event) => setMaxPrice(event.target.value)}
-                                aria-label='Maximum price'
-                            />
-                        </div>
-                    </FilterSection>
-
-                    <FilterSection title='Rarity' isOpen={openFilterSections.rarity} onToggle={() => toggleFilterSection('rarity')}>
-                        <div className='filter-rarity-list'>
-                            {Object.entries(rarityConfig).map(([key, rarity]) => (
-                                <button
-                                    type='button'
-                                    key={key}
-                                    className={`filter-rarity-button ${rarityFilters.includes(key) ? 'active' : ''}`}
-                                    onClick={() => handleRarityClick(key)}
-                                >
-                                    <span
-                                        className='filter-check-box'
-                                        style={rarityFilters.includes(key) ? {
-                                            '--filter-rarity-color': rarity.color,
-                                        } : undefined}
-                                    >
-                                        {rarityFilters.includes(key) ? <Check size={13} strokeWidth={3} aria-hidden='true' /> : null}
-                                    </span>
-                                    <span style={rarityFilters.includes(key) ? { color: rarity.color } : undefined}>
-                                        {['legendary', 'mythic'].includes(key) ? <Sparkles size={12} strokeWidth={2} style={{ color: rarity.color }} aria-hidden='true' /> : null}
-                                        {rarity.label}
-                                    </span>
-                                </button>
-                            ))}
-                        </div>
-                    </FilterSection>
-
-                    <FilterSection title='Collection' isOpen={openFilterSections.collection} onToggle={() => toggleFilterSection('collection')}>
-                        <div className='filter-collection-list'>
-                            <button
-                                type='button'
-                                className={collectionFilter === 'all' ? 'active' : ''}
-                                onClick={() => handleCollectionFilterClick('all')}
-                            >
-                                All Cards
-                                {collectionFilter === 'all' ? <Check size={16} strokeWidth={2.2} /> : null}
-                            </button>
-                            <button
-                                type='button'
-                                className={collectionFilter === 'owned' ? 'active' : ''}
-                                onClick={() => handleCollectionFilterClick('owned')}
-                            >
-                                Owned
-                                {collectionFilter === 'owned' ? <Check size={16} strokeWidth={2.2} /> : null}
-                            </button>
-                            <button
-                                type='button'
-                                className={collectionFilter === 'not-owned' ? 'active' : ''}
-                                onClick={() => handleCollectionFilterClick('not-owned')}
-                            >
-                                Not Owned
-                                {collectionFilter === 'not-owned' ? <Check size={16} strokeWidth={2.2} /> : null}
-                            </button>
-                        </div>
-                    </FilterSection>
-
-                    <FilterSection title='Sort By' isOpen={openFilterSections.sort} onToggle={() => toggleFilterSection('sort')} last>
-                        <div className='filter-sort-list'>
-                            {sortOptions.map((option) => (
-                                <button
-                                    type='button'
-                                    key={option.key}
-                                    className={sortFilter === option.key ? 'active' : ''}
-                                    onClick={() => handleSortClick(option.key)}
-                                >
-                                    <span>{option.label}</span>
-                                    {sortFilter === option.key ? <Check size={16} strokeWidth={2.2} /> : null}
-                                </button>
-                            ))}
-                        </div>
-                    </FilterSection>
-                </div>
-            </div>
-        </aside>
+        <FilterPanel
+            openFilterSections={openFilterSections}
+            toggleFilterSection={toggleFilterSection}
+            sidebarRoles={sidebarRoles}
+            roleFilters={roleFilters}
+            roleIcons={roleIcons}
+            roleActions={roleActions}
+            regionFilters={regionFilters}
+            clearRegionFilters={clearRegionFilters}
+            regionOptions={regionOptions}
+            handleRegionClick={handleRegionClick}
+            maxPrice={maxPrice}
+            setMaxPrice={setMaxPrice}
+            rarityFilters={rarityFilters}
+            handleRarityClick={handleRarityClick}
+            collectionFilter={collectionFilter}
+            handleCollectionFilterClick={handleCollectionFilterClick}
+            sortOptions={sortOptions}
+            sortFilter={sortFilter}
+            handleSortClick={handleSortClick}
+        />
     );
 
     const ownedChampionIds = new Set(myCardsArr.map((champion) => champion.id));
@@ -1068,464 +914,87 @@ function App() {
 
     return (
         <div className='market-shell'>
-            {cartFlight ? (
-                <span
-                    key={cartFlight.id}
-                    className='cart-flight-card'
-                    style={{
-                        left: cartFlight.left,
-                        top: cartFlight.top,
-                        width: cartFlight.width,
-                        height: cartFlight.height,
-                        '--flight-x': cartFlight['--flight-x'],
-                        '--flight-y': cartFlight['--flight-y'],
-                    }}
-                    aria-hidden='true'
-                >
-                    <img src={championLoadingImage(cartFlight.championId)} alt='' />
-                </span>
-            ) : null}
-            {favoriteFlight ? (
-                <span
-                    key={favoriteFlight.id}
-                    className='favorite-flight-card'
-                    style={{
-                        left: favoriteFlight.left,
-                        top: favoriteFlight.top,
-                        width: favoriteFlight.width,
-                        height: favoriteFlight.height,
-                        '--favorite-flight-x': favoriteFlight['--favorite-flight-x'],
-                        '--favorite-flight-y': favoriteFlight['--favorite-flight-y'],
-                    }}
-                    aria-hidden='true'
-                >
-                    <img src={championLoadingImage(favoriteFlight.championId)} alt='' />
-                    <span>
-                        <Heart size={17} strokeWidth={2.5} />
-                    </span>
-                </span>
-            ) : null}
-            {collectionFlights.map((flight) => (
-                <span
-                    key={flight.id}
-                    className='collection-flight-card'
-                    style={{
-                        left: flight.left,
-                        top: flight.top,
-                        width: flight.width,
-                        height: flight.height,
-                        '--flight-x': flight['--flight-x'],
-                        '--flight-y': flight['--flight-y'],
-                        '--flight-delay': flight['--flight-delay'],
-                    }}
-                    aria-hidden='true'
-                >
-                    <img src={championLoadingImage(flight.championId)} alt='' />
-                </span>
-            ))}
-            {dailyEssenceFlights.map((flight) => (
-                <span
-                    key={flight.id}
-                    className='daily-essence-flight'
-                    style={{
-                        left: flight.left,
-                        top: flight.top,
-                        '--essence-x': flight['--essence-x'],
-                        '--essence-y': flight['--essence-y'],
-                        '--essence-arc': flight['--essence-arc'],
-                        '--essence-delay': flight['--essence-delay'],
-                    }}
-                    aria-hidden='true'
-                />
-            ))}
-            {packEssenceFlights.map((flight) => (
-                <span
-                    key={flight.id}
-                    className='pack-essence-flight'
-                    style={{
-                        left: flight.left,
-                        top: flight.top,
-                        '--essence-x': flight['--essence-x'],
-                        '--essence-y': flight['--essence-y'],
-                        '--essence-delay': flight['--essence-delay'],
-                    }}
-                    aria-hidden='true'
-                >
-                    <BlueEssenceIcon />
-                </span>
-            ))}
-            {packImpactWave ? (
-                <span
-                    key={packImpactWave.id}
-                    className={`pack-impact-wave rarity-${packImpactWave.rarity}`}
-                    style={{
-                        left: packImpactWave.left,
-                        top: packImpactWave.top,
-                        '--impact-color': packImpactWave.color,
-                        '--impact-glow': packImpactWave.glow,
-                    }}
-                    aria-hidden='true'
-                >
-                    <span />
-                    <span />
-                    <span />
-                    <i />
-                    <i />
-                    <i />
-                    <i />
-                    <i />
-                    <i />
-                </span>
-            ) : null}
-            {packConfirmOpen && !packReward ? (
-                <div className='pack-reward-overlay pack-confirm-overlay' aria-live='polite'>
-                    <span className='pack-reward-backdrop' onClick={closePackConfirm} />
-                    <div className='pack-confirm-stage' role='dialog' aria-modal='true' aria-labelledby='pack-confirm-title'>
-                        <span className='pack-confirm-frame' aria-hidden='true' />
-                        <span className='pack-confirm-preview' aria-hidden='true'>
-                            {packModalPreviewChampions.map((champion) => {
-                                const rarity = rarityFor(champion);
-
-                                return (
-                                    <span
-                                        className={`pack-confirm-preview-card rarity-${rarity}`}
-                                        key={champion.id}
-                                        style={{
-                                            '--preview-color': rarityConfig[rarity].color,
-                                            '--preview-glow': rarityConfig[rarity].glow,
-                                        }}
-                                    >
-                                        <img src={championLoadingImage(champion.id)} alt='' loading='lazy' draggable='false' />
-                                    </span>
-                                );
-                            })}
-                        </span>
-                        <button type='button' className='pack-confirm-close' onClick={closePackConfirm} aria-label='Close mystery pack'>
-                            <AiOutlineClose />
-                        </button>
-                        <div className='pack-confirm-header'>
-                            <span className='pack-confirm-kicker' id='pack-confirm-title'>Mystery Pack</span>
-                            <span className='pack-confirm-chest'>
-                                <img src={HEXTECH_CHEST_ICON_URL} alt='' aria-hidden='true' />
-                            </span>
-                        </div>
-                        <button type='button' className='pack-confirm-spin' onClick={handlePackOpen}>
-                            <span className='pack-confirm-spin-aura' aria-hidden='true' />
-                            <span className='pack-action-label'>Open</span>
-                            <span className='pack-action-price'>
-                                <span className='wallet-coin'>
-                                    <BlueEssenceIcon />
-                                </span>
-                                <span>{PACK_OPEN_COST.toLocaleString('tr-TR')}</span>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            ) : null}
-            {packReward ? (
-                <div className='pack-reward-overlay' aria-live='polite'>
-                    <span className='pack-reward-backdrop' />
-                    <div className={`pack-case-stage phase-${packReward.phase}`}>
-                        <div className='pack-case-header'>
-                            <span className='pack-case-chest'>
-                                <img src={HEXTECH_CHEST_ICON_URL} alt='' aria-hidden='true' />
-                            </span>
-                            <div>
-                                <span>Hextech Chest</span>
-                                <strong>{packReward.phase === 'won' ? 'Kazanan kart' : packReward.phase === 'flying' ? 'Koleksiyona ekleniyor' : 'Kasa açılıyor'}</strong>
-                            </div>
-                        </div>
-
-                        <div className='pack-roulette-window'>
-                            <span className='pack-roulette-marker' aria-hidden='true' />
-                            <div
-                                className='pack-roulette-track'
-                                style={{ '--winner-offset': `${packReward.winnerIndex * 144 + 66}px` }}
-                            >
-                                {packReward.items.map((item) => {
-                                    const rarity = rarityFor(item.champion);
-
-                                    return (
-                                        <article className={`pack-roulette-card rarity-${rarity} ${item.isWinner ? 'is-winner' : ''}`} key={item.key}>
-                                            <img src={championLoadingImage(item.champion.id)} alt='' />
-                                            <span className='pack-roulette-card-shade' />
-                                            <span className='pack-roulette-card-name'>{item.champion.name}</span>
-                                        </article>
-                                    );
-                                })}
-                            </div>
-                        </div>
-
-                        <div className='pack-winner-panel'>
-                            <article
-                                className={`pack-winner-card rarity-${rarityFor(packReward.champion)}`}
-                                style={{
-                                    '--pack-flight-x': packReward['--pack-flight-x'] || '0px',
-                                    '--pack-flight-y': packReward['--pack-flight-y'] || '0px',
-                                }}
-                            >
-                                <img src={championLoadingImage(packReward.champion.id)} alt={packReward.champion.name} />
-                                <span className='pack-reward-shine' />
-                                <span className='pack-reward-content'>
-                                    <RarityPill rarity={rarityFor(packReward.champion)} />
-                                    <strong>{packReward.champion.name}</strong>
-                                    <span>{packReward.champion.title}</span>
-                                </span>
-                            </article>
-                        </div>
-                    </div>
-                </div>
-            ) : null}
-            <header className='topbar'>
-                <div className='topbar-inner'>
-                    <a href='#marketplace' className='brand' aria-label='Nexus home' onClick={openStoreView}>
-                        <span className='brand-mark'>
-                            <img src={LOL_ICON_URL} alt='League of Legends' />
-                        </span>
-                        <div className='brand-copy'>
-                            <span>League</span>
-                            <small>Champion Marketplace</small>
-                        </div>
-                    </a>
-                    <div className='topbar-links'>
-                        {marketNavLinks.map((link) => (
-                            <a
-                                key={link.label}
-                                href={link.href}
-                                className={activeLink === link.label ? 'active' : ''}
-                                onClick={(event) => handleNavClick(event, link)}
-                            >
-                                {link.label}
-                                {activeLink === link.label ? (
-                                    <span className='topbar-link-underline' aria-hidden='true' />
-                                ) : null}
-                            </a>
-                        ))}
-                    </div>
-                    <label className='top-search'>
-                        <Search size={17} strokeWidth={2.2} />
-                        <input type='text' spellCheck='false' placeholder='Search champions, roles, regions...' value={search} onChange={handleChange} />
-                        {search ? (
-                            <button type='button' onClick={clearSearch} aria-label='Clear search'>
-                                <AiOutlineClose />
-                            </button>
-                        ) : <kbd>/</kbd>}
-                    </label>
-                    <motion.div
-                        ref={walletRef}
-                        key={money}
-                        className={`wallet-pill ${walletCatching ? 'is-catching' : ''}`}
-                        initial={{ scale: 1 }}
-                        animate={{ scale: [1, 1.06, 1] }}
-                        transition={{ duration: 0.35 }}
-                    >
-                        <span className='wallet-coin'>
-                            <BlueEssenceIcon />
-                        </span>
-                        <span>{displayMoney.toLocaleString()}</span>
-                    </motion.div>
-                    <button
-                        ref={dailyRewardButtonRef}
-                        type='button'
-                        className={`daily-reward-button ${dailyRewardAvailable ? 'is-available' : 'is-claimed'}`}
-                        onClick={handleDailyRewardClaim}
-                        disabled={!dailyRewardAvailable}
-                    >
-                        {dailyRewardAvailable ? <Gift size={16} strokeWidth={2.4} /> : <Check size={16} strokeWidth={2.6} />}
-                        <span>{dailyRewardAvailable ? 'Claim' : 'Claimed'}</span>
-                        {dailyRewardAvailable ? <PriceAmount value={dailyRewardAmount} /> : null}
-                    </button>
-                        <div className='favorites-dropdown-shell' ref={favoritesDropdownRef}>
-                            <button
-                                ref={favoritesButtonRef}
-                                type='button'
-                                className={`favorites-pill ${favoritesOpen ? 'is-open' : ''} ${favoritesCatching ? 'is-catching' : ''}`}
-                                onClick={() => {
-                                    setFavoritesOpen((open) => !open);
-                                    setCartOpen(false);
-                                }}
-                                aria-label={`${favoriteItems.length} favorite champions`}
-                                aria-expanded={favoritesOpen}
-                                aria-haspopup='dialog'
-                            >
-                                <Heart size={17} strokeWidth={2.4} />
-                                <span>{favoriteItems.length}</span>
-                            </button>
-                            <AnimatePresence>
-                                {favoritesOpen ? (
-                                    <motion.div
-                                        className='favorites-dropdown'
-                                        initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: 8, scale: 0.98 }}
-                                        transition={{ duration: 0.18, ease: 'easeOut' }}
-                                    >
-                                        <FavoritesPanel
-                                            favorites={favoriteItems}
-                                            ownedChampions={myCardsArr}
-                                            cartItems={cartItems}
-                                            addToCart={addToCart}
-                                            removeFromCart={removeFromCart}
-                                            removeFavorite={removeFavorite}
-                                            clearFavorites={clearFavorites}
-                                            openChampionModal={openChampionModal}
-                                        />
-                                    </motion.div>
-                                ) : null}
-                            </AnimatePresence>
-                        </div>
-
-                        <div className='cart-dropdown-shell' ref={cartDropdownRef}>
-                            <button
-                                ref={cartButtonRef}
-                                type='button'
-                                className={`cart-pill ${cartOpen ? 'is-open' : ''} ${cartCatching ? 'is-catching' : ''}`}
-                                onClick={() => {
-                                    setCartOpen((open) => !open);
-                                    setFavoritesOpen(false);
-                                }}
-                                aria-label={`${cartItems.length} cards in cart`}
-                            aria-expanded={cartOpen}
-                            aria-haspopup='dialog'
-                        >
-                            <ShoppingCart size={17} strokeWidth={2.4} />
-                            <span>{cartItems.length}</span>
-                        </button>
-                        <AnimatePresence>
-                            {cartOpen ? (
-                                <motion.div
-                                    className='cart-dropdown'
-                                    initial={{ opacity: 0, y: -8, scale: 0.98 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                                    transition={{ duration: 0.16, ease: 'easeOut' }}
-                                >
-                                    <CartPanel
-                                        cartItems={cartItems}
-                                        cartTotal={cartTotal}
-                                        cartMissingBalance={cartMissingBalance}
-                                        money={money}
-                                        removeFromCart={removeFromCart}
-                                        clearCart={clearCart}
-                                        checkoutCart={checkoutCart}
-                                        collectionTargetRef={recentCardsTargetRef}
-                                        onCollectionFlights={showCollectionFlights}
-                                        openChampionModal={openChampionModal}
-                                    />
-                                </motion.div>
-                            ) : null}
-                        </AnimatePresence>
-                    </div>
-                    {profileNavLink ? (
-                        <a
-                            href={profileNavLink.href}
-                            className={`topbar-profile-link ${activeLink === profileNavLink.label ? 'active' : ''}`}
-                            onClick={(event) => handleNavClick(event, profileNavLink)}
-                            aria-label='Open profile'
-                        >
-                            <span className='topbar-profile-icon'>
-                                <img src={profileIconImage(selectedProfileIconId)} alt='' />
-                            </span>
-                            <span className='topbar-profile-label'>Profile</span>
-                            {activeLink === profileNavLink.label ? (
-                                <span className='topbar-link-underline' aria-hidden='true' />
-                            ) : null}
-                        </a>
-                    ) : null}
-                    <button type='button' className='icon-button mobile-menu-button' onClick={() => setMobileFiltersOpen(true)} aria-label='Menu'>
-                        <Menu size={20} strokeWidth={2.2} />
-                    </button>
-                </div>
-            </header>
+            <FlightEffects
+                cartFlight={cartFlight}
+                favoriteFlight={favoriteFlight}
+                collectionFlights={collectionFlights}
+                dailyEssenceFlights={dailyEssenceFlights}
+                packEssenceFlights={packEssenceFlights}
+                packImpactWave={packImpactWave}
+            />
+            <PackOverlays
+                packConfirmOpen={packConfirmOpen}
+                packReward={packReward}
+                packModalPreviewChampions={packModalPreviewChampions}
+                closePackConfirm={closePackConfirm}
+                handlePackOpen={handlePackOpen}
+            />
+            <Topbar
+                activeLink={activeLink}
+                marketNavLinks={marketNavLinks}
+                profileNavLink={profileNavLink}
+                handleNavClick={handleNavClick}
+                openStoreView={openStoreView}
+                search={search}
+                handleChange={handleChange}
+                clearSearch={clearSearch}
+                walletRef={walletRef}
+                walletCatching={walletCatching}
+                displayMoney={displayMoney}
+                dailyRewardButtonRef={dailyRewardButtonRef}
+                dailyRewardAvailable={dailyRewardAvailable}
+                dailyRewardAmount={dailyRewardAmount}
+                handleDailyRewardClaim={handleDailyRewardClaim}
+                favoritesDropdownRef={favoritesDropdownRef}
+                favoritesButtonRef={favoritesButtonRef}
+                favoritesOpen={favoritesOpen}
+                setFavoritesOpen={setFavoritesOpen}
+                favoritesCatching={favoritesCatching}
+                favoriteItems={favoriteItems}
+                myCardsArr={myCardsArr}
+                cartItems={cartItems}
+                addToCart={addToCart}
+                removeFromCart={removeFromCart}
+                removeFavorite={removeFavorite}
+                clearFavorites={clearFavorites}
+                openChampionModal={openChampionModal}
+                cartDropdownRef={cartDropdownRef}
+                cartButtonRef={cartButtonRef}
+                cartOpen={cartOpen}
+                setCartOpen={setCartOpen}
+                cartCatching={cartCatching}
+                cartTotal={cartTotal}
+                cartMissingBalance={cartMissingBalance}
+                money={money}
+                clearCart={clearCart}
+                checkoutCart={checkoutCart}
+                recentCardsTargetRef={recentCardsTargetRef}
+                showCollectionFlights={showCollectionFlights}
+                selectedProfileIconId={selectedProfileIconId}
+                setMobileFiltersOpen={setMobileFiltersOpen}
+            />
 
             <main className={`market-main ${activeView === 'profile' ? 'profile-main' : ''}`}>
-                {activeView === 'market' && heroChampion ? (
-                    <section
-                        className={`hero-section rarity-${rarityFor(heroChampion)}`}
-                        onMouseEnter={() => setHeroPaused(true)}
-                        onMouseLeave={() => setHeroPaused(false)}
-                    >
-                        <AnimatePresence mode='sync'>
-                            <motion.div
-                                key={heroChampion.id}
-                                className='hero-image-layer'
-                                initial={{ opacity: 0, scale: 1.06 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 1.02 }}
-                                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-                            >
-                                <img className='hero-bg' src={championSplashImage(heroChampion.id)} alt={heroChampion.name} />
-                            </motion.div>
-                        </AnimatePresence>
-                        <div className='hero-shade' />
-                        <button type='button' className='hero-nav hero-nav-left' onClick={showPrevHero} aria-label='Previous featured champion'>
-                            <AiOutlineLeft />
-                        </button>
-                        <button type='button' className='hero-nav hero-nav-right' onClick={showNextHero} aria-label='Next featured champion'>
-                            <AiOutlineRight />
-                        </button>
-                        <div className='hero-content'>
-                            <AnimatePresence mode='wait'>
-                                <motion.div
-                                    key={heroChampion.id}
-                                    variants={heroTextParent}
-                                    initial='hidden'
-                                    animate='show'
-                                    exit='exit'
-                                >
-                                    <motion.div variants={heroTextItem} className='hero-meta'>
-                                        <span className='hero-rarity'><AiOutlineStar />{rarityFor(heroChampion)}</span>
-                                        <span>Featured · {heroChampion.tags[0] || heroChampion.partype || 'Runeterra'}</span>
-                                    </motion.div>
-                                    <motion.h1 variants={heroTextItem}>{heroChampion.name}</motion.h1>
-                                    <motion.h2 variants={heroTextItem}>{heroChampion.title}</motion.h2>
-                                    <motion.p variants={heroTextItem}>{heroChampion.blurb}</motion.p>
-                                    <motion.div variants={heroTextItem} className='hero-stats'>
-                                        <HeroStat label='Attack' value={heroChampion.info.attack} tone='attack' />
-                                        <HeroStat label='Magic' value={heroChampion.info.magic} tone='magic' />
-                                        <HeroStat label='Defense' value={heroChampion.info.defense} tone='defense' />
-                                        <HeroStat label='Mobility' value={heroChampion.info.difficulty} tone='difficulty' />
-                                    </motion.div>
-                                    <motion.div variants={heroTextItem} className='hero-actions'>
-                                        <button
-                                            type='button'
-                                            className='hero-unlock'
-                                            disabled={heroChampionOwned || heroChampionInCart}
-                                            onClick={() => addToCart(heroChampion)}
-                                        >
-                                            {heroChampionOwned || heroChampionInCart ? <Check size={16} strokeWidth={2.6} /> : <ShoppingCart size={16} strokeWidth={2.4} />}
-                                            {heroChampionOwned ? 'In Collection' : heroChampionInCart ? 'In Cart' : (
-                                                <>
-                                                    <span>Add to Cart</span>
-                                                    <PriceAmount value={getChampionBlueEssence(heroChampion)} />
-                                                </>
-                                            )}
-                                        </button>
-                                        <button type='button' className='hero-preview' onMouseEnter={() => preloadChampionDetails(heroChampion.id)} onClick={() => openChampionModal(heroChampion)}>
-                                            <Play size={16} strokeWidth={2.4} />
-                                            Preview
-                                        </button>
-                                        <button type='button' className={`hero-like ${favoriteIds.has(heroChampion.id) ? 'is-wished' : ''}`} onClick={(event) => toggleHeroFavorite(event, heroChampion)} aria-label={favoriteIds.has(heroChampion.id) ? `Remove ${heroChampion.name} from favorites` : `Add ${heroChampion.name} to favorites`}>
-                                            <Heart size={20} strokeWidth={2.2} />
-                                        </button>
-                                    </motion.div>
-                                </motion.div>
-                            </AnimatePresence>
-                        </div>
-                        <div className='hero-dots'>
-                            {featured.map((champion, index) => (
-                                <button
-                                    type='button'
-                                    key={champion.id}
-                                    className={index === activeHeroIndex % featured.length ? 'active' : ''}
-                                    onClick={() => setActiveHeroIndex(index)}
-                                    aria-label={`Show ${champion.name}`}
-                                >
-                                    {index === activeHeroIndex % featured.length ? <span style={{ width: `${heroProgress * 100}%` }} /> : null}
-                                </button>
-                            ))}
-                        </div>
-                    </section>
+                {activeView === 'market' ? (
+                    <HeroSection
+                        heroChampion={heroChampion}
+                        heroChampionOwned={heroChampionOwned}
+                        heroChampionInCart={heroChampionInCart}
+                        featured={featured}
+                        activeHeroIndex={activeHeroIndex}
+                        setActiveHeroIndex={setActiveHeroIndex}
+                        heroProgress={heroProgress}
+                        setHeroPaused={setHeroPaused}
+                        showPrevHero={showPrevHero}
+                        showNextHero={showNextHero}
+                        heroTextParent={heroTextParent}
+                        heroTextItem={heroTextItem}
+                        addToCart={addToCart}
+                        preloadChampionDetails={preloadChampionDetails}
+                        openChampionModal={openChampionModal}
+                        favoriteIds={favoriteIds}
+                        toggleHeroFavorite={toggleHeroFavorite}
+                    />
                 ) : null}
 
                 {activeView === 'profile' ? (
@@ -1632,207 +1101,28 @@ function App() {
                 />
             ) : null}
 
-            {selectedChampion ? (
-                <Modal show onHide={closeChampionModal} size='xl' centered dialogClassName='champion-preview-dialog' contentClassName='champion-preview-content'>
-                    <Modal.Body className='modal-body'>
-                        <button type='button' className='champion-preview-close' onClick={closeChampionModal} aria-label='Close preview'>
-                            <AiOutlineClose />
-                        </button>
-                        <div className={`champion-preview rarity-${rarityFor(selectedChampion)} ${selectedChampionOwned ? 'is-owned-preview' : ''}`}>
-                            <div className='champion-preview-art'>
-                                <img loading='lazy' src={championSplashImage(selectedChampion.id, selectedSkinNum)} alt={selectedChampion.name} />
-                                <div className='champion-preview-owned-glow' />
-                                <div className='champion-preview-art-shade' />
-                                <div className='champion-preview-frame' />
-                                <div className='champion-preview-title'>
-                                    <span>{selectedChampion.tags?.join(' / ') || selectedChampion.partype || 'Champion'}</span>
-                                    <h2>{selectedChampion.name}</h2>
-                                    <p>{selectedChampion.title}</p>
-                                </div>
-                            </div>
-
-                            <aside className='champion-preview-panel'>
-                                <div className='champion-preview-header'>
-                                    <div>
-                                        <span className='champion-preview-kicker'>Champion Preview</span>
-                                        <h3>{selectedChampion.name}</h3>
-                                    </div>
-                                    {selectedChampionOwned ? (
-                                        <div className='champion-preview-showcase-control'>
-                                            <div>
-                                                <span>In Collection</span>
-                                                <PriceAmount value={selectedChampion.price} />
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            type='button'
-                                            className='champion-preview-price'
-                                            onClick={() => addToCart(selectedChampion)}
-                                            disabled={selectedChampionInCart}
-                                        >
-                                            <span>{selectedChampionInCart ? 'In Cart' : 'Add to Cart'}</span>
-                                            <PriceAmount value={selectedChampion.price} />
-                                        </button>
-                                    )}
-                                </div>
-
-                                <div className='champion-preview-tabs' role='tablist' aria-label='Champion preview sections'>
-                                    {previewTabs.map((tab) => (
-                                        <button
-                                            type='button'
-                                            key={tab.key}
-                                            className={activePreviewTab === tab.key ? 'active' : ''}
-                                            onClick={() => setActivePreviewTab(tab.key)}
-                                            role='tab'
-                                            aria-selected={activePreviewTab === tab.key}
-                                        >
-                                            {tab.label}
-                                        </button>
-                                    ))}
-                                </div>
-
-                                <div className='champion-preview-tab-panel'>
-                                    {activePreviewTab === 'overview' ? (
-                                        <>
-                                            <div className='champion-preview-meta-grid'>
-                                                {(selectedChampion.tags || []).map((tag) => (
-                                                    <div className='champion-preview-meta' key={tag}>
-                                                        {roleIcons[tag] ? <img src={roleIcons[tag]} alt='' /> : null}
-                                                        <span>{tag}</span>
-                                                    </div>
-                                                ))}
-                                                <div className='champion-preview-meta'>
-                                                    <ResourceIcon size={18} strokeWidth={2.4} aria-hidden='true' />
-                                                    <span>{selectedChampion.partype || 'No Resource'}</span>
-                                                </div>
-                                                {!selectedChampionOriginImage ? (
-                                                    <div className='champion-preview-meta'>
-                                                        <MapPin size={18} strokeWidth={2.4} aria-hidden='true' />
-                                                        <span>{selectedChampionOrigin}</span>
-                                                    </div>
-                                                ) : null}
-                                            </div>
-                                            {selectedChampionOriginImage ? (
-                                                <div className='champion-preview-origin-block'>
-                                                    <div className='champion-preview-origin-card'>
-                                                        <img src={selectedChampionOriginImage} alt={`${selectedChampionOrigin} region`} loading='lazy' />
-                                                        <span>
-                                                            {selectedChampionOrigin}
-                                                        </span>
-                                                    </div>
-                                                    {sameOriginChampions.length > 0 ? (
-                                                        <div className='same-origin-roster' aria-label={`${selectedChampionOrigin} champions`}>
-                                                            {sameOriginChampions.map((champion) => (
-                                                                <button
-                                                                    type='button'
-                                                                    key={champion.id}
-                                                                    className={champion.id === selectedChampion.id ? 'active' : ''}
-                                                                    onClick={() => openChampionModal(champion)}
-                                                                    onMouseEnter={() => preloadChampionDetails(champion.id)}
-                                                                    aria-label={`Preview ${champion.name}`}
-                                                                >
-                                                                    <img src={championLoadingImage(champion.id)} alt='' loading='lazy' />
-                                                                    <span>{champion.name}</span>
-                                                                </button>
-                                                            ))}
-                                                        </div>
-                                                    ) : null}
-                                                </div>
-                                            ) : null}
-
-                                            <div className='champion-preview-stats'>
-                                                {previewStats.map((stat) => {
-                                                    const value = selectedChampion.info?.[stat.key] || 0;
-                                                    const StatIcon = stat.icon;
-
-                                                    return (
-                                                    <div className={`preview-stat-row stat-${stat.tone} ${value >= 10 ? 'is-complete' : ''}`} key={stat.label}>
-                                                        <div className='preview-stat-heading'>
-                                                            <span>
-                                                                <StatIcon size={15} strokeWidth={2.3} aria-hidden='true' />
-                                                                {stat.label}
-                                                            </span>
-                                                            <strong>
-                                                                <b>{value}</b>
-                                                                <span>/10</span>
-                                                            </strong>
-                                                        </div>
-                                                        <div className='preview-stat-track'>
-                                                            <i className={`tone-${stat.tone}`} style={{ width: `${Math.min(Math.max(value * 10, 0), 100)}%` }} />
-                                                        </div>
-                                                    </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </>
-                                    ) : null}
-
-                                    {activePreviewTab === 'abilities' ? (
-                                        <section className='preview-section preview-section-flush'>
-                                            <div className='preview-section-title'>Abilities</div>
-                                            <div className='preview-abilities'>
-                                                {selectedChampionSkills.length > 0 ? selectedChampionSkills.map((skill) => (
-                                                    <article className='preview-ability' key={skill.key}>
-                                                        <div className='preview-ability-icon'>
-                                                            <img src={skill.src} alt={skill.name} />
-                                                            <span>{skill.key}</span>
-                                                        </div>
-                                                        <div>
-                                                    <div className='preview-ability-heading'>
-                                                        <h4>{skill.name}</h4>
-                                                    </div>
-                                                            {skill.description ? <p>{skill.description}</p> : null}
-                                                        </div>
-                                                    </article>
-                                                )) : ['P', 'Q', 'W', 'E', 'R'].map((skill) => (
-                                                    <div className='preview-ability preview-ability-loading' key={skill}>
-                                                        <div className='preview-ability-icon'>
-                                                            <span>{skill}</span>
-                                                        </div>
-                                                        <div>
-                                                            <h4>Loading</h4>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </section>
-                                    ) : null}
-
-                                    {activePreviewTab === 'lore' ? (
-                                        <section className='preview-section preview-section-flush'>
-                                            <div className='preview-section-title'>Lore</div>
-                                            <p className='preview-lore preview-lore-full'>{selectedChampionDetails?.lore || selectedChampion.story}</p>
-                                        </section>
-                                    ) : null}
-
-                                    {activePreviewTab === 'skins' ? (
-                                        <section className='preview-section preview-section-flush'>
-                                            <div className='preview-section-head'>
-                                                <div className='preview-section-title'>Skins</div>
-                                                <span>{selectedChampionDetails?.skins?.length || 1} looks</span>
-                                            </div>
-                                            <div className='preview-skins preview-skins-grid'>
-                                                {(selectedChampionDetails?.skins || [{ num: 0, name: selectedChampion.name }]).map((skin) => (
-                                                    <button
-                                                        type='button'
-                                                        key={skin.id || skin.num}
-                                                        className={`preview-skin ${selectedSkinNum === skin.num ? 'active' : ''}`}
-                                                        onClick={() => setSelectedSkinNum(skin.num)}
-                                                    >
-                                                        <img src={championSplashImage(selectedChampion.id, skin.num)} alt={skin.name} loading='lazy' />
-                                                        <span>{skin.name}</span>
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </section>
-                                    ) : null}
-                                </div>
-                            </aside>
-                        </div>
-                    </Modal.Body>
-                </Modal>
-            ) : null}
+            <ChampionPreviewModal
+                selectedChampion={selectedChampion}
+                selectedChampionOwned={selectedChampionOwned}
+                selectedChampionInCart={selectedChampionInCart}
+                selectedChampionDetails={selectedChampionDetails}
+                selectedChampionSkills={selectedChampionSkills}
+                selectedSkinNum={selectedSkinNum}
+                setSelectedSkinNum={setSelectedSkinNum}
+                activePreviewTab={activePreviewTab}
+                setActivePreviewTab={setActivePreviewTab}
+                previewTabs={previewTabs}
+                previewStats={previewStats}
+                closeChampionModal={closeChampionModal}
+                addToCart={addToCart}
+                roleIcons={roleIcons}
+                ResourceIcon={ResourceIcon}
+                selectedChampionOrigin={selectedChampionOrigin}
+                selectedChampionOriginImage={selectedChampionOriginImage}
+                sameOriginChampions={sameOriginChampions}
+                openChampionModal={openChampionModal}
+                preloadChampionDetails={preloadChampionDetails}
+            />
 
             <Alert />
         </div>
