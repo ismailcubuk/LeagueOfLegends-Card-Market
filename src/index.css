@@ -2843,25 +2843,8 @@ img {
 .filter-region-grid {
   display: grid;
   gap: 8px;
-  max-height: 330px;
-  overflow-y: auto;
   padding-top: 12px;
   padding-right: 2px;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(217, 183, 93, 0.36) transparent;
-}
-
-.filter-region-grid::-webkit-scrollbar {
-  width: 4px;
-}
-
-.filter-region-grid::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.filter-region-grid::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: rgba(217, 183, 93, 0.36);
 }
 
 .filter-region-button {
