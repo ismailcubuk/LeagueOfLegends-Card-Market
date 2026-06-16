@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { FaWallet } from 'react-icons/fa';
-import CardContext from '../../component/CardContext';
+import CardContext from '../../../context/CardContext';
 import './navbar.css';
 
 function Wallet() {

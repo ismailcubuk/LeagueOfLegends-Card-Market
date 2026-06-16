@@ -1,4 +1,4 @@
-import { getChampionBlueEssence } from '../components/component/championPrices';
+import { getChampionBlueEssence } from '../domain/championPrices';
 
 export const rarityConfig = {
     common: { label: 'Common', color: 'var(--rarity-common)', border: 'rgba(170,180,200,0.5)', glow: 'rgba(170,180,200,0.35)' },
@@ -41,3 +41,4 @@ export function rarityFor(champion) {
 
     return 'common';
 }
+

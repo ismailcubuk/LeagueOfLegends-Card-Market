@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import CardContext from '../../component/CardContext';
+import CardContext from '../../../context/CardContext';
 import { AiOutlineArrowLeft, AiOutlineArrowRight } from 'react-icons/ai';
 import './Carousel.css';
 
@@ -81,3 +81,4 @@ function Carousel() {
 }
 
 export default Carousel
+

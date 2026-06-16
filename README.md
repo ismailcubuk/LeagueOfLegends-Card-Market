@@ -35,54 +35,60 @@ Live demo: [League of Legends Card Market](https://ismailcubuk.github.io/LeagueO
 
 ```text
 src/
+  app/
+    App.js
   components/
-    cart/
-      CartPanel.js
-    collection/
-      HomeMyCardsSection.js
     common/
       BlueEssenceIcon.js
       PriceAmount.js
       RarityPill.js
-    favorites/
-      FavoritesPanel.js
     effects/
       FlightEffects.js
+    layout/
+      Topbar.js
+    feedback/
+      Alert/
+    pagination/
+      Pagination/
+    Body/
+      Cards/
+      Carousel/
+      Navbar/
+      Sidebar/
+  config/
+    navigation.js
+    profileIcons.js
+  context/
+    CardContext.js
+  data/
+    championOrigins.js
+    Lol.json
+  domain/
+    championPrices.js
+  features/
+    cart/
+      CartPanel.js
+    collection/
+      HomeMyCardsSection.js
+    favorites/
+      FavoritesPanel.js
     filters/
       FilterPanel.js
       FilterSection.js
     hero/
       HeroSection.js
       HeroStat.js
-    layout/
-      Topbar.js
     market/
       ChampionCard.js
       TrendingCarousel.js
     pack/
-      PackOverlays.js
       PackOpeningSection.js
+      PackOverlays.js
     preview/
       ChampionPreviewModal.js
     profile/
       CollectionPanel.js
       ShowcasePickerModal.js
-    Body/
-      Alert/
-      Cards/
-      Carousel/
-      Navbar/
-      Pagination/
-      Sidebar/
-    component/
-      CardContext.js
-      Lol.json
-      championPrices.js
-  config/
-    navigation.js
-    profileIcons.js
-  data/
-    championOrigins.js
   hooks/
     useBodyScrollLock.js
   utils/
@@ -95,7 +101,6 @@ src/
     Passive/
     Skills/
     Stats/
-  App.js
   index.js
 
 public/
@@ -111,9 +116,12 @@ public/
 
 - `public/index.html` is the HTML shell used by Create React App.
 - `src/styles/index.css` and component CSS files keep styling separate from JavaScript.
-- `src/App.js` owns the main screen flow and composes the marketplace sections.
+- `src/app/App.js` owns the main screen flow and composes the marketplace sections.
 - `src/components/common` contains reusable UI pieces used across the app.
-- `src/components/layout`, `filters`, `hero`, `pack`, `preview`, and `effects` contain App-level UI sections extracted from the main screen.
+- `src/components` contains shared UI, layout, feedback, pagination, and legacy Body components.
+- `src/features` groups user-facing feature areas such as market, filters, pack, profile, cart, favorites, and champion preview.
+- `src/context` contains global React context providers.
+- `src/domain` contains domain-specific business helpers such as champion pricing.
 - `src/hooks` contains focused reusable React behavior.
 - `src/config` contains app navigation and profile icon configuration.
 - `src/data` contains domain mapping data such as champion origins.

@@ -3,8 +3,8 @@ import { AiOutlineClose } from 'react-icons/ai';
 import { Check, Gift, Heart, Menu, Search, ShoppingCart } from 'lucide-react';
 import BlueEssenceIcon from '../common/BlueEssenceIcon';
 import PriceAmount from '../common/PriceAmount';
-import CartPanel from '../cart/CartPanel';
-import FavoritesPanel from '../favorites/FavoritesPanel';
+import CartPanel from '../../features/cart/CartPanel';
+import FavoritesPanel from '../../features/favorites/FavoritesPanel';
 import { profileIconImage } from '../../config/profileIcons';
 import { LOL_ICON_URL } from '../../utils/championMedia';
 
@@ -155,3 +155,4 @@ export default function Topbar({
         </header>
     );
 }
+

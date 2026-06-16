@@ -3,7 +3,7 @@ import { AiOutlineArrowUp, AiOutlineArrowDown, AiOutlineArrowLeft, AiOutlineArro
 import './sidebar.css'
 import { useContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import CardContext from '../../component/CardContext';
+import CardContext from '../../../context/CardContext';
 
 function Sidebar() {
     const {
@@ -260,3 +260,4 @@ function Sidebar() {
 }
 
 export default Sidebar
+

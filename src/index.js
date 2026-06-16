@@ -1,8 +1,8 @@
 import './styles/index.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { CardContextprovider } from './components/component/CardContext';
-import App from './App';
+import { CardContextprovider } from './context/CardContext';
+import App from './app/App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -12,3 +12,4 @@ root.render(
     </CardContextprovider>
   </React.StrictMode>
 );
+

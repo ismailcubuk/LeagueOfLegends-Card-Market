@@ -1,13 +1,13 @@
 import './Cards.css';
 import React, { useContext, useState } from 'react';
 import Modal from 'react-bootstrap/Modal';
-import CardContext from '../../component/CardContext';
-import { BLUE_ESSENCE_ICON_URL, getChampionBlueEssence } from '../../component/championPrices';
+import CardContext from '../../../context/CardContext';
+import { BLUE_ESSENCE_ICON_URL, getChampionBlueEssence } from '../../../domain/championPrices';
 import attack from '../../../Images/Stats/attack.png';
 import defanse from '../../../Images/Stats/defanse.png';
 import magic from '../../../Images/Stats/magic.png';
-import Alert from '../Alert/Alert';
-import Pagination from '../Pagination/Pagination';
+import Alert from '../../feedback/Alert/Alert';
+import Pagination from '../../pagination/Pagination/Pagination';
 
 const championLoadingImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${id}_0.jpg`;
 const championSplashImage = (id) => `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${id}_0.jpg`;
@@ -237,3 +237,4 @@ function MappedCard() {
 }
 
 export default MappedCard;
+
