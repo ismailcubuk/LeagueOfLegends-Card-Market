@@ -415,7 +415,7 @@ img {
   position: relative;
   display: inline-flex;
   width: 158px;
-  min-height: 42px;
+  min-height: 46px;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
@@ -431,6 +431,24 @@ img {
   padding: 0 14px;
   text-transform: uppercase;
   transition: border-color 160ms ease, background 160ms ease, color 160ms ease, opacity 160ms ease, transform 160ms ease;
+}
+
+.daily-reward-copy {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  line-height: 1;
+}
+
+.daily-reward-copy small {
+  color: #b8f2ff;
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.03em;
 }
 
 .daily-reward-button::before {
@@ -6520,7 +6538,7 @@ img {
 
   .daily-reward-button {
     width: 86px;
-    min-height: 38px;
+    min-height: 42px;
     gap: 6px;
     padding: 0 10px;
   }
@@ -6546,7 +6564,7 @@ img {
     flex-basis: 30px;
   }
 
-  .daily-reward-button > span:not(.price-amount) {
+  .daily-reward-button.is-available .daily-reward-copy {
     display: none;
   }
 

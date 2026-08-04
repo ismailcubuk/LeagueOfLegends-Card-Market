@@ -91,6 +91,7 @@ function App() {
         cartMissingBalance,
         dailyRewardAmount,
         dailyRewardAvailable,
+        nextDailyRewardAt,
         claimDailyReward,
         addToCart,
         removeFromCart,
@@ -944,6 +945,7 @@ function App() {
                 dailyRewardButtonRef={dailyRewardButtonRef}
                 dailyRewardAvailable={dailyRewardAvailable}
                 dailyRewardAmount={dailyRewardAmount}
+                nextDailyRewardAt={nextDailyRewardAt}
                 handleDailyRewardClaim={handleDailyRewardClaim}
                 favoritesDropdownRef={favoritesDropdownRef}
                 favoritesButtonRef={favoritesButtonRef}

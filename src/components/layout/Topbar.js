@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 import { Check, Gift, Heart, Menu, Search, ShoppingCart } from 'lucide-react';
 import BlueEssenceIcon from '../common/BlueEssenceIcon';
@@ -7,6 +8,16 @@ import CartPanel from '../../features/cart/CartPanel';
 import FavoritesPanel from '../../features/favorites/FavoritesPanel';
 import { profileIconImage } from '../../config/profileIcons';
 import { LOL_ICON_URL } from '../../utils/championMedia';
+
+const getNextRewardCountdown = (nextDailyRewardAt = Date.now()) => {
+    const now = new Date();
+    const totalSeconds = Math.max(Math.ceil((nextDailyRewardAt - now.getTime()) / 1000), 0);
+    const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+    const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+    const seconds = String(totalSeconds % 60).padStart(2, '0');
+
+    return `${hours}:${minutes}:${seconds}`;
+};
 
 export default function Topbar({
     activeLink,
@@ -23,6 +34,7 @@ export default function Topbar({
     dailyRewardButtonRef,
     dailyRewardAvailable,
     dailyRewardAmount,
+    nextDailyRewardAt,
     handleDailyRewardClaim,
     favoritesDropdownRef,
     favoritesButtonRef,
@@ -52,6 +64,22 @@ export default function Topbar({
     selectedProfileIconId,
     setMobileFiltersOpen,
 }) {
+    const [nextRewardCountdown, setNextRewardCountdown] = useState(() => getNextRewardCountdown(nextDailyRewardAt));
+    const rewardLabel = useMemo(() => (dailyRewardAvailable ? 'Claim' : 'Claimed'), [dailyRewardAvailable]);
+
+    useEffect(() => {
+        if (dailyRewardAvailable) {
+            return undefined;
+        }
+
+        setNextRewardCountdown(getNextRewardCountdown(nextDailyRewardAt));
+        const intervalId = window.setInterval(() => {
+            setNextRewardCountdown(getNextRewardCountdown(nextDailyRewardAt));
+        }, 1000);
+
+        return () => window.clearInterval(intervalId);
+    }, [dailyRewardAvailable, nextDailyRewardAt]);
+
     return (
         <header className='topbar'>
             <div className='topbar-inner'>
@@ -87,7 +115,10 @@ export default function Topbar({
                 </motion.div>
                 <button ref={dailyRewardButtonRef} type='button' className={`daily-reward-button ${dailyRewardAvailable ? 'is-available' : 'is-claimed'}`} onClick={handleDailyRewardClaim} disabled={!dailyRewardAvailable}>
                     {dailyRewardAvailable ? <Gift size={16} strokeWidth={2.4} /> : <Check size={16} strokeWidth={2.6} />}
-                    <span>{dailyRewardAvailable ? 'Claim' : 'Claimed'}</span>
+                    <span className='daily-reward-copy'>
+                        <span>{rewardLabel}</span>
+                        {!dailyRewardAvailable ? <small>{nextRewardCountdown}</small> : null}
+                    </span>
                     {dailyRewardAvailable ? <PriceAmount value={dailyRewardAmount} /> : null}
                 </button>
                 <div className='favorites-dropdown-shell' ref={favoritesDropdownRef}>
