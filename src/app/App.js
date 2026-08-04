@@ -21,7 +21,7 @@ import ShowcasePickerModal from '../features/profile/ShowcasePickerModal';
 import { HERO_AUTOPLAY_MS, marketNavLinks, navLinks, previewTabs, profileNavLink, sidebarRoles } from '../config/navigation';
 import { championOrigins, originImageUrls } from '../data/championOrigins';
 import useBodyScrollLock from '../hooks/useBodyScrollLock';
-import { rarityConfig, rarityFor, scoreChampion } from '../utils/championMeta';
+import { rarityConfig, rarityFor } from '../utils/championMeta';
 import { buildPackRouletteItems, PACK_MODAL_PREVIEW_COUNT, PACK_OPEN_COST, pickPackChampion } from '../utils/packOpening';
 import { profileIconFallbackGroup } from '../config/profileIcons';
 
@@ -36,6 +36,55 @@ const resourceIcons = {
     courage: Shield,
     energy: Zap,
     fury: Swords,
+};
+
+const DAILY_FEATURED_COUNT = 4;
+const DAILY_FEATURED_STORAGE_KEY = 'league-market-daily-featured-champions';
+
+const getLocalDateKey = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+};
+
+const pickRandomItems = (items, count) => {
+    const shuffled = [...items];
+
+    for (let index = shuffled.length - 1; index > 0; index -= 1) {
+        const randomIndex = Math.floor(Math.random() * (index + 1));
+        [shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]];
+    }
+
+    return shuffled.slice(0, count);
+};
+
+const getDailyFeaturedChampions = (champions) => {
+    const todayKey = getLocalDateKey();
+    const championMap = new Map(champions.map((champion) => [champion.id, champion]));
+    const featuredCount = Math.min(DAILY_FEATURED_COUNT, champions.length);
+
+    try {
+        const storedFeatured = JSON.parse(localStorage.getItem(DAILY_FEATURED_STORAGE_KEY) || 'null');
+        const storedIds = Array.isArray(storedFeatured?.ids) ? storedFeatured.ids : [];
+        const storedChampions = storedIds.map((id) => championMap.get(id)).filter(Boolean);
+
+        if (storedFeatured?.date === todayKey && storedChampions.length === featuredCount) {
+            return storedChampions;
+        }
+    } catch (error) {
+        localStorage.removeItem(DAILY_FEATURED_STORAGE_KEY);
+    }
+
+    const dailyFeatured = pickRandomItems(champions, featuredCount);
+    localStorage.setItem(DAILY_FEATURED_STORAGE_KEY, JSON.stringify({
+        date: todayKey,
+        ids: dailyFeatured.map((champion) => champion.id),
+    }));
+
+    return dailyFeatured;
 };
 
 const heroTextParent = {
@@ -416,9 +465,7 @@ function App() {
         { key: 'rarity', label: 'Rarity' },
     ];
 
-    const featured = useMemo(() => (
-        [...filtered].sort((a, b) => scoreChampion(b) - scoreChampion(a)).slice(0, 4)
-    ), [filtered]);
+    const featured = useMemo(() => getDailyFeaturedChampions(filtered), [filtered]);
 
     const trending = useMemo(() => (
         [...filtered].sort((a, b) => getChampionBlueEssence(b) - getChampionBlueEssence(a) || b.info.magic - a.info.magic).slice(0, 8)
