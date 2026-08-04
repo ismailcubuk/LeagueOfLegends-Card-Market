@@ -23,6 +23,7 @@ import { championOrigins, originImageUrls } from '../data/championOrigins';
 import useBodyScrollLock from '../hooks/useBodyScrollLock';
 import { rarityConfig, rarityFor, scoreChampion } from '../utils/championMeta';
 import { buildPackRouletteItems, PACK_MODAL_PREVIEW_COUNT, PACK_OPEN_COST, pickPackChampion } from '../utils/packOpening';
+import { profileIconFallbackGroup } from '../config/profileIcons';
 
 const previewStats = [
     { label: 'Attack', key: 'attack', tone: 'attack', icon: Skull },
@@ -157,7 +158,15 @@ function App() {
     const [selectedProfileIconId, setSelectedProfileIconId] = useState(() => {
         const savedIconId = window.localStorage.getItem('league-market-profile-icon-id');
 
-        return savedIconId || '29';
+        if (savedIconId) {
+            return savedIconId;
+        }
+
+        const fallbackIds = profileIconFallbackGroup.ids || [29];
+        const randomIconId = String(fallbackIds[Math.floor(Math.random() * fallbackIds.length)] || 29);
+        window.localStorage.setItem('league-market-profile-icon-id', randomIconId);
+
+        return randomIconId;
     });
     const [showcaseIds, setShowcaseIds] = useState(() => {
         try {
