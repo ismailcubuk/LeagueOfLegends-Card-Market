@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Hextech chest</title>
+  <desc id="desc">A stylized blue and gold fantasy chest icon.</desc>
+  <defs>
+    <linearGradient id="body" x1="20" x2="108" y1="40" y2="104" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#12304d"/>
+      <stop offset="0.54" stop-color="#0a1729"/>
+      <stop offset="1" stop-color="#07101c"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="20" x2="108" y1="28" y2="104" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f4df90"/>
+      <stop offset="0.48" stop-color="#c8943d"/>
+      <stop offset="1" stop-color="#81571f"/>
+    </linearGradient>
+    <linearGradient id="gem" x1="50" x2="78" y1="42" y2="84" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8af5ff"/>
+      <stop offset="0.5" stop-color="#16c7f2"/>
+      <stop offset="1" stop-color="#1574c8"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="3.2" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.1 0 0 0 0 0.78 0 0 0 0 1 0 0 0 0.75 0"/>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <path fill="#030812" d="M13 51 31 30h66l18 21v49c0 6.1-4.9 11-11 11H24c-6.1 0-11-4.9-11-11V51Z"/>
+  <path fill="url(#gold)" d="M17 52 34 33h60l17 19-9 8H26l-9-8Z"/>
+  <path fill="url(#body)" d="M23 57h82v42c0 3.3-2.7 6-6 6H29c-3.3 0-6-2.7-6-6V57Z"/>
+  <path fill="#06111f" d="M31 63h66v34H31V63Z" opacity=".74"/>
+  <path fill="url(#gold)" d="M18 52h92v13H18V52Zm7 43h78v10H25V95Z"/>
+  <path fill="#f0d983" d="M35 39h58l10 12H25l10-12Z" opacity=".6"/>
+  <path fill="#0d2945" d="M37 65h16v31H37V65Zm38 0h16v31H75V65Z"/>
+  <path fill="url(#gold)" d="M57 50h14v55H57V50Z"/>
+  <path fill="#f5db84" d="M57 50h14v8H57v-8Z"/>
+  <path filter="url(#glow)" fill="url(#gem)" d="m64 42 14 18-14 25-14-25 14-18Z"/>
+  <path fill="#c9fbff" d="m64 48 7 12-7 14-7-14 7-12Z" opacity=".75"/>
+  <path fill="#030812" d="M58 78h12v13H58V78Z" opacity=".72"/>
+  <path fill="#f4df90" d="M22 57h10v48H22V57Zm74 0h10v48H96V57Z" opacity=".78"/>
+  <path fill="none" stroke="#f5e19a" stroke-linecap="round" stroke-width="3" d="M36 39h56M30 65h68"/>
+  <path fill="none" stroke="#38dbff" stroke-linecap="round" stroke-width="2" d="M43 88h8m26 0h8" opacity=".75"/>
+</svg>
