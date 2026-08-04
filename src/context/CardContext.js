@@ -6,7 +6,8 @@ const CardContext = createContext();
 
 const DDRAGON_VERSION = "13.1.1";
 const CHAMPIONS_PER_PAGE = 16;
-const DAILY_REWARD_AMOUNT = 450;
+const STARTING_MONEY = 10000;
+const DAILY_REWARD_AMOUNT = 20000;
 const EXCLUDED_CHAMPIONS = new Set(["akshan", "rell", "vex", "seraphine"]);
 const passiveImage = (fileName) => `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/passive/${fileName}`;
 const spellImage = (fileName) => `https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/spell/${fileName}`;
@@ -285,8 +286,10 @@ const localChampions = Object.values(LolData.data || {}).filter(
 ).map(withBlueEssence);
 
 export const CardContextprovider = ({ children }) => {
-    const storedMoney = getStoredJson("money", 30000);
-    const initialMoney = Array.isArray(storedMoney) ? Number(storedMoney[0] || 30000) : Number(storedMoney || 30000);
+    const storedMoney = getStoredJson("money", STARTING_MONEY);
+    const storedStartingMoneyVersion = localStorage.getItem("startingMoneyVersion");
+    const parsedStoredMoney = Array.isArray(storedMoney) ? Number(storedMoney[0] || STARTING_MONEY) : Number(storedMoney || STARTING_MONEY);
+    const initialMoney = storedStartingMoneyVersion ? parsedStoredMoney : Math.min(parsedStoredMoney, STARTING_MONEY);
     const storedCards = getStoredJson("char", []);
 
     const [champions, setChampions] = useState(localChampions);
@@ -306,7 +309,7 @@ export const CardContextprovider = ({ children }) => {
     const [filteredId, setFilteredId] = useState([]);
     const [myCardsArr, setMyCardsArr] = useState(uniqueById(getStoredJson("myCardsArr", [])));
     const [cartItems, setCartItems] = useState(uniqueById(getStoredJson("cartItems", [])));
-    const [lastDailyRewardClaim, setLastDailyRewardClaim] = useState("");
+    const [lastDailyRewardClaim, setLastDailyRewardClaim] = useState(() => localStorage.getItem("lastDailyRewardClaim") || "");
     const [alertt, setAlertt] = useState(false);
     const [carouselPage, setCarouselPage] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
@@ -324,7 +327,14 @@ export const CardContextprovider = ({ children }) => {
 
     useEffect(() => {
         localStorage.setItem("money", JSON.stringify(money));
+        localStorage.setItem("startingMoneyVersion", "10000");
     }, [money]);
+
+    useEffect(() => {
+        if (lastDailyRewardClaim) {
+            localStorage.setItem("lastDailyRewardClaim", lastDailyRewardClaim);
+        }
+    }, [lastDailyRewardClaim]);
 
     useEffect(() => {
         localStorage.setItem("myCardsArr", JSON.stringify(myCardsArr));
